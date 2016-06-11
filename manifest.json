@@ -1,0 +1,21 @@
+{
+  "name": "Highlighter",
+  "description": "Highlight text on webpages",
+  "version": "0.1.2",
+
+    "icons": { "16": "16.png",
+           "48": "48.png",
+          "128": "128.png" },
+
+    "background": {
+        "scripts": ["background.js"]
+    },
+
+    "permissions": [
+        "tabs",
+        "contextMenus",
+        "<all_urls>"
+    ],
+
+  "manifest_version": 2
+}
