@@ -1,9 +1,11 @@
 "use strict";
 
 var selection = window.getSelection();
+var selectionString = selection.toString();
 
-console.log(selection);
-console.log(selection.toString());
+// DEBUG
+//console.log(selection);
+//console.log(selectionString);
 
 // Pick a combination of characters that should (almost) never occur
 var DELIMITERS = {
@@ -22,19 +24,21 @@ var selectionLength = 0;
 
 var startFound = false;
 var charsHighlighted = 0;
+var currentSelectionPos = 0;
 
-if(selection.toString()) { //If there is text selected
+if(selectionString) { //If there is text selected
 
     var container = $(selection.getRangeAt(0).commonAncestorContainer);
 
     // Sometimes the element will only be text. Get the parent in that case
-    while(!container.html()) {
+    // TODO: Is this really necessary?
+    while (!container.html()) {
         container = container.parent();
     }
 
     // In order to get the correct length, we need to remove all line break characters
-    selectionLength = selection.toString().replace(/\x0A/g, '').length;
-    //selectionLength = selection.toString().length;
+    //selectionLength = selectionString.replace(/\x0A/g, '').length;
+    selectionLength = selectionString.length;
 
     anchor = $(selection.anchorNode);
     anchorOffset = selection.anchorOffset;
@@ -75,47 +79,68 @@ function recursiveWrapper(container) {
             // Step 1:
             // The first element to appear could be the anchor OR the focus node,
             // since you can highlight from left to right or right to left
-            if(!startFound) {
+            if (!startFound) {
                 if (anchor.is(element)) {
                     startFound = true;
                     startIndex = anchorOffset;
                 }
-                else if (focus.is(element)) {
-                    startFound = true;
-                    startIndex = focusOffset;
+                if (focus.is(element)) {
+                    if (startFound) // If the anchor and the focus elements are the same, use the smallest index
+                        startIndex = Math.min(anchorOffset, focusOffset);
+                    else {
+                        startFound = true;
+                        startIndex = focusOffset;
+                    }
                 }
             }
 
             // Step 2:
-            if (startFound && charsHighlighted < selectionLength) { // && !element.nodeValue.match(/^\s*$/)) {
+            if (startFound && charsHighlighted < selectionLength) {
                 var nodeValueLength = element.nodeValue.length;
+                var charsLeftToHighlight = selectionLength - charsHighlighted;
+                var newText = "";
 
-                if (charsHighlighted + nodeValueLength - startIndex <= selectionLength) {
-                    charsHighlighted += nodeValueLength - startIndex;
-                    element.nodeValue = element.nodeValue.substr(0, startIndex) + DELIMITERS.start + element.nodeValue.substr(startIndex) + DELIMITERS.end;
+                // Go over all characters to see if they match the selection.
+                // This is done because the selection text and node text contents differ.
+                for (var i = 0; i < nodeValueLength; i++) {
+                    if (i === startIndex)
+                        newText += DELIMITERS.start;
+                    if (i === startIndex + charsLeftToHighlight) {
+                        newText += DELIMITERS.end;
+                        newText += element.nodeValue.substr(i);
+                        break;
+                    }
+
+                    newText += element.nodeValue[i];
+
+                    if (i >= startIndex && currentSelectionPos < selectionLength) {
+                        // Skip whitespaces as they often cause trouble
+                        while (currentSelectionPos < selectionLength && selectionString[currentSelectionPos].match(/\s/)) {
+                            currentSelectionPos++;
+                            charsHighlighted++;
+                        }
+
+                        if (selectionString[currentSelectionPos] == element.nodeValue[i]) {
+                            charsHighlighted++;
+                            currentSelectionPos++;
+                        }
+                    }
+
+                    if (i === nodeValueLength - 1)
+                        newText += DELIMITERS.end;
                 }
-                else {
-                    var charsLeftToHighlight = selectionLength - charsHighlighted;
-                    charsHighlighted += charsLeftToHighlight;
-                    element.nodeValue = element.nodeValue.substr(0, startIndex) + DELIMITERS.start + element.nodeValue.substr(startIndex, charsLeftToHighlight) +
-                        DELIMITERS.end + element.nodeValue.substr(charsLeftToHighlight + startIndex);
-                }
+
+                element.nodeValue = newText;
             }
-            /*else if (startFound && charsHighlighted < selectionLength) {
-                charsHighlighted += element.nodeValue.split(String.fromCharCode(10)).length - 1;
-
-                for (var i = 0; i < element.nodeValue.length; i++) {
-                    if (element.nodeValue.charCodeAt(i) < 32)
-                        console.log(element.nodeValue.charCodeAt(i));
-                }
-            }*/
         }
         else
             recursiveWrapper($(element))
     });
 }
 
-
+// The Content-Editable Way
+// Using this, I get less control over the highlighting process,
+// But I also get an annoying blue box for half a second indicating the 'contenteditable' mode
 /*var range, sel;
 try {
     if (!document.execCommand("BackColor", false, colour)) {
