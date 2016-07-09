@@ -1,11 +1,11 @@
 {
-  "name": "Highlighter",
-  "description": "Highlight text on webpages",
-  "version": "0.1.2",
+    "name": "Highlighter",
+    "description": "Highlight text on webpages",
+    "version": "0.1.2",
 
     "icons": { "16": "16.png",
-           "48": "48.png",
-          "128": "128.png" },
+        "48": "48.png",
+        "128": "128.png" },
 
     "background": {
         "scripts": ["background.js"]
@@ -17,5 +17,5 @@
         "<all_urls>"
     ],
 
-  "manifest_version": 2
+    "manifest_version": 2
 }
