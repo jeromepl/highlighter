@@ -9,8 +9,8 @@ var selectionString = selection.toString();
 
 // Pick a combination of characters that should (almost) never occur
 var DELIMITERS = {
-    start: '~:|;',
-    end: ';:~|'
+    start: '~:;',
+    end: ';:~'
 };
 
 var REPLACEMENTS = {
