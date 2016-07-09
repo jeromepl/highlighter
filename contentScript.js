@@ -43,7 +43,6 @@ if(selectionString) { //If there is text selected
     anchorOffset = selection.anchorOffset;
     focus = $(selection.focusNode);
     focusOffset = selection.focusOffset;
-    var content = container.html();
 
     /**
     * STEPS:
@@ -61,7 +60,8 @@ if(selectionString) { //If there is text selected
     // Step 3:
     var startRe = new RegExp(DELIMITERS.start, "g");
     var endRe = new RegExp(DELIMITERS.end, "g");
-    container.html(container.html().replace(startRe, REPLACEMENTS.start).replace(endRe, REPLACEMENTS.end));
+    var content = container.html();
+    container.html(content.replace(startRe, REPLACEMENTS.start).replace(endRe, REPLACEMENTS.end));
 
     // Step 4:
     selection.removeAllRanges();
