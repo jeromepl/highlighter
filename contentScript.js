@@ -24,7 +24,6 @@ var selectionLength = 0;
 
 var startFound = false;
 var charsHighlighted = 0;
-var currentSelectionPos = 0;
 
 if(selectionString) { //If there is text selected
 
@@ -97,7 +96,6 @@ function recursiveWrapper(container) {
             // Step 2:
             if (startFound && charsHighlighted < selectionLength) {
                 var nodeValueLength = element.nodeValue.length;
-                var charsLeftToHighlight = selectionLength - charsHighlighted;
                 var newText = "";
 
                 // Go over all characters to see if they match the selection.
@@ -105,7 +103,7 @@ function recursiveWrapper(container) {
                 for (var i = 0; i < nodeValueLength; i++) {
                     if (i === startIndex)
                         newText += DELIMITERS.start;
-                    if (i === startIndex + charsLeftToHighlight) {
+                    if (charsHighlighted === selectionLength) {
                         newText += DELIMITERS.end;
                         newText += element.nodeValue.substr(i);
                         break;
@@ -113,17 +111,13 @@ function recursiveWrapper(container) {
 
                     newText += element.nodeValue[i];
 
-                    if (i >= startIndex && currentSelectionPos < selectionLength) {
+                    if (i >= startIndex && charsHighlighted < selectionLength) {
                         // Skip whitespaces as they often cause trouble
-                        while (currentSelectionPos < selectionLength && selectionString[currentSelectionPos].match(/\s/)) {
-                            currentSelectionPos++;
+                        while (charsHighlighted < selectionLength && selectionString[charsHighlighted].match(/\s/))
                             charsHighlighted++;
-                        }
 
-                        if (selectionString[currentSelectionPos] == element.nodeValue[i]) {
+                        if (selectionString[charsHighlighted] === element.nodeValue[i])
                             charsHighlighted++;
-                            currentSelectionPos++;
-                        }
                     }
 
                     if (i === nodeValueLength - 1)
