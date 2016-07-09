@@ -1,11 +1,22 @@
 {
     "name": "Highlighter",
-    "description": "Highlight text on webpages",
-    "version": "0.1.2",
+    "description": "Highlight text on websites with a simple right-click. Saves your highlights across all your devices!",
+    "version": "1.0.0",
 
-    "icons": { "16": "16.png",
-        "48": "48.png",
-        "128": "128.png" },
+    "icons": {
+        "16": "images/16.png",
+        "48": "images/48.png",
+        "128": "images/128.png"
+    },
+
+    "browser_action": {
+        "default_icon": {
+            "16": "images/16.png",
+            "48": "images/48.png",
+            "128": "images/128.png"
+        },
+        "default_popup": "popup.html"
+    },
 
     "background": {
         "scripts": ["background.js"]
@@ -14,6 +25,7 @@
     "permissions": [
         "tabs",
         "contextMenus",
+        "system.storage",
         "<all_urls>"
     ],
 

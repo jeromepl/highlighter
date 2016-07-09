@@ -14,7 +14,7 @@ var DELIMITERS = {
 };
 
 var REPLACEMENTS = {
-    start: '<span style="background-color: yellow;">',
+    start: '<span class="highlighter--highlighted" style="background-color: yellow;">',
     end: '</span>'
 };
 
