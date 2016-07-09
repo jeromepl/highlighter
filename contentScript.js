@@ -9,8 +9,8 @@ var selectionString = selection.toString();
 
 // Pick a combination of characters that should (almost) never occur
 var DELIMITERS = {
-    start: '~:;',
-    end: ';:~'
+    start: '~:|;',
+    end: ';:~|'
 };
 
 var REPLACEMENTS = {
@@ -53,8 +53,6 @@ if(selectionString) { //If there is text selected
     *     - Wrap all the text nodes (or parts of them) in special characters
     * 3 - Replace the special characters by span tags with a yellow background color in the container html
     * 4 - Deselect text
-    *
-    * NOTE: A Document fragment could possibly be used here for efficiency
     */
 
     // Step 1 + 2:
@@ -112,7 +110,7 @@ function recursiveWrapper(container) {
                     newText += element.nodeValue[i];
 
                     if (i >= startIndex && charsHighlighted < selectionLength) {
-                        // Skip whitespaces as they often cause trouble
+                        // Skip whitespaces as they often cause trouble (differences between selection and actual text)
                         while (charsHighlighted < selectionLength && selectionString[charsHighlighted].match(/\s/))
                             charsHighlighted++;
 
