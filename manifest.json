@@ -1,6 +1,6 @@
 {
     "name": "Highlighter",
-    "description": "Highlight text on websites with a simple right-click. Saves your highlights across all your devices!",
+    "description": "Highlight text on websites with a simple right-click (or keyboard shortcut). Saves your highlights across all your devices!",
     "version": "1.0.0",
 
     "icons": {
@@ -22,10 +22,19 @@
         "scripts": ["background.js"]
     },
 
+    "commands": {
+        "execute-highlight": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+H"
+            },
+            "description": "Highlight selected text"
+        }
+    },
+
     "permissions": [
         "tabs",
         "contextMenus",
-        "system.storage",
+        "storage",
         "<all_urls>"
     ],
 
