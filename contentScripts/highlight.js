@@ -9,8 +9,8 @@ var selectionString = selection.toString();
 
 // Pick a combination of characters that should (almost) never occur
 var DELIMITERS = {
-    start: '~:;',
-    end: ';:~'
+    start: '~|:;',
+    end: ';:~|'
 };
 
 var REPLACEMENTS = {
@@ -24,6 +24,8 @@ var selectionLength = 0;
 
 var startFound = false;
 var charsHighlighted = 0;
+
+var alreadyHighlighted = true;
 
 if(selectionString) { //If there is text selected
 
@@ -58,10 +60,32 @@ if(selectionString) { //If there is text selected
     recursiveWrapper(container);
 
     // Step 3:
-    var startRe = new RegExp(DELIMITERS.start, "g");
-    var endRe = new RegExp(DELIMITERS.end, "g");
-    var content = container.html();
-    container.html(content.replace(startRe, REPLACEMENTS.start).replace(endRe, REPLACEMENTS.end));
+    // Either highlight, or un-highlight the selection
+
+    // Need to take the parent in order to be able to open and close the container's root element (a <span> in the un-highlight case)
+    // Also needed for the negative lookahead of the highlight case
+    var parent = container.parent();
+    var content = parent.html();
+
+    if (!alreadyHighlighted) {
+        var startRe = new RegExp(escapeRegex(DELIMITERS.start), "g");
+        var endRe = new RegExp(escapeRegex(DELIMITERS.end), "g");
+        content = content.replace(startRe, REPLACEMENTS.start).replace(endRe, REPLACEMENTS.end);
+
+        // Make sure to not highlight the same thing twice, as it breaks the un-highlighting
+        var sanitizeRe = new RegExp(escapeRegex(REPLACEMENTS.start + REPLACEMENTS.start) + '(.*?)' + escapeRegex(REPLACEMENTS.end + REPLACEMENTS.end), "g");
+        parent.html(content.replace(sanitizeRe, REPLACEMENTS.start + "$1" + REPLACEMENTS.end));
+    }
+    else {
+        var startRe = new RegExp(escapeRegex(DELIMITERS.start), "g");
+        var endRe = new RegExp(escapeRegex(DELIMITERS.end), "g");
+        // The trick here is to replace the start with the end and vice-versa which will remove the selected text from the highlight
+        content = content.replace(startRe, REPLACEMENTS.end).replace(endRe, REPLACEMENTS.start);
+
+        // Clean-up by removing empty spans
+        var sanitizeRe = new RegExp(escapeRegex(REPLACEMENTS.start + REPLACEMENTS.end), "g");
+        parent.html(content.replace(sanitizeRe, ''));
+    }
 
     // Step 4:
     selection.removeAllRanges();
@@ -96,6 +120,12 @@ function recursiveWrapper(container) {
                 var nodeValueLength = element.nodeValue.length;
                 var newText = "";
 
+                // If one of the textElement is not wrapped in a .highlighter--highlighted span,
+                // the selection is not already highlighted
+                var parent = element.parentElement;
+                if (parent.nodeName !== 'SPAN' || parent.className !== 'highlighter--highlighted')
+                    alreadyHighlighted = false;
+
                 // Go over all characters to see if they match the selection.
                 // This is done because the selection text and node text contents differ.
                 for (var i = 0; i < nodeValueLength; i++) {
@@ -128,6 +158,14 @@ function recursiveWrapper(container) {
         else
             recursiveWrapper($(element))
     });
+}
+
+
+/** UTILS **/
+
+// Escape Regex special characters
+function escapeRegex(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
 
 // The Content-Editable Way
