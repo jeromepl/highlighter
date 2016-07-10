@@ -1,3 +1,5 @@
+"use strict";
+
 function highlightText() {
     chrome.extension.getBackgroundPage().highlightText();
 }
