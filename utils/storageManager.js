@@ -24,7 +24,6 @@ function load(url) {
     chrome.storage.local.get({highlights: {}}, function (result) {
         var highlights = result.highlights[url];
         for (var i = 0; highlights && i < highlights.length; i++) {
-            console.log(highlights[i]);
 
             var selection = {
                 anchorNode: elementFromQuery(highlights[i].anchorNode),
