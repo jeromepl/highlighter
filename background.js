@@ -10,13 +10,9 @@ chrome.commands.onCommand.addListener(function(command) {
 });
 
 function highlightText() {
-    chrome.tabs.executeScript({file: "jquery-2.1.3.min.js"}, function() {
-        chrome.tabs.executeScript({file: "contentScripts/highlight.js"});
-    });
+    chrome.tabs.executeScript({file: 'contentScripts/highlight.js'});
 }
 
 function removeHighlights() {
-    chrome.tabs.executeScript({file: "jquery-2.1.3.min.js"}, function() {
-        chrome.tabs.executeScript({file: "contentScripts/removeHighlights.js"});
-    });
+    chrome.tabs.executeScript({file: 'contentScripts/removeHighlights.js'});
 }
