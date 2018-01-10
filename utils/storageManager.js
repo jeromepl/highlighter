@@ -68,18 +68,17 @@ function getQuery(element) {
 
     var parent = element.parentNode;
 
-    var index, parentSelector;
+    var index;
+    var parentSelector = getQuery(parent);
     // The element is a text node
     if (!element.localName) {
         // Find the index of the text node:
         index = Array.prototype.indexOf.call(parent.childNodes, element);
 
-        parentSelector = getQuery(parent);
         return parentSelector + '>textNode:nth-of-type(' + index + ')';
     }
     else {
         var jEl = $(element);
-        parentSelector = getQuery(parent);
         index = jEl.index(parentSelector + '>' + element.localName) + 1;
         return parentSelector + '>' + element.localName + ':nth-of-type(' + index + ')';
     }
