@@ -1,4 +1,4 @@
-function store(selection, container, url, callback) {
+function store(selection, container, url, color, callback) {
     chrome.storage.local.get({highlights: {}}, (result) => {
         var highlights = result.highlights;
 
@@ -11,7 +11,8 @@ function store(selection, container, url, callback) {
             anchorNode: getQuery(selection.anchorNode),
             anchorOffset: selection.anchorOffset,
             focusNode: getQuery(selection.focusNode),
-            focusOffset: selection.focusOffset
+            focusOffset: selection.focusOffset,
+            color: color
         });
         chrome.storage.local.set({highlights});
 
@@ -31,8 +32,9 @@ function load(url) {
                 focusNode: elementFromQuery(highlights[i].focusNode),
                 focusOffset: highlights[i].focusOffset
             };
+            var color = highlights[i].color;
 
-            highlight(highlights[i].string, elementFromQuery(highlights[i].container), selection);
+            highlight(highlights[i].string, elementFromQuery(highlights[i].container), selection, color);
         }
     });
 }

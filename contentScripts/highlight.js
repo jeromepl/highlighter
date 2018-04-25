@@ -3,7 +3,7 @@
 var selection = window.getSelection();
 var selectionString = selection.toString();
 
-if (selectionString) { //If there is text selected
+if (selectionString) { // If there is text selected
 
     var container = selection.getRangeAt(0).commonAncestorContainer;
 
@@ -13,7 +13,10 @@ if (selectionString) { //If there is text selected
         container = container.parentNode;
     }
 
-    store(selection, container, window.location.pathname, function() {
-        highlight(selectionString, container, selection);
+    chrome.storage.sync.get('color', (values) => {
+        var color = values.color;
+        store(selection, container, window.location.pathname, color, () => {
+            highlight(selectionString, container, selection, color);
+        });
     });
 }

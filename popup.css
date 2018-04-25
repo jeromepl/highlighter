@@ -30,3 +30,44 @@ button:hover {
 button:last-of-type {
     margin-bottom: 0;
 }
+
+#colors {
+    display: flex;
+    flex-direction: row;
+    height: 31px;
+    padding: 5px 11px 0 11px;
+}
+
+#colors label {
+    display: flex;
+    flex-grow: 1;
+    margin: 4px;
+    border: solid 1px #AAA;
+}
+
+#colors label.selected {
+    border-color: black;
+    border-width: 2px;
+    width: 11px;
+}
+
+#colors label:nth-of-type(1) {
+    background-color: yellow;
+}
+#colors label:nth-of-type(2) {
+    background-color: cyan;
+}
+#colors label:nth-of-type(3) {
+    background-color: lime;
+}
+#colors label:nth-of-type(4) {
+    background-color: magenta;
+}
+
+#colors label input {
+    cursor: pointer;
+    opacity: 0; /* Hide the default browser radio buttons */
+    flex-grow: 1;
+    margin: 0;
+    height: 100%;
+}

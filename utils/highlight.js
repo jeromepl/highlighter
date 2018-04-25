@@ -4,10 +4,14 @@ var DELIMITERS = {
     end: ';:~|'
 };
 
-var REPLACEMENTS = {
-    start: '<span class="highlighter--highlighted" style="background-color: yellow;">',
-    end: '</span>'
-};
+var HIGHLIGHT_CLASS = 'highlighter--highlighted';
+
+function getReplacements(color) {
+    return {
+        start: '<span class="' + HIGHLIGHT_CLASS + '" style="background-color: ' + color + ';">',
+        end: '</span>'
+    };
+}
 
 var anchor = null, focus = null;
 var anchorOffset = 0, focusOffset = 0;
@@ -31,11 +35,9 @@ function resetVars() {
     alreadyHighlighted = true;
 }
 
-function highlight(selString, container, selection) {
+function highlight(selString, container, selection, color) {
     resetVars();
 
-    // In order to get the correct length, we need to remove all line break characters
-    //selectionLength = selectionString.replace(/\x0A/g, '').length;
     selectionString = selString;
     selectionLength = selectionString.length;
 
@@ -58,6 +60,9 @@ function highlight(selString, container, selection) {
     // Step 1 + 2:
     recursiveWrapper(container);
 
+    color = color ? color : "yellow";
+    var replacements = getReplacements(color);
+
     // Step 3:
     // Either highlight, or un-highlight the selection
 
@@ -70,20 +75,20 @@ function highlight(selString, container, selection) {
     if (!alreadyHighlighted) {
         startRe = new RegExp(escapeRegex(DELIMITERS.start), "g");
         endRe = new RegExp(escapeRegex(DELIMITERS.end), "g");
-        content = content.replace(startRe, REPLACEMENTS.start).replace(endRe, REPLACEMENTS.end);
+        content = content.replace(startRe, replacements.start).replace(endRe, replacements.end);
 
         // Make sure to not highlight the same thing twice, as it breaks the un-highlighting
-        sanitizeRe = new RegExp(escapeRegex(REPLACEMENTS.start + REPLACEMENTS.start) + '(.*?)' + escapeRegex(REPLACEMENTS.end + REPLACEMENTS.end), "g");
-        parent.html(content.replace(sanitizeRe, REPLACEMENTS.start + "$1" + REPLACEMENTS.end));
+        sanitizeRe = new RegExp(escapeRegex(replacements.start + replacements.start) + '(.*?)' + escapeRegex(replacements.end + replacements.end), "g");
+        parent.html(content.replace(sanitizeRe, replacements.start + "$1" + replacements.end));
     }
     else {
         startRe = new RegExp(escapeRegex(DELIMITERS.start), "g");
         endRe = new RegExp(escapeRegex(DELIMITERS.end), "g");
         // The trick here is to replace the start with the end and vice-versa which will remove the selected text from the highlight
-        content = content.replace(startRe, REPLACEMENTS.end).replace(endRe, REPLACEMENTS.start);
+        content = content.replace(startRe, replacements.end).replace(endRe, replacements.start);
 
         // Clean-up by removing empty spans
-        sanitizeRe = new RegExp(escapeRegex(REPLACEMENTS.start + REPLACEMENTS.end), "g");
+        sanitizeRe = new RegExp(escapeRegex(replacements.start + replacements.end), "g");
         parent.html(content.replace(sanitizeRe, ''));
     }
 
@@ -124,7 +129,7 @@ function recursiveWrapper(container) {
                 // If one of the textElement is not wrapped in a .highlighter--highlighted span,
                 // the selection is not already highlighted
                 var parent = element.parentElement;
-                if (parent.nodeName !== 'SPAN' || parent.className !== 'highlighter--highlighted')
+                if (parent.nodeName !== 'SPAN' || parent.className !== HIGHLIGHT_CLASS)
                     alreadyHighlighted = false;
 
                 // Go over all characters to see if they match the selection.
