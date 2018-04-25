@@ -64,7 +64,7 @@ function elementFromQuery(storedQuery) {
 // From an DOM element, get a query to that DOM element
 function getQuery(element) {
     if (element.id)
-        return '#' + element.id;
+        return '#' + escapeCSSString(element.id);
     if (element.localName === 'html')
         return 'html';
 
@@ -84,4 +84,10 @@ function getQuery(element) {
         index = jEl.index(parentSelector + '>' + element.localName) + 1;
         return parentSelector + '>' + element.localName + ':nth-of-type(' + index + ')';
     }
+}
+
+// Colons and spaces are accepted in IDs in HTML but not in CSS syntax
+// Similar (but much more simplified) to the CSS.escape() working draft
+function escapeCSSString(cssString) {
+    return cssString.replace(/(:)/g, "\\$1");
 }
