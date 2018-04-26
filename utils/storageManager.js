@@ -21,22 +21,39 @@ function store(selection, container, url, color, callback) {
     });
 }
 
-function load(url) {
+function loadAll(url) {
     chrome.storage.local.get({highlights: {}}, function (result) {
         var highlights = result.highlights[url];
         for (var i = 0; highlights && i < highlights.length; i++) {
-
-            var selection = {
-                anchorNode: elementFromQuery(highlights[i].anchorNode),
-                anchorOffset: highlights[i].anchorOffset,
-                focusNode: elementFromQuery(highlights[i].focusNode),
-                focusOffset: highlights[i].focusOffset
-            };
-            var color = highlights[i].color;
-
-            highlight(highlights[i].string, elementFromQuery(highlights[i].container), selection, color);
+            load(highlights[i]);
         }
     });
+}
+
+function load(highlightVal, noErrorTracking) { // noErrorTracking is optional
+    var selection = {
+        anchorNode: elementFromQuery(highlightVal.anchorNode),
+        anchorOffset: highlightVal.anchorOffset,
+        focusNode: elementFromQuery(highlightVal.focusNode),
+        focusOffset: highlightVal.focusOffset
+    };
+
+    var selectionString = highlightVal.string;
+    var container = elementFromQuery(highlightVal.container);
+    var color = highlightVal.color;
+
+    if (!selection.anchorNode || !selection.focusNode || !container) {
+        if (!noErrorTracking) {
+            addHighlightError(highlightVal);
+        }
+        return false;
+    } else {
+        var success = highlight(selectionString, container, selection, color);
+        if (!noErrorTracking && !success) {
+            addHighlightError(highlightVal);
+        }
+        return success;
+    }
 }
 
 function clearPage(url) {
@@ -51,11 +68,13 @@ function elementFromQuery(storedQuery) {
     var re = />textNode:nth-of-type\(([0-9]+)\)$/i;
     var result = re.exec(storedQuery);
 
-    if (result) {
+    if (result) { // For text nodes, nth-of-type needs to be handled differently (not a valid CSS selector)
         var textNodeIndex = parseInt(result[1]);
         storedQuery = storedQuery.replace(re, "");
-        var $parent = $(storedQuery);
-        return $parent[0].childNodes[textNodeIndex];
+        var parent = $(storedQuery)[0];
+        if (!parent)
+            return undefined;
+        return parent.childNodes[textNodeIndex];
     }
     else
         return $(storedQuery)[0];

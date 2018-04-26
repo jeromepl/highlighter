@@ -95,6 +95,8 @@ function highlight(selString, container, selection, color) {
     // Step 4:
     if (selection.removeAllRanges)
         selection.removeAllRanges();
+
+    return true; // No errors. 'undefined' is returned by default if any error occurs during this method's execution, like if 'content.replace' fails by 'content' being 'undefined'
 }
 
 function recursiveWrapper(container) {

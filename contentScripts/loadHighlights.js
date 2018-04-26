@@ -1,3 +1,3 @@
 $(document).ready(function() {
-    load(window.location.pathname);
+    loadAll(window.location.pathname);
 });
