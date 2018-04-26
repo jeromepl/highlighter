@@ -71,3 +71,9 @@ button:last-of-type {
     margin: 0;
     height: 100%;
 }
+
+#shortcut-help {
+    text-align: center;
+    font-size: 11px;
+    font-style: italic;
+}

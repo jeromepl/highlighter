@@ -14,6 +14,9 @@ function colorChanged(color) {
 var highlightBtn = document.getElementById('highlight');
 var removeHighlightsBtn = document.getElementById('remove-highlights');
 var radios = document.getElementsByName('color');
+var shortcutLink = document.getElementById('shortcut-link');
+var highlightCommandEl = document.getElementById('highlight-command');
+var shortcutTextEl = document.getElementById('shortcut-text');
 
 // Register Events
 highlightBtn.addEventListener('click', highlightText);
@@ -32,6 +35,23 @@ chrome.storage.sync.get('color', (values) => {
         if (radio.value === color) { // Highlight the currently selected color saved in chrome storage
             clearSelected();
             radio.parentNode.classList.add('selected');
+        }
+    });
+});
+
+shortcutLink.addEventListener('click', () => { // Open the shortcuts Chrome settings page in a new tab
+    chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+});
+
+// Retrieve the shortcut for the highlight command from the Chrome settings and display it
+chrome.commands.getAll((commands) => {
+    commands.forEach((command) => {
+        if (command.name === 'execute-highlight') {
+            if (command.shortcut) {
+                highlightCommandEl.textContent = command.shortcut;
+            } else {
+                shortcutTextEl.textContent = "No keyboard shortcut is currently defined."; // If no shortcut is defined, change the whole text to reflect this
+            }
         }
     });
 });
