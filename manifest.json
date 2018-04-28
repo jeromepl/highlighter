@@ -26,7 +26,7 @@
     ],
 
     "background": {
-        "scripts": ["background.js"]
+        "scripts": ["analytics.js", "background.js"]
     },
 
     "commands": {
@@ -44,6 +44,8 @@
         "storage",
         "<all_urls>"
     ],
+
+    "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
 
     "manifest_version": 2
 }

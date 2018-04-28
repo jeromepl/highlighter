@@ -1,14 +1,18 @@
 "use strict";
 
+var backgroundPage = chrome.extension.getBackgroundPage();
+
 function highlightText() {
-    chrome.extension.getBackgroundPage().highlightText();
+    backgroundPage.trackEvent('highlight-source', 'popup');
+    backgroundPage.highlightText();
 }
 function removeHighlights() {
-    chrome.extension.getBackgroundPage().removeHighlights();
+    backgroundPage.removeHighlights();
 }
 
 function colorChanged(color) {
-    chrome.extension.getBackgroundPage().changeColor(color);
+    backgroundPage.trackEvent('color-change-source', 'popup');
+    backgroundPage.changeColor(color);
 }
 
 var highlightBtn = document.getElementById('highlight');
@@ -55,6 +59,9 @@ chrome.commands.getAll((commands) => {
         }
     });
 });
+
+// Register (in analytics) that the popup was opened
+backgroundPage.trackEvent('popup', 'opened');
 
 // TODO: Determine if the buttons should be enabled or disabled
 highlightBtn.disabled = false;
