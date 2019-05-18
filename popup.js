@@ -2,17 +2,20 @@
 
 var backgroundPage = chrome.extension.getBackgroundPage();
 
-function highlightText() {
-    backgroundPage.trackEvent('highlight-source', 'popup');
-    backgroundPage.highlightText();
-}
 function removeHighlights() {
     backgroundPage.removeHighlights();
+    window.close();
 }
 
 function colorChanged(color) {
     backgroundPage.trackEvent('color-change-source', 'popup');
     backgroundPage.changeColor(color);
+}
+
+function toggleHighlighterCursor() {
+    backgroundPage.trackEvent('toggle-cursor-source', 'popup');
+    backgroundPage.toggleHighlighterCursor();
+    window.close();
 }
 
 var highlightBtn = document.getElementById('highlight');
@@ -23,7 +26,7 @@ var highlightCommandEl = document.getElementById('highlight-command');
 var shortcutTextEl = document.getElementById('shortcut-text');
 
 // Register Events
-highlightBtn.addEventListener('click', highlightText);
+highlightBtn.addEventListener('click', toggleHighlighterCursor);
 removeHighlightsBtn.addEventListener('click', removeHighlights);
 
 chrome.storage.sync.get('color', (values) => {
