@@ -2,6 +2,15 @@
 
 var backgroundPage = chrome.extension.getBackgroundPage();
 
+var highlightBtn = document.getElementById('highlight');
+var removeHighlightsBtn = document.getElementById('remove-highlights');
+var radios = document.getElementsByName('color');
+var shortcutLink = document.getElementById('shortcut-link');
+var highlightCommandEl = document.getElementById('highlight-command');
+var shortcutTextEl = document.getElementById('shortcut-text');
+var refreshWarningEl = document.getElementById('refresh-warning');
+var closeWarningBtn = document.getElementById('close-warning');
+
 function removeHighlights() {
     backgroundPage.removeHighlights();
     window.close();
@@ -18,16 +27,22 @@ function toggleHighlighterCursor() {
     window.close();
 }
 
-var highlightBtn = document.getElementById('highlight');
-var removeHighlightsBtn = document.getElementById('remove-highlights');
-var radios = document.getElementsByName('color');
-var shortcutLink = document.getElementById('shortcut-link');
-var highlightCommandEl = document.getElementById('highlight-command');
-var shortcutTextEl = document.getElementById('shortcut-text');
+(function preventWarning() {
+    // Do not show the warning message on future popup window opens after a user has clicked the 'x' button once
+    if (window.localStorage.getItem('refresh-warning-closed')) {
+        refreshWarningEl.remove();
+    }
+})(); // Automatically trigger. function added for clarity only
+
+function closeWarning() {
+    refreshWarningEl.remove();
+    window.localStorage.setItem('refresh-warning-closed', true);
+}
 
 // Register Events
 highlightBtn.addEventListener('click', toggleHighlighterCursor);
 removeHighlightsBtn.addEventListener('click', removeHighlights);
+closeWarningBtn.addEventListener('click', closeWarning);
 
 chrome.storage.sync.get('color', (values) => {
     var color = values.color;

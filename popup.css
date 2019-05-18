@@ -77,3 +77,24 @@ button:last-of-type {
     font-size: 11px;
     font-style: italic;
 }
+
+#refresh-warning {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+
+    text-align: center;
+    font-size: 11px;
+    margin-top: 3px;
+    color: white;
+    background-color: #ec4848;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+#close-warning {
+    font-size: 17px;
+    padding: 2px 6px;
+    cursor: pointer;
+}
