@@ -26,6 +26,7 @@ chrome.commands.onCommand.addListener(function(command) {
 // Listen to messages from content scripts
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action && request.action == 'highlight') {
+        trackEvent('highlight-source', 'highlighter-cursor');
         highlightText();
     }
 });
