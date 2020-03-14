@@ -1,3 +1,5 @@
+"use strict";
+
 // Pick a combination of characters that should (almost) never occur
 var DELIMITERS = {
     start: '~|:;',
