@@ -7,17 +7,16 @@ var DELIMITERS = {
 };
 
 var HIGHLIGHT_CLASS = 'highlighter--highlighted';
-var HIGHLIGHT_ID = 'highlighter--id--';
 
 var highlightID = 0; // global highlight ID - unique per highlight action of the user, not per highlight HTML element
 
-var REPLACEMENT_START_RE = `<span(\ id="${escapeRegex(HIGHLIGHT_ID)}[0-9]+")?\ class="${escapeRegex(HIGHLIGHT_CLASS)}"\ style="background\-color:\ [a-z]+;">`;
+var REPLACEMENT_START_RE = `<span\ class="${escapeRegex(HIGHLIGHT_CLASS)}"\ style="background\-color:\ [a-z]+;"(\ data\-highlight\-id="[0-9]+")?>`;
 var REPLACEMENT_END = '</span>';
 var REPLACEMENT_END_RE = escapeRegex(REPLACEMENT_END);
 
 function getReplacements(color) {
     return {
-        start: `<span id="${HIGHLIGHT_ID + highlightID}" class="${HIGHLIGHT_CLASS}" style="background-color: ${color};">`,
+        start: `<span class="${HIGHLIGHT_CLASS}" style="background-color: ${color};" data-highlight-id="${highlightID}">`,
         end: REPLACEMENT_END
     };
 }
