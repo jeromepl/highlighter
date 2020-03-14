@@ -10,6 +10,20 @@ var highlightCommandEl = document.getElementById('highlight-command');
 var shortcutTextEl = document.getElementById('shortcut-text');
 var refreshWarningEl = document.getElementById('refresh-warning');
 var closeWarningBtn = document.getElementById('close-warning');
+var askConfirmationEl = document.getElementById('remove-ask-confirmation');
+var removeConfirmBtn = document.getElementById('remove-confirm');
+var removeCancelBtn = document.getElementById('remove-cancel');
+
+function askConfirmation() {
+    // Ask confirmation to remove all highlights on the page
+    removeHighlightsBtn.style.display = 'none';
+    askConfirmationEl.style.display = 'block';
+}
+
+function closeConfirmation() {
+    removeHighlightsBtn.style.display = 'block';
+    askConfirmationEl.style.display = 'none';
+}
 
 function removeHighlights() {
     backgroundPage.removeHighlights();
@@ -41,8 +55,10 @@ function closeWarning() {
 
 // Register Events
 highlightBtn.addEventListener('click', toggleHighlighterCursor);
-removeHighlightsBtn.addEventListener('click', removeHighlights);
+removeHighlightsBtn.addEventListener('click', askConfirmation);
 closeWarningBtn.addEventListener('click', closeWarning);
+removeConfirmBtn.addEventListener('click', removeHighlights);
+removeCancelBtn.addEventListener('click', closeConfirmation);
 
 chrome.storage.sync.get('color', (values) => {
     var color = values.color;
@@ -84,6 +100,7 @@ backgroundPage.trackEvent('popup', 'opened');
 // TODO: Determine if the buttons should be enabled or disabled
 highlightBtn.disabled = false;
 removeHighlightsBtn.disabled = false;
+closeConfirmation(); // Trigger initially to hide the 'remove confirmation' section
 
 function clearSelected() {
     var selected = document.getElementsByClassName('selected');
