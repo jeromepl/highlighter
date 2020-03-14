@@ -31,6 +31,33 @@ button:last-of-type {
     margin-bottom: 0;
 }
 
+#remove-ask-confirmation {
+    text-align: center;
+}
+
+#remove-ask-confirmation > button {
+    display: inline-block;
+    width: 71px;
+    margin-top: 4px;
+    text-transform: capitalize;
+}
+
+#remove-ask-confirmation > div {
+    margin-top: 4px;
+}
+
+#remove-ask-confirmation > div > b {
+    font-size: 14px;
+}
+
+#remove-confirm {
+    background-color: #ec4848;
+}
+
+#remove-cancel {
+    background-color: #b7b7b7;
+}
+
 #colors {
     display: flex;
     flex-direction: row;
