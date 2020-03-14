@@ -1,3 +1,5 @@
+"use strict";
+
 var MAX_RETRY_TIME = 10000; // Stop trying to highlight after this time (in ms)
 var RETRY_INTERVAL = 500;
 

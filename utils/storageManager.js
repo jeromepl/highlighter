@@ -1,3 +1,5 @@
+"use strict";
+
 function store(selection, container, url, color, callback) {
     chrome.storage.local.get({highlights: {}}, (result) => {
         var highlights = result.highlights;
