@@ -7,11 +7,18 @@ var DELIMITERS = {
 };
 
 var HIGHLIGHT_CLASS = 'highlighter--highlighted';
+var HIGHLIGHT_ID = 'highlighter--id--';
+
+var highlightID = 0; // global highlight ID - unique per highlight action of the user, not per highlight HTML element
+
+var REPLACEMENT_START_RE = `<span(\ id="${escapeRegex(HIGHLIGHT_ID)}[0-9]+")?\ class="${escapeRegex(HIGHLIGHT_CLASS)}"\ style="background\-color:\ [a-z]+;">`;
+var REPLACEMENT_END = '</span>';
+var REPLACEMENT_END_RE = escapeRegex(REPLACEMENT_END);
 
 function getReplacements(color) {
     return {
-        start: '<span class="' + HIGHLIGHT_CLASS + '" style="background-color: ' + color + ';">',
-        end: '</span>'
+        start: `<span id="${HIGHLIGHT_ID + highlightID}" class="${HIGHLIGHT_CLASS}" style="background-color: ${color};">`,
+        end: REPLACEMENT_END
     };
 }
 
@@ -35,6 +42,7 @@ function resetVars() {
     startFound = false;
     charsHighlighted = 0;
     alreadyHighlighted = true;
+    highlightID++;
 }
 
 function highlight(selString, container, selection, color) {
@@ -78,19 +86,18 @@ function highlight(selString, container, selection, color) {
         startRe = new RegExp(escapeRegex(DELIMITERS.start), "g");
         endRe = new RegExp(escapeRegex(DELIMITERS.end), "g");
         content = content.replace(startRe, replacements.start).replace(endRe, replacements.end);
-
-        // Make sure to not highlight the same thing twice, as it breaks the un-highlighting
-        sanitizeRe = new RegExp(escapeRegex(replacements.start + replacements.start) + '(.*?)' + escapeRegex(replacements.end + replacements.end), "g");
-        parent.html(content.replace(sanitizeRe, replacements.start + "$1" + replacements.end));
+        parent.html(content);
     }
     else {
         startRe = new RegExp(escapeRegex(DELIMITERS.start), "g");
         endRe = new RegExp(escapeRegex(DELIMITERS.end), "g");
+
         // The trick here is to replace the start with the end and vice-versa which will remove the selected text from the highlight
         content = content.replace(startRe, replacements.end).replace(endRe, replacements.start);
 
         // Clean-up by removing empty spans
-        sanitizeRe = new RegExp(escapeRegex(replacements.start + replacements.end), "g");
+        // NOTE: This sanitization step could be removed entirely if needed
+        sanitizeRe = new RegExp(REPLACEMENT_START_RE + REPLACEMENT_END_RE, "g");
         parent.html(content.replace(sanitizeRe, ''));
     }
 
