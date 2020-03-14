@@ -25,18 +25,16 @@ function store(selection, container, url, color, callback) {
 
 function loadAll(url, alternativeUrl) { // alternativeUrl is optional
     chrome.storage.local.get({highlights: {}}, function (result) {
-        var highlights = result.highlights[url];
+        var highlights = [];
 
         // Because of a bug in an older version of the code, some highlights were stored
         // using a key that didn't correspond to the full page URL. To fix this, if the
         // alternativeUrl exists, try to load highlights from there as well 
         if (alternativeUrl) {
-            if (highlights) {
-                highlights = highlights.concat(result.highlights[alternativeUrl]);
-            } else {
-                highlights = result.highlights[alternativeUrl];
-            }
+            highlights = highlights.concat(result.highlights[alternativeUrl] || []);
         }
+
+        highlights = highlights.concat(result.highlights[url] || []);
 
         for (var i = 0; highlights && i < highlights.length; i++) {
             load(highlights[i]);
