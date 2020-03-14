@@ -15,7 +15,7 @@ if (selectionString) { // If there is text selected
 
     chrome.storage.sync.get('color', (values) => {
         var color = values.color;
-        store(selection, container, window.location.pathname, color, () => {
+        store(selection, container, window.location.hostname + window.location.pathname, color, () => {
             highlight(selectionString, container, selection, color);
         });
     });
