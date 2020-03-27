@@ -1,5 +1,7 @@
 "use strict";
 
+var STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
+
 function store(selection, container, url, color, callback) {
     chrome.storage.local.get({highlights: {}}, (result) => {
         var highlights = result.highlights;
@@ -8,6 +10,7 @@ function store(selection, container, url, color, callback) {
             highlights[url] = [];
 
         highlights[url].push({
+            version: STORE_FORMAT_VERSION,
             string: selection.toString(),
             container: getQuery(container),
             anchorNode: getQuery(selection.anchorNode),
