@@ -104,6 +104,13 @@ function highlight(selString, container, selection, color) {
     if (selection.removeAllRanges)
         selection.removeAllRanges();
 
+    // Attach mouse hover event listeners to display tools when hovering a highlight
+    parent.find(`.${HIGHLIGHT_CLASS}`).each((i, el) => {
+        el.addEventListener('mouseenter', onHighlightMouseEnterOrClick);
+        el.addEventListener('click', onHighlightMouseEnterOrClick);
+        el.addEventListener('mouseleave', onHighlightMouseLeave);
+    });
+
     return true; // No errors. 'undefined' is returned by default if any error occurs during this method's execution, like if 'content.replace' fails by 'content' being 'undefined'
 }
 
@@ -139,7 +146,7 @@ function recursiveWrapper(container) {
                 // If one of the textElement is not wrapped in a .highlighter--highlighted span,
                 // the selection is not already highlighted
                 var parent = element.parentElement;
-                if (parent.nodeName !== 'SPAN' || parent.className !== HIGHLIGHT_CLASS)
+                if (parent.nodeName !== 'SPAN' || !parent.classList.contains(HIGHLIGHT_CLASS))
                     alreadyHighlighted = false;
 
                 // Go over all characters to see if they match the selection.

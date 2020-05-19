@@ -28,6 +28,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action && request.action == 'highlight') {
         trackEvent('highlight-source', 'highlighter-cursor');
         highlightText();
+    } else if (request.action && request.action == 'track-event') {
+        if (request.trackCategory && request.trackAction) {
+            trackEvent(request.trackCategory, request.trackAction)
+        }
     }
 });
 
@@ -54,6 +58,16 @@ function toggleHighlighterCursor() {
 function removeHighlights() {
     trackEvent('highlight-action', 'clear-all');
     chrome.tabs.executeScript({file: 'contentScripts/removeHighlights.js'});
+}
+
+function showHighlight(highlightId) {
+    trackEvent('highlight-action', 'show-highlight');
+
+    chrome.tabs.executeScript({
+        code: `var highlightId = ${highlightId};`
+    }, function() {
+        chrome.tabs.executeScript({file: 'contentScripts/showHighlight.js'});
+    });
 }
 
 function changeColorFromContext(info) {
