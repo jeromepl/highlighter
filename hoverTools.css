@@ -1,0 +1,79 @@
+.highlighter--highlighted.highlighter--hovered {
+	outline: solid 1px grey;
+}
+
+#highlighter--hover-tools {
+	position: fixed;
+	padding-bottom: 8px;
+}
+
+#highlighter--hover-tools--container {
+	position: relative;
+    z-index: 10000;
+    border: solid 1px #777777;
+    border-radius: 4px;
+    padding: 1px 7px;
+	background-color: white;
+	width: 82px;
+	height: 37px;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+/* Generated with http://www.cssarrowplease.com/ */
+#highlighter--hover-tools--container:after, #highlighter--hover-tools--container:before {
+	top: 100%;
+	left: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+#highlighter--hover-tools--container:after {
+	border-color: rgba(255, 255, 255, 0);
+	border-top-color: white;
+	border-width: 5px;
+	margin-left: -5px;
+}
+#highlighter--hover-tools--container:before {
+	border-color: rgba(119, 119, 119, 0);
+	border-top-color: #777777;
+	border-width: 6px;
+	margin-left: -6px;
+}
+
+.highlighter--icon {
+	display: inline-block;
+	width: 25px;
+	height: 25px;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	cursor: pointer;
+	filter: opacity(0.7);
+}
+
+.highlighter--icon:hover {
+	filter: opacity(0.92);
+}
+
+.highlighter--icon-copy {
+	background-image:url('chrome-extension://__MSG_@@extension_id__/images/copy.png');
+	margin-right: 4px;
+}
+
+.highlighter--icon-delete {
+	background-image:url('chrome-extension://__MSG_@@extension_id__/images/delete.png');
+	margin-left: 4px;
+}
+
+.highlighter--separator {
+	display: inline-block;
+	height: 22px;
+    width: 0px;
+    border-right: solid 1px #bfbfbf;
+}
