@@ -26,11 +26,10 @@ window.addEventListener('click', function (e) {
 });
 
 window.addEventListener("scroll", function (e) {
-    // TODO: The better solution here is to:
-    // 1) Debounce this
-    // 2) check if a highlight was selected (clicked)
-    // 3) if so, reposition the hover toolbar
-    hide();
+    // TODO: Handle horizontal scrolling
+    if (highlightClicked) {
+        moveToolbarToHighlight(currentHighlightEl);
+    }
 });
 
 function onHighlightMouseEnterOrClick(e) {
@@ -52,21 +51,8 @@ function onHighlightMouseEnterOrClick(e) {
 
     currentHighlightEl = newHighlightEl;
 
-    // Position the hover toolbar above the highlight
-    const boundingRect = e.target.getBoundingClientRect();
-    const toolWidth = 82;
-    let hoverLeft = 0;
-    if (boundingRect.width < toolWidth) {
-        hoverLeft = boundingRect.left + boundingRect.width / 2 - toolWidth / 2
-    } else if (e.clientX - boundingRect.left < toolWidth / 2) {
-        hoverLeft = boundingRect.left;
-    } else if (boundingRect.right - e.clientX < toolWidth / 2) {
-        hoverLeft = boundingRect.right - toolWidth;
-    } else {
-        hoverLeft = e.clientX - toolWidth / 2;
-    }
-    hoverToolEl.css({ top: boundingRect.top - 45, left: hoverLeft });
-    hoverToolEl.show();
+    // Position (and show) the hover toolbar above the highlight
+    moveToolbarToHighlight(newHighlightEl, e.clientX);
 
     // Remove any previous borders and add a border to the highlight (by id) to clearly see what was selected
     $('.highlighter--hovered').removeClass('highlighter--hovered');
@@ -77,6 +63,35 @@ function onHighlightMouseLeave(e) {
     if (!highlightClicked) {
         hoverToolTimeout = setTimeout(hide, 170);
     }
+}
+
+function moveToolbarToHighlight(highlightEl, cursorX) { // cursorX is optional, in which case no change is made to the x position of the hover toolbar
+    const boundingRect = highlightEl.getBoundingClientRect();
+    const toolWidth = 82;
+
+    const hoverTop = boundingRect.top - 45;
+    hoverToolEl.css({ top: hoverTop });
+    
+    if (cursorX !== undefined) {
+        let hoverLeft = null;
+        if (boundingRect.width < toolWidth) {
+            // center the toolbar if the highlight is smaller than the toolbar
+            hoverLeft = boundingRect.left + boundingRect.width / 2 - toolWidth / 2
+        } else if (cursorX - boundingRect.left < toolWidth / 2) {
+            // If the toolbar would overflow the highlight on the left, snap it to the left of the highlight
+            hoverLeft = boundingRect.left;
+        } else if (boundingRect.right - cursorX < toolWidth / 2) {
+            // If the toolbar would overflow the highlight on the right, snap it to the right of the highlight
+            hoverLeft = boundingRect.right - toolWidth;
+        } else {
+            // Else, center the toolbar above the cursor
+            hoverLeft = cursorX - toolWidth / 2;
+        }
+
+        hoverToolEl.css({ left: hoverLeft });
+    }
+
+    hoverToolEl.show()
 }
 
 function hide() {
