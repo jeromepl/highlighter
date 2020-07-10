@@ -7,44 +7,38 @@ var DELIMITERS = {
 };
 
 var HIGHLIGHT_CLASS = 'highlighter--highlighted';
+var DELETED_CLASS = 'highlighter--deleted';
 
-var highlightID = 0; // global highlight ID - unique per highlight action of the user, not per highlight HTML element
-
-var REPLACEMENT_START_RE = `<span\ class="${escapeRegex(HIGHLIGHT_CLASS)}"\ style="background\-color:\ [a-z]+;"(\ data\-highlight\-id="[0-9]+")?>`;
+var REPLACEMENT_START_RE = `<span\ class="(${escapeRegex(HIGHLIGHT_CLASS)}|${escapeRegex(DELETED_CLASS)})"\ style="background\-color:\ [a-z]+;"(\ data\-highlight\-id="[0-9]+")?>`;
 var REPLACEMENT_END = '</span>';
 var REPLACEMENT_END_RE = escapeRegex(REPLACEMENT_END);
 
-function getReplacements(color) {
+function getReplacements(color, highlightIndex) {
+    // deleted highlights have background-color: 'inherit'
+    const className = (color === 'inherit') ? DELETED_CLASS : HIGHLIGHT_CLASS;
     return {
-        start: `<span class="${HIGHLIGHT_CLASS}" style="background-color: ${color};" data-highlight-id="${highlightID}">`,
+        start: `<span class="${className}" style="background-color: ${color};" data-highlight-id="${highlightIndex}">`,
         end: REPLACEMENT_END
     };
 }
 
-var anchor = null, focus = null;
-var anchorOffset = 0, focusOffset = 0;
-var selectionString = "";
-var selectionLength = 0;
+let anchor = null, focus = null;
+let anchorOffset = 0, focusOffset = 0;
+let selectionString = "";
+let selectionLength = 0;
 
-var startFound = false;
-var charsHighlighted = 0;
+let startFound = false;
+let charsHighlighted = 0;
 
-var alreadyHighlighted = true;
+let alreadyHighlighted = true;
 
 function resetVars() {
-    anchor = null;
-    focus = null;
-    anchorOffset = 0;
-    focusOffset = 0;
-    selectionString = "";
-    selectionLength = 0;
     startFound = false;
     charsHighlighted = 0;
     alreadyHighlighted = true;
-    highlightID++;
 }
 
-function highlight(selString, container, selection, color) {
+function highlight(selString, container, selection, color, highlightIndex) {
     resetVars();
 
     selectionString = selString;
@@ -70,17 +64,17 @@ function highlight(selString, container, selection, color) {
     recursiveWrapper(container);
 
     color = color ? color : "yellow";
-    var replacements = getReplacements(color);
+    const replacements = getReplacements(color, highlightIndex);
 
     // Step 3:
     // Either highlight, or un-highlight the selection
 
     // Need to take the parent in order to be able to open and close the container's root element (a <span> in the un-highlight case)
     // Also needed for the negative lookahead of the highlight case
-    var parent = container.parent();
-    var content = parent.html();
+    const parent = container.parent();
+    let content = parent.html();
 
-    var startRe, endRe, sanitizeRe;
+    let startRe, endRe, sanitizeRe;
     if (!alreadyHighlighted) {
         startRe = new RegExp(escapeRegex(DELIMITERS.start), "g");
         endRe = new RegExp(escapeRegex(DELIMITERS.end), "g");
@@ -116,9 +110,9 @@ function highlight(selString, container, selection, color) {
 
 function recursiveWrapper(container) {
 
-    container.contents().each(function (index, element) {
+    container.contents().each((index, element) => {
         if (element.nodeType === Node.TEXT_NODE) {
-            var startIndex = 0;
+            let startIndex = 0;
 
             // Step 1:
             // The first element to appear could be the anchor OR the focus node,
@@ -140,18 +134,18 @@ function recursiveWrapper(container) {
 
             // Step 2:
             if (startFound && charsHighlighted < selectionLength) {
-                var nodeValueLength = element.nodeValue.length;
-                var newText = "";
+                const nodeValueLength = element.nodeValue.length;
+                let newText = "";
 
                 // If one of the textElement is not wrapped in a .highlighter--highlighted span,
                 // the selection is not already highlighted
-                var parent = element.parentElement;
+                const parent = element.parentElement;
                 if (parent.nodeName !== 'SPAN' || !parent.classList.contains(HIGHLIGHT_CLASS))
                     alreadyHighlighted = false;
 
                 // Go over all characters to see if they match the selection.
                 // This is done because the selection text and node text contents differ.
-                for (var i = 0; i < nodeValueLength; i++) {
+                for (let i = 0; i < nodeValueLength; i++) {
                     if (i === startIndex)
                         newText += DELIMITERS.start;
                     if (charsHighlighted === selectionLength) {

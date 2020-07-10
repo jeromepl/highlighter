@@ -5,8 +5,8 @@ window.showHighlighterCursor = false;
 function highlightOnSelection() {
     if (!window.showHighlighterCursor) return;
     
-    var selection = window.getSelection();
-    var selectionString = selection.toString();
+    const selection = window.getSelection();
+    const selectionString = selection.toString();
 
     if (selectionString) { // If there is text selected
         chrome.runtime.sendMessage({ action: 'highlight' });
