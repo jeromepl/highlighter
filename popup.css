@@ -170,6 +170,7 @@ button:last-of-type {
 
 #highlights-list > li {
     padding: 2px;
+    max-width: 146px;
     border-bottom: solid 1px rgb(230, 230, 230);
     cursor: pointer;
     color: #6a6a6a;
