@@ -5,9 +5,10 @@ var RETRY_INTERVAL = 500;
 
 var highlightErrors = [];
 
-function addHighlightError(highlight) {
+function addHighlightError(highlight, highlightIndex) {
     highlightErrors.push({
-        highlight: highlight,
+        highlight,
+        highlightIndex,
         errorTime: Date.now()
     });
 }
@@ -17,7 +18,7 @@ setInterval(() => {
         if (Date.now() - highlightError.errorTime > MAX_RETRY_TIME) { // Stop the search
             highlightErrors.splice(idx, 1);
         } else { // Keep retrying
-            var success = load(highlightError.highlight, true);
+            const success = load(highlightError.highlight, highlightError.highlightIndex, true);
             if (success) {
                 highlightErrors.splice(idx, 1);
             }
