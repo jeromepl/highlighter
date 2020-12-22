@@ -5,6 +5,7 @@ var hoverToolTimeout = null;
 var currentHighlightEl = null;
 var highlightClicked = false;
 var copyBtnEl = null;
+var changeBtnEl = null;
 var deleteBtnEl = null;
 
 $.get(chrome.extension.getURL('hoverTools.html'), function(data) {
@@ -15,8 +16,10 @@ $.get(chrome.extension.getURL('hoverTools.html'), function(data) {
 
     copyBtnEl = hoverToolEl.find('.highlighter--icon-copy')[0];
     deleteBtnEl = hoverToolEl.find('.highlighter--icon-delete')[0];
+    changeBtnEl = hoverToolEl.find('.highlighter--icon-change')[0];
     copyBtnEl.addEventListener('click', onCopyBtnClicked);
     deleteBtnEl.addEventListener('click', onDeleteBtnClicked);
+    changeBtnEl.addEventListener('click', onChangeBtnClicked);
 });
 
 // Allow clicking outside of a highlight to unselect
@@ -40,7 +43,7 @@ function onHighlightMouseEnterOrClick(e) {
 
     highlightClicked = e.type === 'click';
 
-    // Clear any previous timeout that would hide the toolbar, and 
+    // Clear any previous timeout that would hide the toolbar, and
     if (hoverToolTimeout !== null) {
         clearTimeout(hoverToolTimeout);
         hoverToolTimeout = null;
@@ -70,7 +73,7 @@ function moveToolbarToHighlight(highlightEl, cursorX) { // cursorX is optional, 
 
     const hoverTop = boundingRect.top - 45;
     hoverToolEl.css({ top: hoverTop });
-    
+
     if (cursorX !== undefined) {
         let hoverLeft = null;
         if (boundingRect.width < toolWidth) {
@@ -134,3 +137,20 @@ function onDeleteBtnClicked(e) {
 
     chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'delete' });
 }
+
+
+// feature: change color on popup menu
+
+ function onChangeBtnClicked(e) {
+     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
+     const highlights = $(`.highlighter--highlighted[data-highlight-id='${highlightId}']`);
+     const colors = ["yellow", "cyan", "lime", "magenta"];
+     const currentColor = highlights[0].style.backgroundColor;
+     const newColor = colors[(colors.indexOf(currentColor) + 1) % 4];
+     console.log(currentColor, newColor);
+     highlights.css('backgroundColor', newColor); // Change the background color attribute
+
+     update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, newColor); // update the value in the local storage
+    chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'change' });
+ }
+
