@@ -51,6 +51,7 @@
 
     "web_accessible_resources": [
         "images/*.png",
+        "images/*.svg",
         "hoverTools.html"
     ],
 
