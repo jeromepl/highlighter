@@ -71,6 +71,12 @@
 	margin-left: 4px;
 }
 
+.highlighter--icon-change {
+	background-image:url('chrome-extension://__MSG_@@extension_id__/images/change.png');
+	margin-right: 4px;
+	margin-left: 4px;
+}
+
 .highlighter--separator {
 	display: inline-block;
 	height: 22px;
