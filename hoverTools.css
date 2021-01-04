@@ -1,83 +1,83 @@
 .highlighter--highlighted.highlighter--hovered {
-	box-shadow: 0 1px 0 grey;
+    box-shadow: 0 1px 0 grey;
 }
 
 #highlighter--hover-tools {
-	position: fixed;
-	padding-bottom: 8px;
-	z-index: 10000;
+    position: fixed;
+    padding-bottom: 8px;
+    z-index: 10000;
 }
 
 #highlighter--hover-tools--container {
-	position: relative;
+    position: relative;
     border: solid 1px #777777;
     border-radius: 4px;
     padding: 1px 0;
-	background-color: white;
-	width: 94px;
-	height: 37px;
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
-	box-shadow: 1px 1px 2px #bdbdbd;
+    background-color: white;
+    width: 94px;
+    height: 37px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 1px 1px 2px #bdbdbd;
 }
 
 /* Generated with http://www.cssarrowplease.com/ */
 #highlighter--hover-tools--container:after, #highlighter--hover-tools--container:before {
-	top: 100%;
-	left: 50%;
-	border: solid transparent;
-	content: " ";
-	height: 0;
-	width: 0;
-	position: absolute;
-	pointer-events: none;
+    top: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
 }
 
 #highlighter--hover-tools--container:after {
-	border-color: rgba(255, 255, 255, 0);
-	border-top-color: white;
-	border-width: 5px;
-	margin-left: -5px;
+    border-color: rgba(255, 255, 255, 0);
+    border-top-color: white;
+    border-width: 5px;
+    margin-left: -5px;
 }
 #highlighter--hover-tools--container:before {
-	border-color: rgba(119, 119, 119, 0);
-	border-top-color: #777777;
-	border-width: 6px;
-	margin-left: -6px;
+    border-color: rgba(119, 119, 119, 0);
+    border-top-color: #777777;
+    border-width: 6px;
+    margin-left: -6px;
 }
 
 .highlighter--icon {
-	display: inline-block;
-	width: 25px;
-	height: 25px;
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
-	cursor: pointer;
-	filter: opacity(0.7);
-	margin: 0 4px;
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    filter: opacity(0.7);
+    margin: 0 4px;
 }
 
 .highlighter--icon:hover {
-	filter: opacity(0.92);
+    filter: opacity(0.92);
 }
 
 .highlighter--icon-copy {
-	background-image:url('chrome-extension://__MSG_@@extension_id__/images/clipboard-outline.svg');
+    background-image:url('chrome-extension://__MSG_@@extension_id__/images/clipboard-outline.svg');
 }
 
 .highlighter--icon-delete {
-	background-image:url('chrome-extension://__MSG_@@extension_id__/images/trash-outline.svg');
+    background-image:url('chrome-extension://__MSG_@@extension_id__/images/trash-outline.svg');
 }
 
 .highlighter--icon-change-color {
-	background-image:url('chrome-extension://__MSG_@@extension_id__/images/color-palette-outline.svg');
+    background-image:url('chrome-extension://__MSG_@@extension_id__/images/color-palette-outline.svg');
 }
 
 .highlighter--separator {
-	display: inline-block;
-	height: 22px;
+    display: inline-block;
+    height: 22px;
     width: 0px;
     border-right: solid 1px #bfbfbf;
 }
