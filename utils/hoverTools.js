@@ -70,7 +70,7 @@ function onHighlightMouseLeave(e) {
 
 function moveToolbarToHighlight(highlightEl, cursorX) { // cursorX is optional, in which case no change is made to the x position of the hover toolbar
     const boundingRect = highlightEl.getBoundingClientRect();
-    const toolWidth = 82;
+    const toolWidth = 94; // When changing this, also update the width in css #highlighter--hover-tools--container
 
     const hoverTop = boundingRect.top - 45;
     hoverToolEl.css({ top: hoverTop });

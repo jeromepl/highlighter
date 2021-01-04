@@ -14,7 +14,7 @@
     border-radius: 4px;
     padding: 1px 0;
     background-color: white;
-    width: 94px;
+    width: 94px; /* When changing this, also update moveToolbarToHighlight() in hoverTools.js */
     height: 37px;
     display: flex;
     justify-content: space-around;
