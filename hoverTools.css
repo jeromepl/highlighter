@@ -5,11 +5,11 @@
 #highlighter--hover-tools {
 	position: fixed;
 	padding-bottom: 8px;
+	z-index: 10000;
 }
 
 #highlighter--hover-tools--container {
 	position: relative;
-    z-index: 10000;
     border: solid 1px #777777;
     border-radius: 4px;
     padding: 1px 7px;
