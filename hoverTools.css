@@ -12,13 +12,14 @@
 	position: relative;
     border: solid 1px #777777;
     border-radius: 4px;
-    padding: 1px 7px;
+    padding: 1px 0;
 	background-color: white;
-	width: 82px;
+	width: 94px;
 	height: 37px;
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
+	box-shadow: 1px 1px 2px #bdbdbd;
 }
 
 /* Generated with http://www.cssarrowplease.com/ */
@@ -55,6 +56,7 @@
 	background-position: center;
 	cursor: pointer;
 	filter: opacity(0.7);
+	margin: 0 4px;
 }
 
 .highlighter--icon:hover {
@@ -62,19 +64,15 @@
 }
 
 .highlighter--icon-copy {
-	background-image:url('chrome-extension://__MSG_@@extension_id__/images/copy.png');
-	margin-right: 4px;
+	background-image:url('chrome-extension://__MSG_@@extension_id__/images/clipboard-outline.svg');
 }
 
 .highlighter--icon-delete {
-	background-image:url('chrome-extension://__MSG_@@extension_id__/images/delete.png');
-	margin-left: 4px;
+	background-image:url('chrome-extension://__MSG_@@extension_id__/images/trash-outline.svg');
 }
 
-.highlighter--icon-change {
-	background-image:url('chrome-extension://__MSG_@@extension_id__/images/change.png');
-	margin-right: 4px;
-	margin-left: 4px;
+.highlighter--icon-change-color {
+	background-image:url('chrome-extension://__MSG_@@extension_id__/images/color-palette-outline.svg');
 }
 
 .highlighter--separator {
