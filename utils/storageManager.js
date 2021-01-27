@@ -5,7 +5,7 @@ var STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
 var alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
 function store(selection, container, url, color, callback) {
-    chrome.storage.local.get({highlights: {}}, (result) => {
+    chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
 
         if (!highlights[url])
@@ -21,7 +21,7 @@ function store(selection, container, url, color, callback) {
             focusOffset: selection.focusOffset,
             color: color
         });
-        chrome.storage.local.set({highlights});
+        chrome.storage.local.set({ highlights });
 
         if (callback)
             callback(count - 1 + alternativeUrlIndexOffset);
@@ -29,7 +29,7 @@ function store(selection, container, url, color, callback) {
 }
 
 function update(highlightIndex, url, alternativeUrl, newColor) {
-    chrome.storage.local.get({highlights: {}}, (result) => {
+    chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
 
         let urlToUse = url;
@@ -44,14 +44,14 @@ function update(highlightIndex, url, alternativeUrl, newColor) {
             const highlight = highlightsInKey[indexToUse];
             if (highlight) {
                 highlight.color = newColor;
-                chrome.storage.local.set({highlights});
+                chrome.storage.local.set({ highlights });
             }
         }
     });
 }
 
 function loadAll(url, alternativeUrl) { // alternativeUrl is optional
-    chrome.storage.local.get({highlights: {}}, function (result) {
+    chrome.storage.local.get({ highlights: {} }, function (result) {
         let highlights = [];
 
         // Because of a bug in an older version of the code, some highlights were stored
@@ -106,14 +106,14 @@ function load(highlightVal, highlightIndex, noErrorTracking) { // noErrorTrackin
 }
 
 function clearPage(url, alternativeUrl) { // alternativeUrl is optional
-    chrome.storage.local.get({highlights: {}}, (result) => {
+    chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
         delete highlights[url];
 
         if (alternativeUrl) // See 'loadAll()' for an explaination of why this is necessary
             delete highlights[alternativeUrl];
 
-        chrome.storage.local.set({highlights});
+        chrome.storage.local.set({ highlights });
     });
 }
 
