@@ -110,10 +110,9 @@ function _recursiveWrapper(highlightInfo, startFound, charsHighlighted) {
                     }
                 }
 
-                // If textElement is wrapped in a .highlighter--highlighted span,
-                // do not add this highlight
+                // If textElement is wrapped in a .highlighter--highlighted span, do not add this highlight
                 if (parent.classList.contains(HIGHLIGHT_CLASS)) {
-                    parent.normalize();
+                    parent.normalize(); // Undo any 'splitText' operations
                     return;
                 }
 
@@ -131,9 +130,9 @@ function _recursiveWrapper(highlightInfo, startFound, charsHighlighted) {
             }
         } else {
             highlightInfo.container = $(element);
-            charsHighlighted = _recursiveWrapper(highlightInfo, startFound, charsHighlighted);
+            [startFound, charsHighlighted] = _recursiveWrapper(highlightInfo, startFound, charsHighlighted);
         }
     });
 
-    return charsHighlighted;
+    return [startFound, charsHighlighted];
 }
