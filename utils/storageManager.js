@@ -148,11 +148,10 @@ function getQuery(element) {
     if (!element.localName) {
         // Find the index of the text node:
         index = Array.prototype.indexOf.call(parent.childNodes, element);
-
         return parentSelector + '>textNode:nth-of-type(' + index + ')';
     } else {
         const jEl = $(element);
-        index = jEl.index(parentSelector + '>' + element.localName) + 1;
+        index = jEl.parent().find('>' + element.localName).index(jEl) + 1;
         return parentSelector + '>' + element.localName + ':nth-of-type(' + index + ')';
     }
 }
