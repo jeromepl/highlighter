@@ -67,7 +67,6 @@
         }
     },
     "permissions": [
-        "tabs",
         "contextMenus",
         "storage",
         "<all_urls>"
