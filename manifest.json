@@ -46,7 +46,7 @@
     "commands": {
         "execute-highlight": {
             "suggested_key": {
-                "default": "Ctrl+Shift+H"
+                "default": "Alt+H"
             },
             "description": "Highlight selected text"
         },
