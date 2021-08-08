@@ -2,6 +2,7 @@
 
 window.showHighlighterCursor = false;
 
+// We want this to be exported, so do not wrap this code in a function
 function highlightOnSelection() {
     if (!window.showHighlighterCursor) return;
     
