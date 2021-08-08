@@ -18,10 +18,10 @@ globals:
   onHighlightMouseEnterOrClick: readonly # From hoverTools/hoverTools
   onHighlightMouseLeave: readonly # From hoverTools/hoverTools
   highlightOnSelection: readonly # From contentScripts/highlighterCursor
-  _gaq: readonly # From analytics
+  _gaq: readonly # From config/analytics
 ignorePatterns:
   - lib/*
-  - src/analytics*
+  - config/*
 parserOptions:
   ecmaVersion: 12
 rules:

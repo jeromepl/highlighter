@@ -1,7 +1,8 @@
 *.crx
 .idea/
 
-src/analytics.js
-src/analytics-test.js
+config/analytics.js
+config/analytics-production.js
 
 node_modules/
+releases/

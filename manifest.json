@@ -39,7 +39,7 @@
     ],
     "background": {
         "scripts": [
-            "src/analytics.js",
+            "config/analytics.js",
             "src/background.js"
         ]
     },
