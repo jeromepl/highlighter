@@ -8,7 +8,7 @@ let copyBtnEl = null;
 let changeColorBtnEl = null;
 let deleteBtnEl = null;
 
-$.get(chrome.extension.getURL('hoverTools.html'), function(data) {
+$.get(chrome.extension.getURL('src/hoverTools/hoverTools.html'), function(data) {
     hoverToolEl = $(data);
     hoverToolEl.hide().appendTo('body');
     hoverToolEl[0].addEventListener('mouseenter', onHoverToolMouseEnter);

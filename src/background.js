@@ -64,7 +64,7 @@ function highlightTextFromContext() {
 
 function highlightText() {
     trackEvent('highlight-action', 'highlight');
-    chrome.tabs.executeScript({file: 'contentScripts/highlight.js'});
+    chrome.tabs.executeScript({file: 'src/contentScripts/highlight.js'});
 }
 
 function toggleHighlighterCursorFromContext() {
@@ -74,12 +74,12 @@ function toggleHighlighterCursorFromContext() {
 
 function toggleHighlighterCursor() {
     trackEvent('highlight-action', 'toggle-cursor');
-    chrome.tabs.executeScript({file: 'contentScripts/toggleHighlighterCursor.js'});
+    chrome.tabs.executeScript({file: 'src/contentScripts/toggleHighlighterCursor.js'});
 }
 
 function removeHighlights() {
     trackEvent('highlight-action', 'clear-all');
-    chrome.tabs.executeScript({file: 'contentScripts/removeHighlights.js'});
+    chrome.tabs.executeScript({file: 'src/contentScripts/removeHighlights.js'});
 }
 
 function showHighlight(highlightId) {
@@ -88,7 +88,7 @@ function showHighlight(highlightId) {
     chrome.tabs.executeScript({
         code: `const highlightId = ${highlightId};`
     }, function() {
-        chrome.tabs.executeScript({file: 'contentScripts/showHighlight.js'});
+        chrome.tabs.executeScript({file: 'src/contentScripts/showHighlight.js'});
     });
 }
 

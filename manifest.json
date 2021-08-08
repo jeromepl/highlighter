@@ -14,7 +14,7 @@
             "48": "images/48.png",
             "128": "images/128.png"
         },
-        "default_popup": "popup.html"
+        "default_popup": "src/popup/popup.html"
     },
     "content_scripts": [
         {
@@ -22,25 +22,25 @@
                 "<all_urls>"
             ],
             "js": [
-                "jquery-2.1.3.min.js",
-                "utils/storageManager.js",
-                "utils/highlight.js",
-                "utils/highlight_legacy.js",
-                "utils/errorManager.js",
-                "utils/hoverTools.js",
-                "contentScripts/loadHighlights.js",
-                "contentScripts/highlighterCursor.js"
+                "lib/jquery-2.1.3.min.js",
+                "src/utils/storageManager.js",
+                "src/utils/highlight.js",
+                "src/utils/highlight_legacy.js",
+                "src/utils/errorManager.js",
+                "src/hoverTools/hoverTools.js",
+                "src/contentScripts/loadHighlights.js",
+                "src/contentScripts/highlighterCursor.js"
             ],
             "css": [
-                "hoverTools.css"
+                "src/hoverTools/hoverTools.css"
             ],
             "all_frames": true
         }
     ],
     "background": {
         "scripts": [
-            "analytics.js",
-            "background.js"
+            "src/analytics.js",
+            "src/background.js"
         ]
     },
     "commands": {
@@ -74,7 +74,7 @@
     "web_accessible_resources": [
         "images/*.png",
         "images/*.svg",
-        "hoverTools.html"
+        "src/hoverTools/hoverTools.html"
     ],
     "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
 }

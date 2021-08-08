@@ -70,7 +70,7 @@ function copyHighlights() {
 }
 
 (function getHighlights() {
-    chrome.tabs.executeScript({file: 'contentScripts/getHighlights.js'}, (results) => {
+    chrome.tabs.executeScript({file: 'src/contentScripts/getHighlights.js'}, (results) => {
         if (!results || !Array.isArray(results) || results.length == 0) return;
         if (results[0].length == 0) {
             copyBtn.disabled = true;

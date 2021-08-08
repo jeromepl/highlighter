@@ -1,5 +1,5 @@
 *.crx
 .idea/
 
-analytics.js
-analytics-test.js
+src/analytics.js
+src/analytics-test.js
