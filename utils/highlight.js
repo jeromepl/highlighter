@@ -1,7 +1,7 @@
 "use strict";
 
-var HIGHLIGHT_CLASS = 'highlighter--highlighted';
-var DELETED_CLASS = 'highlighter--deleted';
+const HIGHLIGHT_CLASS = 'highlighter--highlighted';
+const DELETED_CLASS = 'highlighter--deleted';
 
 
 function highlight(selString, container, selection, color, highlightIndex) {

@@ -1,12 +1,12 @@
 "use strict";
 
-var hoverToolEl = null;
-var hoverToolTimeout = null;
-var currentHighlightEl = null;
-var highlightClicked = false;
-var copyBtnEl = null;
-var changeColorBtnEl = null;
-var deleteBtnEl = null;
+let hoverToolEl = null;
+let hoverToolTimeout = null;
+let currentHighlightEl = null;
+let highlightClicked = false;
+let copyBtnEl = null;
+let changeColorBtnEl = null;
+let deleteBtnEl = null;
 
 $.get(chrome.extension.getURL('hoverTools.html'), function(data) {
     hoverToolEl = $(data);

@@ -11,7 +11,7 @@ chrome.contextMenus.create({ title: "Magenta", id: "magenta", parentId: "highlig
 
 // Get the initial color value
 chrome.storage.sync.get('color', (values) => {
-    var color = values.color ? values.color : "yellow";
+    const color = values.color ? values.color : "yellow";
     chrome.contextMenus.update(color, { checked: true });
 });
 
@@ -86,7 +86,7 @@ function showHighlight(highlightId) {
     trackEvent('highlight-action', 'show-highlight');
 
     chrome.tabs.executeScript({
-        code: `var highlightId = ${highlightId};`
+        code: `const highlightId = ${highlightId};`
     }, function() {
         chrome.tabs.executeScript({file: 'contentScripts/showHighlight.js'});
     });

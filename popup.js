@@ -1,20 +1,20 @@
 "use strict";
 
-var backgroundPage = chrome.extension.getBackgroundPage();
+const backgroundPage = chrome.extension.getBackgroundPage();
 
-var highlightBtn = document.getElementById('highlight');
-var removeHighlightsBtn = document.getElementById('remove-highlights');
-var radios = document.getElementsByName('color');
-var shortcutLink = document.getElementById('shortcut-link');
-var highlightCommandEl = document.getElementById('highlight-command');
-var shortcutTextEl = document.getElementById('shortcut-text');
-var refreshWarningEl = document.getElementById('refresh-warning');
-var closeWarningBtn = document.getElementById('close-warning');
-var askConfirmationEl = document.getElementById('remove-ask-confirmation');
-var removeConfirmBtn = document.getElementById('remove-confirm');
-var removeCancelBtn = document.getElementById('remove-cancel');
-var copyBtn = document.getElementById('copy-highlights');
-var highlightsListEl = document.getElementById('highlights-list');
+const highlightBtn = document.getElementById('highlight');
+const removeHighlightsBtn = document.getElementById('remove-highlights');
+const radios = document.getElementsByName('color');
+const shortcutLink = document.getElementById('shortcut-link');
+const highlightCommandEl = document.getElementById('highlight-command');
+const shortcutTextEl = document.getElementById('shortcut-text');
+const refreshWarningEl = document.getElementById('refresh-warning');
+const closeWarningBtn = document.getElementById('close-warning');
+const askConfirmationEl = document.getElementById('remove-ask-confirmation');
+const removeConfirmBtn = document.getElementById('remove-confirm');
+const removeCancelBtn = document.getElementById('remove-cancel');
+const copyBtn = document.getElementById('copy-highlights');
+const highlightsListEl = document.getElementById('highlights-list');
 
 function askConfirmation() {
     // Ask confirmation to remove all highlights on the page
@@ -63,7 +63,7 @@ function copyHighlights() {
     backgroundPage.trackEvent('highlight-action', 'copy-all');
 
     // Let the user know the copy went through
-    var checkmarkEl = document.createElement('span');
+    const checkmarkEl = document.createElement('span');
     checkmarkEl.style.color = '#00ff00';
     checkmarkEl.innerHTML = ' &#10004;';
     copyBtn.appendChild(checkmarkEl);
@@ -78,14 +78,14 @@ function copyHighlights() {
             return;
         } 
 
-        var highlights = results[0];
+        const highlights = results[0];
 
         // Clear previous list elements, but only if there is at least one otherwise leave the "empty" message
         highlightsListEl.innerHTML = '';
         
         // Populate with new elements
-        for (var i = 0; i < highlights.length; i += 2) {
-            var newEl = document.createElement('li');
+        for (let i = 0; i < highlights.length; i += 2) {
+            const newEl = document.createElement('li');
             newEl.innerText = highlights[i + 1];
             let highlightId = highlights[i];
             newEl.addEventListener('click', (e) => {
@@ -105,7 +105,7 @@ removeCancelBtn.addEventListener('click', closeConfirmation);
 copyBtn.addEventListener('click', copyHighlights);
 
 chrome.storage.sync.get('color', (values) => {
-    var color = values.color;
+    const color = values.color;
 
     radios.forEach((radio) => {
         radio.addEventListener("click", (e) => { // Add event listener
@@ -144,8 +144,8 @@ backgroundPage.trackEvent('popup', 'opened');
 closeConfirmation(); // Trigger initially to hide the 'remove confirmation' section
 
 function clearSelected() {
-    var selected = document.getElementsByClassName('selected');
-    for (var i = 0; i < selected.length; i++) {
-        selected[i].classList.remove('selected');
-    }
+    const selecteds = document.getElementsByClassName('selected');
+    selecteds.forEach(selected => {
+        selected.classList.remove('selected');
+    });
 }

@@ -1,9 +1,9 @@
 "use strict";
 
-var MAX_RETRY_TIME = 10000; // Stop trying to highlight after this time (in ms)
-var RETRY_INTERVAL = 500;
+const MAX_RETRY_TIME = 10000; // Stop trying to highlight after this time (in ms)
+const RETRY_INTERVAL = 500;
 
-var highlightErrors = [];
+const highlightErrors = [];
 
 function addHighlightError(highlight, highlightIndex) {
     highlightErrors.push({

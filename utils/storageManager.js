@@ -1,8 +1,8 @@
 "use strict";
 
-var STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
+const STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
 
-var alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
+let alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
 function store(selection, container, url, color, callback) {
     chrome.storage.local.get({ highlights: {} }, (result) => {
