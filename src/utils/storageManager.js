@@ -4,12 +4,11 @@ const STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
 
 let alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
-function store(selection, container, url, color, callback) {
+function store(selection, container, url, color, callback) { /* eslint-disable-line no-redeclare, no-unused-vars */
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
 
-        if (!highlights[url])
-            highlights[url] = [];
+        if (!highlights[url]) highlights[url] = [];
 
         const count = highlights[url].push({
             version: STORE_FORMAT_VERSION,
@@ -19,16 +18,15 @@ function store(selection, container, url, color, callback) {
             anchorOffset: selection.anchorOffset,
             focusNode: getQuery(selection.focusNode),
             focusOffset: selection.focusOffset,
-            color: color
+            color: color,
         });
         chrome.storage.local.set({ highlights });
 
-        if (callback)
-            callback(count - 1 + alternativeUrlIndexOffset);
+        if (callback) callback(count - 1 + alternativeUrlIndexOffset);
     });
 }
 
-function update(highlightIndex, url, alternativeUrl, newColor) {
+function update(highlightIndex, url, alternativeUrl, newColor) { /* eslint-disable-line no-redeclare, no-unused-vars */
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
 
@@ -50,13 +48,14 @@ function update(highlightIndex, url, alternativeUrl, newColor) {
     });
 }
 
-function loadAll(url, alternativeUrl) { // alternativeUrl is optional
-    chrome.storage.local.get({ highlights: {} }, function (result) {
+// alternativeUrl is optional
+function loadAll(url, alternativeUrl) { /* eslint-disable-line no-redeclare, no-unused-vars */
+    chrome.storage.local.get({ highlights: {} }, (result) => {
         let highlights = [];
 
         // Because of a bug in an older version of the code, some highlights were stored
         // using a key that didn't correspond to the full page URL. To fix this, if the
-        // alternativeUrl exists, try to load highlights from there as well 
+        // alternativeUrl exists, try to load highlights from there as well
         if (alternativeUrl) {
             highlights = highlights.concat(result.highlights[alternativeUrl] || []);
         }
@@ -64,18 +63,21 @@ function loadAll(url, alternativeUrl) { // alternativeUrl is optional
 
         highlights = highlights.concat(result.highlights[url] || []);
 
-        for (let i = 0; highlights && i < highlights.length; i++) {
+        if (!highlights) return;
+
+        for (let i = 0; i < highlights.length; i++) {
             load(highlights[i], i);
         }
     });
 }
 
-function load(highlightVal, highlightIndex, noErrorTracking) { // noErrorTracking is optional
+// noErrorTracking is optional
+function load(highlightVal, highlightIndex, noErrorTracking) { /* eslint-disable-line no-redeclare */
     const selection = {
         anchorNode: elementFromQuery(highlightVal.anchorNode),
         anchorOffset: highlightVal.anchorOffset,
         focusNode: elementFromQuery(highlightVal.focusNode),
-        focusOffset: highlightVal.focusOffset
+        focusOffset: highlightVal.focusOffset,
     };
 
     // Starting with version 3.1.0, a new highlighting system was used which modifies the DOM in place
@@ -90,76 +92,78 @@ function load(highlightVal, highlightIndex, noErrorTracking) { // noErrorTrackin
             addHighlightError(highlightVal, highlightIndex);
         }
         return false;
-    } else {
-        let success = false;
-        if (loadLegacy) {
-            success = highlight_legacy(selectionString, container, selection, color, highlightIndex);
-        } else {
-            success = highlight(selectionString, container, selection, color, highlightIndex);
-        }
-
-        if (!noErrorTracking && !success) {
-            addHighlightError(highlightVal, highlightIndex);
-        }
-        return success;
     }
+
+    let success = false;
+    if (loadLegacy) {
+        success = highlight_legacy(selectionString, container, selection, color, highlightIndex);
+    } else {
+        success = highlight(selectionString, container, selection, color, highlightIndex);
+    }
+
+    if (!noErrorTracking && !success) {
+        addHighlightError(highlightVal, highlightIndex);
+    }
+    return success;
 }
 
-function clearPage(url, alternativeUrl) { // alternativeUrl is optional
+// alternativeUrl is optional
+function clearPage(url, alternativeUrl) { /* eslint-disable-line no-redeclare, no-unused-vars */
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
         delete highlights[url];
 
-        if (alternativeUrl) // See 'loadAll()' for an explaination of why this is necessary
+        if (alternativeUrl) {
+            // See 'loadAll()' for an explaination of why this is necessary
             delete highlights[alternativeUrl];
+        }
 
         chrome.storage.local.set({ highlights });
     });
 }
 
 function elementFromQuery(storedQuery) {
-    const re = />textNode:nth-of-type\(([0-9]+)\)$/i;
+    const re = />textNode:nth-of-type\(([0-9]+)\)$/ui;
     const result = re.exec(storedQuery);
 
     if (result) { // For text nodes, nth-of-type needs to be handled differently (not a valid CSS selector)
-        const textNodeIndex = parseInt(result[1]);
+        const textNodeIndex = parseInt(result[1], 10);
         storedQuery = storedQuery.replace(re, "");
         const parent = $(storedQuery)[0];
-        if (!parent)
-            return undefined;
+
+        if (!parent) return undefined;
+
         return parent.childNodes[textNodeIndex];
-    } else {
-        return $(storedQuery)[0];
     }
+
+    return $(storedQuery)[0];
 }
 
 // From an DOM element, get a query to that DOM element
 function getQuery(element) {
-    if (element.id)
-        return '#' + escapeCSSString(element.id);
-    if (element.localName === 'html')
-        return 'html';
+    if (element.id) return `#${escapeCSSString(element.id)}`;
+    if (element.localName === 'html') return 'html';
 
     const parent = element.parentNode;
 
-    let index;
+    let index = null;
     const parentSelector = getQuery(parent);
     // The element is a text node
     if (!element.localName) {
         // Find the index of the text node:
         index = Array.prototype.indexOf.call(parent.childNodes, element);
-        return parentSelector + '>textNode:nth-of-type(' + index + ')';
+        return `${parentSelector}>textNode:nth-of-type(${index})`;
     } else {
         const jEl = $(element);
-        index = jEl.parent().find('>' + element.localName).index(jEl) + 1;
-        return parentSelector + '>' + element.localName + ':nth-of-type(' + index + ')';
+        index = jEl.parent().find(`>${element.localName}`).index(jEl) + 1;
+        return `${parentSelector}>${element.localName}:nth-of-type(${index})`;
     }
 }
 
 // Colons and spaces are accepted in IDs in HTML but not in CSS syntax
 // Similar (but much more simplified) to the CSS.escape() working draft
 function escapeCSSString(cssString) {
-    return cssString.replace(/(:)/g, "\\$1");
+    return cssString.replace(/(:)/ug, "\\$1");
 }
 
 // Compare two manifest version strings, e.g. "3.1.0" > "2.0.4"
@@ -170,8 +174,8 @@ function versionCompare(v1, v2) {
     if (v1 === undefined) return -1;
     if (v2 === undefined) return 1;
 
-    const v1Numbers = v1.split('.').map(numStr => parseInt(numStr));
-    const v2Numbers = v2.split('.').map(numStr => parseInt(numStr));
+    const v1Numbers = v1.split('.').map((numStr) => parseInt(numStr, 10));
+    const v2Numbers = v2.split('.').map((numStr) => parseInt(numStr, 10));
 
     const v1Len = v1Numbers.length, v2Len = v2Numbers.length;
 

@@ -3,9 +3,9 @@
 window.showHighlighterCursor = false;
 
 // We want this to be exported, so do not wrap this code in a function
-function highlightOnSelection() {
+function highlightOnSelection() { /* eslint-disable-line no-redeclare */
     if (!window.showHighlighterCursor) return;
-    
+
     const selection = window.getSelection();
     const selectionString = selection.toString();
 

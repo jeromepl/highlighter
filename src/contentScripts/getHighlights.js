@@ -5,7 +5,7 @@
 
     const textToCopy = new Map(); // Use a Map instead of an object since it retains order of insertion
 
-    Array.from(highlights).forEach(highlight => {
+    Array.from(highlights).forEach((highlight) => {
         const dataHighlightId = highlight.getAttribute('data-highlight-id');
         if (textToCopy.has(dataHighlightId)) {
             textToCopy.set(dataHighlightId, textToCopy.get(dataHighlightId).concat(highlight.textContent));
@@ -19,9 +19,9 @@
     // Note that we could return a dict instead, but that we would lose ordering
     const highlightsText = [];
     textToCopy.forEach((value, key) => {
-        const highlightText = value.map((text) => text.replace(/\s+/gm, ' ')).join(''); // clean up whitespace
+        const highlightText = value.map((text) => text.replace(/\s+/ugm, ' ')).join(''); // clean up whitespace
 
-        highlightsText.push(parseInt(key));
+        highlightsText.push(parseInt(key, 10));
         highlightsText.push(highlightText);
     });
 

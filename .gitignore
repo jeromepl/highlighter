@@ -3,3 +3,5 @@
 
 src/analytics.js
 src/analytics-test.js
+
+node_modules/

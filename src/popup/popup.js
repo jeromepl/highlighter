@@ -59,7 +59,7 @@ function copyHighlights() {
     window.getSelection().selectAllChildren(highlightsListEl);
     document.execCommand("copy");
     window.getSelection().empty();
-    
+
     backgroundPage.trackEvent('highlight-action', 'copy-all');
 
     // Let the user know the copy went through
@@ -76,19 +76,19 @@ function copyHighlights() {
             copyBtn.disabled = true;
             removeHighlightsBtn.disabled = true;
             return;
-        } 
+        }
 
         const highlights = results[0];
 
         // Clear previous list elements, but only if there is at least one otherwise leave the "empty" message
         highlightsListEl.innerHTML = '';
-        
+
         // Populate with new elements
         for (let i = 0; i < highlights.length; i += 2) {
             const newEl = document.createElement('li');
             newEl.innerText = highlights[i + 1];
-            let highlightId = highlights[i];
-            newEl.addEventListener('click', (e) => {
+            const highlightId = highlights[i];
+            newEl.addEventListener('click', () => {
                 backgroundPage.showHighlight(highlightId);
             });
             highlightsListEl.appendChild(newEl);
@@ -145,7 +145,7 @@ closeConfirmation(); // Trigger initially to hide the 'remove confirmation' sect
 
 function clearSelected() {
     const selecteds = document.getElementsByClassName('selected');
-    selecteds.forEach(selected => {
+    selecteds.forEach((selected) => {
         selected.classList.remove('selected');
     });
 }

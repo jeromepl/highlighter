@@ -3,10 +3,10 @@
 // Pick a combination of characters that should (almost) never occur
 var DELIMITERS = {
     start: '~|:;',
-    end: ';:~|'
+    end: ';:~|',
 };
 
-var REPLACEMENT_START_RE = `<span\ class="(${escapeRegex(HIGHLIGHT_CLASS)}|${escapeRegex(DELETED_CLASS)})"\ style="background\-color:\ [a-z]+;"(\ data\-highlight\-id="[0-9]+")?>`;
+var REPLACEMENT_START_RE = `<span class="(${escapeRegex(HIGHLIGHT_CLASS)}|${escapeRegex(DELETED_CLASS)})" style="background-color: [a-z]+;"( data-highlight-id="[0-9]+")?>`;
 var REPLACEMENT_END = '</span>';
 var REPLACEMENT_END_RE = escapeRegex(REPLACEMENT_END);
 
@@ -15,11 +15,11 @@ function getReplacements(color, highlightIndex) {
     const className = (color === 'inherit') ? DELETED_CLASS : HIGHLIGHT_CLASS;
     return {
         start: `<span class="${className}" style="background-color: ${color};" data-highlight-id="${highlightIndex}">`,
-        end: REPLACEMENT_END
+        end: REPLACEMENT_END,
     };
 }
 
-let anchor = null, focus = null;
+let anchorNode = null, focusNode = null;
 let anchorOffset = 0, focusOffset = 0;
 let selectionString = "";
 let selectionLength = 0;
@@ -35,16 +35,16 @@ function _resetVars() {
     alreadyHighlighted = true;
 }
 
-function highlight_legacy(selString, container, selection, color, highlightIndex) {
+function highlight_legacy(selString, container, selection, color, highlightIndex) { /* eslint-disable-line no-redeclare, no-unused-vars, camelcase */
     _resetVars();
 
     selectionString = selString;
     selectionLength = selectionString.length;
 
     container = $(container);
-    anchor = $(selection.anchorNode);
+    anchorNode = $(selection.anchorNode);
     anchorOffset = selection.anchorOffset;
-    focus = $(selection.focusNode);
+    focusNode = $(selection.focusNode);
     focusOffset = selection.focusOffset;
 
     /**
@@ -71,29 +71,27 @@ function highlight_legacy(selString, container, selection, color, highlightIndex
     const parent = container.parent();
     let content = parent.html();
 
-    let startRe, endRe, sanitizeRe;
+    let startRe = null, endRe = null, sanitizeRe = null;
     if (!alreadyHighlighted) {
-        startRe = new RegExp(escapeRegex(DELIMITERS.start), "g");
-        endRe = new RegExp(escapeRegex(DELIMITERS.end), "g");
+        startRe = new RegExp(escapeRegex(DELIMITERS.start), "ug");
+        endRe = new RegExp(escapeRegex(DELIMITERS.end), "ug");
         content = content.replace(startRe, replacements.start).replace(endRe, replacements.end);
         parent.html(content);
-    }
-    else {
-        startRe = new RegExp(escapeRegex(DELIMITERS.start), "g");
-        endRe = new RegExp(escapeRegex(DELIMITERS.end), "g");
+    } else {
+        startRe = new RegExp(escapeRegex(DELIMITERS.start), "ug");
+        endRe = new RegExp(escapeRegex(DELIMITERS.end), "ug");
 
         // The trick here is to replace the start with the end and vice-versa which will remove the selected text from the highlight
         content = content.replace(startRe, replacements.end).replace(endRe, replacements.start);
 
         // Clean-up by removing empty spans
         // NOTE: This sanitization step could be removed entirely if needed
-        sanitizeRe = new RegExp(REPLACEMENT_START_RE + REPLACEMENT_END_RE, "g");
+        sanitizeRe = new RegExp(REPLACEMENT_START_RE + REPLACEMENT_END_RE, "ug");
         parent.html(content.replace(sanitizeRe, ''));
     }
 
     // Step 4:
-    if (selection.removeAllRanges)
-        selection.removeAllRanges();
+    if (selection.removeAllRanges) selection.removeAllRanges();
 
     // Attach mouse hover event listeners to display tools when hovering a highlight
     parent.find(`.${HIGHLIGHT_CLASS}`).each((i, el) => {
@@ -105,7 +103,7 @@ function highlight_legacy(selString, container, selection, color, highlightIndex
     return true; // No errors. 'undefined' is returned by default if any error occurs during this method's execution, like if 'content.replace' fails by 'content' being 'undefined'
 }
 
-function recursiveWrapper_legacy(container) {
+function recursiveWrapper_legacy(container) { /* eslint-disable-line camelcase */
 
     container.contents().each((index, element) => {
         if (element.nodeType === Node.TEXT_NODE) {
@@ -115,14 +113,14 @@ function recursiveWrapper_legacy(container) {
             // The first element to appear could be the anchor OR the focus node,
             // since you can highlight from left to right or right to left
             if (!startFound) {
-                if (anchor.is(element)) {
+                if (anchorNode.is(element)) {
                     startFound = true;
                     startIndex = anchorOffset;
                 }
-                if (focus.is(element)) {
-                    if (startFound) // If the anchor and the focus elements are the same, use the smallest index
+                if (focusNode.is(element)) {
+                    if (startFound) { // If the anchor and the focus elements are the same, use the smallest index
                         startIndex = Math.min(anchorOffset, focusOffset);
-                    else {
+                    } else {
                         startFound = true;
                         startIndex = focusOffset;
                     }
@@ -137,14 +135,16 @@ function recursiveWrapper_legacy(container) {
                 // If one of the textElement is not wrapped in a .highlighter--highlighted span,
                 // the selection is not already highlighted
                 const parent = element.parentElement;
-                if (parent.nodeName !== 'SPAN' || !parent.classList.contains(HIGHLIGHT_CLASS))
+                if (parent.nodeName !== 'SPAN' || !parent.classList.contains(HIGHLIGHT_CLASS)) {
                     alreadyHighlighted = false;
+                }
 
                 // Go over all characters to see if they match the selection.
                 // This is done because the selection text and node text contents differ.
                 for (let i = 0; i < nodeValueLength; i++) {
-                    if (i === startIndex)
+                    if (i === startIndex) {
                         newText += DELIMITERS.start;
+                    }
                     if (charsHighlighted === selectionLength) {
                         newText += DELIMITERS.end;
                         newText += element.nodeValue.substr(i);
@@ -155,22 +155,25 @@ function recursiveWrapper_legacy(container) {
 
                     if (i >= startIndex && charsHighlighted < selectionLength) {
                         // Skip whitespaces as they often cause trouble (differences between selection and actual text)
-                        while (charsHighlighted < selectionLength && selectionString[charsHighlighted].match(/\s/))
+                        while (charsHighlighted < selectionLength && selectionString[charsHighlighted].match(/\s/u)) {
                             charsHighlighted++;
+                        }
 
-                        if (selectionString[charsHighlighted] === element.nodeValue[i])
+                        if (selectionString[charsHighlighted] === element.nodeValue[i]) {
                             charsHighlighted++;
+                        }
                     }
 
-                    if (i === nodeValueLength - 1)
+                    if (i === nodeValueLength - 1) {
                         newText += DELIMITERS.end;
+                    }
                 }
 
                 element.nodeValue = newText;
             }
+        } else {
+            recursiveWrapper_legacy($(element));
         }
-        else
-            recursiveWrapper_legacy($(element))
     });
 }
 
@@ -179,5 +182,5 @@ function recursiveWrapper_legacy(container) {
 
 // Escape Regex special characters
 function escapeRegex(text) {
-    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/ug, "\\$&");
 }

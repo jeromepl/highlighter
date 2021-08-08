@@ -1,10 +1,10 @@
 "use strict";
 
-const HIGHLIGHT_CLASS = 'highlighter--highlighted';
-const DELETED_CLASS = 'highlighter--deleted';
+const HIGHLIGHT_CLASS = 'highlighter--highlighted'; /* eslint-disable-line no-redeclare */
+const DELETED_CLASS = 'highlighter--deleted'; /* eslint-disable-line no-redeclare */
 
 
-function highlight(selString, container, selection, color, highlightIndex) {
+function highlight(selString, container, selection, color, highlightIndex) { /* eslint-disable-line no-redeclare, no-unused-vars */
 
     const highlightInfo = {
         color: color ? color : "yellow",
@@ -15,7 +15,7 @@ function highlight(selString, container, selection, color, highlightIndex) {
         anchor: $(selection.anchorNode),
         anchorOffset: selection.anchorOffset,
         focus: $(selection.focusNode),
-        focusOffset: selection.focusOffset
+        focusOffset: selection.focusOffset,
     };
 
     /**
@@ -32,8 +32,7 @@ function highlight(selString, container, selection, color, highlightIndex) {
     recursiveWrapper(highlightInfo);
 
     // Step 3:
-    if (selection.removeAllRanges)
-        selection.removeAllRanges();
+    if (selection.removeAllRanges) selection.removeAllRanges();
 
     // Step 4:
     const parent = highlightInfo.container.parent();
@@ -69,9 +68,9 @@ function _recursiveWrapper(highlightInfo, startFound, charsHighlighted) {
                     startIndex = anchorOffset;
                 }
                 if (focus.is(element)) {
-                    if (startFound) // If the anchor and the focus elements are the same, use the smallest index
+                    if (startFound) { // If the anchor and the focus elements are the same, use the smallest index
                         startIndex = Math.min(anchorOffset, focusOffset);
-                    else {
+                    } else {
                         startFound = true;
                         startIndex = focusOffset;
                     }
@@ -102,11 +101,13 @@ function _recursiveWrapper(highlightInfo, startFound, charsHighlighted) {
 
                     if (i >= startIndex && charsHighlighted < selectionLength) {
                         // Skip whitespaces as they often cause trouble (differences between selection and actual text)
-                        while (charsHighlighted < selectionLength && selectionString[charsHighlighted].match(/\s/))
+                        while (charsHighlighted < selectionLength && selectionString[charsHighlighted].match(/\s/u)) {
                             charsHighlighted++;
+                        }
 
-                        if (selectionString[charsHighlighted] === nodeValue[i])
+                        if (selectionString[charsHighlighted] === nodeValue[i]) {
                             charsHighlighted++;
+                        }
                     }
                 }
 

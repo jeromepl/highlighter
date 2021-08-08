@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 "use strict";
 
 // Add option when right-clicking
@@ -16,7 +18,7 @@ chrome.storage.sync.get('color', (values) => {
 });
 
 // Add Keyboard shortcut
-chrome.commands.onCommand.addListener(function(command) {
+chrome.commands.onCommand.addListener((command) => {
     switch(command) {
         case 'execute-highlight':
             trackEvent('highlight-source', 'keyboard-shortcut');
@@ -46,13 +48,13 @@ chrome.commands.onCommand.addListener(function(command) {
 });
 
 // Listen to messages from content scripts
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
     if (request.action && request.action == 'highlight') {
         trackEvent('highlight-source', 'highlighter-cursor');
         highlightText();
     } else if (request.action && request.action == 'track-event') {
         if (request.trackCategory && request.trackAction) {
-            trackEvent(request.trackCategory, request.trackAction)
+            trackEvent(request.trackCategory, request.trackAction);
         }
     }
 });
@@ -86,8 +88,8 @@ function showHighlight(highlightId) {
     trackEvent('highlight-action', 'show-highlight');
 
     chrome.tabs.executeScript({
-        code: `const highlightId = ${highlightId};`
-    }, function() {
+        code: `const highlightId = ${highlightId};`,
+    }, () => {
         chrome.tabs.executeScript({file: 'src/contentScripts/showHighlight.js'});
     });
 }

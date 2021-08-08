@@ -8,7 +8,7 @@ let copyBtnEl = null;
 let changeColorBtnEl = null;
 let deleteBtnEl = null;
 
-$.get(chrome.extension.getURL('src/hoverTools/hoverTools.html'), function(data) {
+$.get(chrome.extension.getURL('src/hoverTools/hoverTools.html'), (data) => {
     hoverToolEl = $(data);
     hoverToolEl.hide().appendTo('body');
     hoverToolEl[0].addEventListener('mouseenter', onHoverToolMouseEnter);
@@ -23,19 +23,19 @@ $.get(chrome.extension.getURL('src/hoverTools/hoverTools.html'), function(data) 
 });
 
 // Allow clicking outside of a highlight to unselect
-window.addEventListener('click', function (e) {
+window.addEventListener('click', (e) => {
     if (e.target.classList.contains('highlighter--highlighted')) return;
     if (e.target.classList.contains('highlighter--icon-change-color')) return;
     hide();
 });
 
-window.addEventListener("scroll", function (e) {
+window.addEventListener("scroll", () => {
     if (highlightClicked) {
         moveToolbarToHighlight(currentHighlightEl);
     }
 });
 
-function onHighlightMouseEnterOrClick(e) {
+function onHighlightMouseEnterOrClick(e) { /* eslint-disable-line no-redeclare */
     const newHighlightEl = e.target;
     const newHighlightId = newHighlightEl.getAttribute('data-highlight-id');
 
@@ -62,7 +62,7 @@ function onHighlightMouseEnterOrClick(e) {
     $(`.highlighter--highlighted[data-highlight-id='${newHighlightId}']`).addClass('highlighter--hovered');
 }
 
-function onHighlightMouseLeave(e) {
+function onHighlightMouseLeave() { /* eslint-disable-line no-redeclare */
     if (!highlightClicked) {
         hoverToolTimeout = setTimeout(hide, 170);
     }
@@ -79,7 +79,7 @@ function moveToolbarToHighlight(highlightEl, cursorX) { // cursorX is optional, 
         let hoverLeft = null;
         if (boundingRect.width < toolWidth) {
             // center the toolbar if the highlight is smaller than the toolbar
-            hoverLeft = boundingRect.left + boundingRect.width / 2 - toolWidth / 2
+            hoverLeft = boundingRect.left + (boundingRect.width / 2) - (toolWidth / 2);
         } else if (cursorX - boundingRect.left < toolWidth / 2) {
             // If the toolbar would overflow the highlight on the left, snap it to the left of the highlight
             hoverLeft = boundingRect.left;
@@ -88,13 +88,13 @@ function moveToolbarToHighlight(highlightEl, cursorX) { // cursorX is optional, 
             hoverLeft = boundingRect.right - toolWidth;
         } else {
             // Else, center the toolbar above the cursor
-            hoverLeft = cursorX - toolWidth / 2;
+            hoverLeft = cursorX - (toolWidth / 2);
         }
 
         hoverToolEl.css({ left: hoverLeft });
     }
 
-    hoverToolEl.show()
+    hoverToolEl.show();
 }
 
 function hide() {
@@ -104,22 +104,22 @@ function hide() {
     highlightClicked = false;
 }
 
-function onHoverToolMouseEnter(e) {
+function onHoverToolMouseEnter() {
     if (hoverToolTimeout !== null) {
         clearTimeout(hoverToolTimeout);
         hoverToolTimeout = null;
     }
 }
 
-function onCopyBtnClicked(e) {
+function onCopyBtnClicked() {
     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
     const highlights = document.querySelectorAll(`.highlighter--highlighted[data-highlight-id='${highlightId}']`);
-    const highlightText = Array.from(highlights).map((el) => el.textContent.replace(/\s+/gm, ' ')).join(''); // clean up whitespace
+    const highlightText = Array.from(highlights).map((el) => el.textContent.replace(/\s+/ugm, ' ')).join(''); // clean up whitespace
     navigator.clipboard.writeText(highlightText);
     chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'copy' });
 }
 
-function onDeleteBtnClicked(e) {
+function onDeleteBtnClicked() {
     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
     const highlights = $(`.highlighter--highlighted[data-highlight-id='${highlightId}']`);
     $('.highlighter--hovered').removeClass('highlighter--hovered');
@@ -141,7 +141,7 @@ function onDeleteBtnClicked(e) {
 
 
 // feature: change color on popup menu
- function onChangeColorBtnClicked(e) {
+ function onChangeColorBtnClicked() {
     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
     const highlights = $(`.highlighter--highlighted[data-highlight-id='${highlightId}']`);
     const colors = ["yellow", "cyan", "lime", "magenta"];

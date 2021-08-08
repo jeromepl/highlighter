@@ -5,11 +5,11 @@ const RETRY_INTERVAL = 500;
 
 const highlightErrors = [];
 
-function addHighlightError(highlight, highlightIndex) {
+function addHighlightError(highlight, highlightIndex) { /* eslint-disable-line no-redeclare, no-unused-vars */
     highlightErrors.push({
         highlight,
         highlightIndex,
-        errorTime: Date.now()
+        errorTime: Date.now(),
     });
 }
 
