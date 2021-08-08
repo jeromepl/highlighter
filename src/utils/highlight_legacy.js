@@ -6,9 +6,6 @@ var DELIMITERS = {
     end: ';:~|'
 };
 
-var HIGHLIGHT_CLASS = 'highlighter--highlighted';
-var DELETED_CLASS = 'highlighter--deleted';
-
 var REPLACEMENT_START_RE = `<span\ class="(${escapeRegex(HIGHLIGHT_CLASS)}|${escapeRegex(DELETED_CLASS)})"\ style="background\-color:\ [a-z]+;"(\ data\-highlight\-id="[0-9]+")?>`;
 var REPLACEMENT_END = '</span>';
 var REPLACEMENT_END_RE = escapeRegex(REPLACEMENT_END);
