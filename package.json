@@ -12,7 +12,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "release": "node release.js",
+    "release": "node scripts/release.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
