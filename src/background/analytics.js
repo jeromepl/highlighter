@@ -1,10 +1,10 @@
 import { GA_TRACKING_ID } from '../../config/secrets.js';
 
-const generateUUID = () => {
+function generateUUID() {
     return crypto.randomUUID();
 }
 
-const clientUUID = async () => {
+async function clientUUID() {
     // Note that we don't use the 'sync' storage here as we want a separate ID
     // per device
     let { uuid } = await chrome.storage.local.get('uuid');
@@ -13,10 +13,10 @@ const clientUUID = async () => {
     uuid = generateUUID();
     chrome.storage.local.set({ uuid });
     return uuid;
-};
+}
 
 // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
-const trackEvent = async (category, action, label = null, value = null, extraParams = {}) => {
+async function trackEvent(category, action, label = null, value = null, extraParams = {}) {
     const data = {
         // API Version.
         v: '1',
@@ -39,6 +39,6 @@ const trackEvent = async (category, action, label = null, value = null, extraPar
 
     const params = new URLSearchParams(data).toString();
     return fetch(`https://www.google-analytics.com/collect?${params}`);
-};
+}
 
 export { trackEvent, clientUUID };

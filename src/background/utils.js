@@ -1,10 +1,10 @@
-const getCurrentTab = async () => {
+async function getCurrentTab() {
     const queryOptions = { active: true, currentWindow: true };
     const [tab] = await chrome.tabs.query(queryOptions);
     return tab;
 }
 
-const executeInCurrentTab = async ({ file, func, args }) => {
+async function executeInCurrentTab({ file, func, args }) {
     const tab = await getCurrentTab();
     const executions = await chrome.scripting.executeScript({
         target: { tabId: tab.id, allFrames: true },

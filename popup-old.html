@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Highlighter</title>
+        <link rel="stylesheet" type="text/css" href="popup.css">
+    </head>
+    <body>
+        <div id="popup">
+            <div id='refresh-warning'><div><b>Refresh</b> your pages after installing or updating this extension!</div><div id='close-warning'>x</div></div>
+            <button id="highlight" title="Toggle the use of the highlighter tool">Toggle Cursor</button>
+            <div id="highlights-list-container">
+                <h2>Highlights on this page:</h2>
+                <ul id="highlights-list">
+                    <li id='no-highlights-message'>There are no highlights on this page</li>
+                </ul>
+                <button id="copy-highlights" title="Copy all highlights on the page to the clipboard">Copy All</button>
+                <button id="remove-highlights" title="Remove all highlights on the page">Remove All</button>
+                <div id='remove-ask-confirmation'>
+                    <div><b>Are you sure?</b> <em>This will permanently delete all highlights on this page.</em></div>
+                    <button id="remove-confirm">Delete</button>
+                    <button id="remove-cancel">Cancel</button>
+                </div>
+            </div>
+            <div id="colors">
+                <label class="selected" title="Change highlight color">
+                    <input type="radio" checked="checked" name="color" value="yellow" />
+                    <span></span>
+                </label>
+                <label title="Change highlight color">
+                    <input type="radio" name="color" value="cyan" />
+                    <span></span>
+                </label>
+                <label title="Change highlight color">
+                    <input type="radio" name="color" value="lime" />
+                    <span></span>
+                </label>
+                <label title="Change highlight color">
+                    <input type="radio" name="color" value="magenta" />
+                    <span></span>
+                </label>
+            </div>
+            <div id="shortcut-help"><span id="shortcut-text">Use the shortcut '<span id="highlight-command"></span>' to highlight straight from your keyboard!</span> Change it <a href="#" id="shortcut-link">here</a>.</div>
+        </div>
+
+        <script src="popup.js"></script>
+    </body>
+</html>

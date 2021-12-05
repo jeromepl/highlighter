@@ -24,6 +24,7 @@ ignorePatterns:
   - config/*
 parserOptions:
   ecmaVersion: 12
+  sourceType: "module"
 rules:
   accessor-pairs: error
   array-bracket-newline: error
@@ -216,7 +217,7 @@ rules:
   semi-style:
     - error
     - last
-  sort-imports: error
+  sort-imports: 'off'
   sort-keys: 'off'
   space-before-blocks: error
   space-before-function-paren: 'off'

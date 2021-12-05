@@ -70,7 +70,7 @@ function onHighlightMouseLeave() { /* eslint-disable-line no-redeclare */
 
 function moveToolbarToHighlight(highlightEl, cursorX) { // cursorX is optional, in which case no change is made to the x position of the hover toolbar
     const boundingRect = highlightEl.getBoundingClientRect();
-    const toolWidth = 94; // When changing this, also update the width in css #highlighter--hover-tools--container
+    const toolWidth = 108; // When changing this, also update the width in css #highlighter--hover-tools--container
 
     const hoverTop = boundingRect.top - 45;
     hoverToolEl.css({ top: hoverTop });
@@ -144,11 +144,16 @@ function onDeleteBtnClicked() {
 function onChangeColorBtnClicked() {
     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
     const highlights = $(`.highlighter--highlighted[data-highlight-id='${highlightId}']`);
-    const colors = ["yellow", "cyan", "lime", "magenta"];
     const currentColor = highlights[0].style.backgroundColor;
-    const newColor = colors[(colors.indexOf(currentColor) + 1) % 4];
-    highlights.css('backgroundColor', newColor); // Change the background color attribute
 
-    update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, newColor); // update the value in the local storage
-    chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'change-color' });
+    chrome.runtime.sendMessage({ action: 'get-color-options' }, (colorOptions) => {
+        const currentIndex = colorOptions.findIndex((color) => color.color === currentColor); // Find index by color rgb value
+        const newColor = colorOptions[(currentIndex + 1) % colorOptions.length].color;
+
+        // TODO: textColor
+        highlights.css('backgroundColor', newColor); // Change the background color attribute
+
+        update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, newColor); // update the value in the local storage
+        chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'change-color' });
+    });
 }

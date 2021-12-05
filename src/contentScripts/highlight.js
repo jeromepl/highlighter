@@ -14,10 +14,10 @@
             container = container.parentNode;
         }
 
-        chrome.storage.sync.get('color', (values) => {
-            const color = values.color;
-            store(selection, container, window.location.hostname + window.location.pathname, color, (highlightIndex) => {
-                highlight(selectionString, container, selection, color, highlightIndex);
+        chrome.runtime.sendMessage({ action: 'get-current-color' }, (color) => {
+            store(selection, container, window.location.hostname + window.location.pathname, color.color, (highlightIndex) => {
+                // TODO: textColor
+                highlight(selectionString, container, selection, color.color, highlightIndex);
             });
         });
     }

@@ -5,8 +5,10 @@
 import { trackEvent } from './src/background/analytics.js';
 import { executeInCurrentTab } from './src/background/utils.js';
 
+const DEFAULT_COLOR_TITLE = "yellow";
+
 // Add option when right-clicking
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(async () => {
     // remove existing menu items
     chrome.contextMenus.removeAll();
 
@@ -14,20 +16,20 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({ title: 'Toggle Cursor', id: 'toggle-cursor' });
     chrome.contextMenus.create({ title: 'Highlighter color', id: 'highlight-colors' });
     chrome.contextMenus.create({ title: 'Yellow', id: 'yellow', parentId: 'highlight-colors', type: 'radio' });
-    chrome.contextMenus.create({ title: 'Cyan', id: 'cyan', parentId: 'highlight-colors', type: 'radio' });
-    chrome.contextMenus.create({ title: 'Lime', id: 'lime', parentId: 'highlight-colors', type: 'radio' });
-    chrome.contextMenus.create({ title: 'Magenta', id: 'magenta', parentId: 'highlight-colors', type: 'radio' });
+    chrome.contextMenus.create({ title: 'Blue', id: 'blue', parentId: 'highlight-colors', type: 'radio' });
+    chrome.contextMenus.create({ title: 'Green', id: 'green', parentId: 'highlight-colors', type: 'radio' });
+    chrome.contextMenus.create({ title: 'Pink', id: 'pink', parentId: 'highlight-colors', type: 'radio' });
+    chrome.contextMenus.create({ title: "Dark", id: "dark", parentId: "highlight-colors", type: "radio" });
 
     // Get the initial selected color value
-    chrome.storage.sync.get('color', (values) => {
-        const color = values.color || 'yellow';
-        chrome.contextMenus.update(color, { checked: true });
-    });
+    const { title: colorTitle } = await getCurrentColor();
+    chrome.contextMenus.update(colorTitle, { checked: true });
 });
 
 chrome.contextMenus.onClicked.addListener(({ menuItemId, parentMenuItemId }) => {
     if (parentMenuItemId === 'highlight-color') {
-        return changeColorFromContext(menuItemId);
+        changeColorFromContext(menuItemId);
+        return;
     }
 
     switch (menuItemId) {
@@ -47,6 +49,13 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.runtime.onStartup.addListener(() => {
     trackEvent('extension', 'startup', null, null, { ni: 1 });
 });
+
+async function getCurrentColor() {
+    const { color } = await chrome.storage.sync.get("color");
+    const colorTitle = color || DEFAULT_COLOR_TITLE;
+    const colorOptions = await getColorOptions();
+    return colorOptions.find((colorOption) => colorOption.title === colorTitle);
+}
 
 // Add Keyboard shortcuts
 chrome.commands.onCommand.addListener((command) => {
@@ -75,34 +84,51 @@ chrome.commands.onCommand.addListener((command) => {
             trackEvent('color-change-source', 'keyboard-shortcut');
             changeColor('magenta');
             break;
+        case 'change-color-to-dark':
+            trackEvent('color-change-source', 'keyboard-shortcut');
+            changeColor('dark');
+            break;
     }
 });
 
 // Listen to messages from content scripts
+/* eslint-disable consistent-return */
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     if (!request.action) return;
 
     switch (request.action) {
         case 'highlight':
             trackEvent('highlight-source', 'highlighter-cursor');
-            return highlightText();
+            highlightText();
+            return;
         case 'track-event':
-            return trackEvent(request.trackCategory, request.trackAction);
+            trackEvent(request.trackCategory, request.trackAction);
+            return;
         case 'remove-highlights':
-            return removeHighlights();
+            removeHighlights();
+            return;
         case 'change-color':
             trackEvent('color-change-source', request.source);
-            return changeColor(request.color);
+            changeColor(request.color);
+            return;
         case 'toggle-highlighter-cursor':
             trackEvent('toggle-cursor-source', request.source);
-            return toggleHighlighterCursor();
+            toggleHighlighterCursor();
+            return;
         case 'get-highlights':
             getHighlights().then(sendResponse);
             return true; // return asynchronously
         case 'show-highlight':
             return showHighlight(request.highlightId);
+        case 'get-current-color':
+            getCurrentColor().then(sendResponse);
+            return true; // return asynchronously
+        case 'get-color-options':
+            getColorOptions().then(sendResponse);
+            return true; // return asynchronously
     }
 });
+/* eslint-enable consistent-return */
 
 function highlightTextFromContext() {
     trackEvent('highlight-source', 'context-menu');
@@ -114,9 +140,11 @@ function toggleHighlighterCursorFromContext() {
     toggleHighlighterCursor();
 }
 
-function changeColorFromContext(menuItemId) {
+async function changeColorFromContext(menuItemId) {
     trackEvent('color-change-source', 'context-menu');
-    changeColor(menuItemId);
+    const colorOptions = await getColorOptions();
+    const colorTitle = colorOptions.find((colorOption) => colorOption.title === menuItemId).title;
+    changeColor(colorTitle);
 }
 
 function highlightText() {
@@ -137,7 +165,7 @@ function removeHighlights() {
 function showHighlight(highlightId) {
     trackEvent('highlight-action', 'show-highlight');
 
-    function contentScriptShowHighlight(highlightId) {
+    function contentScriptShowHighlight(highlightId) { // eslint-disable-line no-shadow
         const highlightEl = document.querySelector(`[data-highlight-id="${highlightId}"]`);
         if (highlightEl) {
             highlightEl.scrollIntoViewIfNeeded(true);
@@ -157,10 +185,37 @@ function getHighlights() {
     return executeInCurrentTab({ file: 'src/contentScripts/getHighlights.js' });
 }
 
-function changeColor(color) {
-    trackEvent('color-changed-to', color);
-    chrome.storage.sync.set({ color: color });
+function changeColor(colorTitle) {
+    trackEvent('color-changed-to', colorTitle);
+    chrome.storage.sync.set({ color: colorTitle });
 
     // Also update the context menu
-    chrome.contextMenus.update(color, { checked: true });
+    chrome.contextMenus.update(colorTitle, { checked: true });
+}
+
+function getColorOptions() {
+    // TODO: Add support for customizing the options
+    return Promise.resolve([
+        {
+            title: 'yellow',
+            color: 'rgb(255, 246, 21)',
+        },
+        {
+            title: 'green',
+            color: 'rgb(68, 255, 147)',
+        },
+        {
+            title: 'blue',
+            color: 'rgb(66, 229, 255)',
+        },
+        {
+            title: 'pink',
+            color: 'rgb(244, 151, 255)',
+        },
+        {
+            title: 'dark',
+            color: 'rgb(52, 73, 94)',
+            textColor: 'rgb(255, 255, 255)',
+        },
+    ]);
 }

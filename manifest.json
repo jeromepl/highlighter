@@ -62,6 +62,9 @@
         },
         "change-color-to-magenta": {
             "description": "Change highlighter color to pink"
+        },
+        "change-color-to-dark": {
+            "description": "Change highlighter color to dark"
         }
     },
     "permissions": [

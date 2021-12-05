@@ -10,41 +10,15 @@
 
 #highlighter--hover-tools--container {
     position: relative;
-    border: solid 1px #777777;
-    border-radius: 4px;
+    border-radius: 5px;
     padding: 1px 0;
-    background-color: white;
-    width: 94px; /* When changing this, also update moveToolbarToHighlight() in hoverTools.js */
+    background-color: #f0f0f0;
+    width: 108px; /* When changing this, also update moveToolbarToHighlight() in hoverTools.js */
     height: 37px;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
-    box-shadow: 1px 1px 2px #bdbdbd;
-}
-
-/* Generated with http://www.cssarrowplease.com/ */
-#highlighter--hover-tools--container:after, #highlighter--hover-tools--container:before {
-    top: 100%;
-    left: 50%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-}
-
-#highlighter--hover-tools--container:after {
-    border-color: rgba(255, 255, 255, 0);
-    border-top-color: white;
-    border-width: 5px;
-    margin-left: -5px;
-}
-#highlighter--hover-tools--container:before {
-    border-color: rgba(119, 119, 119, 0);
-    border-top-color: #777777;
-    border-width: 6px;
-    margin-left: -6px;
+    filter: drop-shadow(1px 2px 3px rgba(0, 0, 0, 0.25));
 }
 
 .highlighter--icon {
@@ -55,7 +29,6 @@
     background-repeat: no-repeat;
     background-position: center;
     cursor: pointer;
-    filter: opacity(0.7);
     margin: 0 4px;
 }
 
@@ -64,20 +37,13 @@
 }
 
 .highlighter--icon-copy {
-    background-image:url('chrome-extension://__MSG_@@extension_id__/images/clipboard-outline.svg');
+    background-image:url('chrome-extension://__MSG_@@extension_id__/images/file_copy.svg');
 }
 
 .highlighter--icon-delete {
-    background-image:url('chrome-extension://__MSG_@@extension_id__/images/trash-outline.svg');
+    background-image:url('chrome-extension://__MSG_@@extension_id__/images/delete.svg');
 }
 
 .highlighter--icon-change-color {
-    background-image:url('chrome-extension://__MSG_@@extension_id__/images/color-palette-outline.svg');
-}
-
-.highlighter--separator {
-    display: inline-block;
-    height: 22px;
-    width: 0px;
-    border-right: solid 1px #bfbfbf;
+    background-image:url('chrome-extension://__MSG_@@extension_id__/images/color_lens.svg');
 }

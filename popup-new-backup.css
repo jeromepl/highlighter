@@ -3,11 +3,6 @@
     color: #414141;
 }
 
-html {
-    width: 450px;
-    height: 600px;
-}
-
 body {
     display: flex;
     flex-direction: column;
@@ -23,30 +18,20 @@ body {
     flex-direction: row;
     flex-shrink: 0;
     align-items: center;
-    margin: 22px 22px 0 22px;
+    margin: 34px 26px 0 26px;
 }
 
 #title-section h1 {
     color: black;
-    font-size: 40px;
+    font-size: 48px;
     font-weight: bold;
     margin: 0 0 -6px -4px;
 
     cursor: default;
 }
 
-#title-section .highlighter-icon {
-    height: 72px;
-}
-
-#close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-
-    color: #AAAAAA;
-    font-size: 21px;
-    cursor: pointer;
+.highlighter-icon {
+    height: 82px;
 }
 
 #settings-section { 
@@ -64,7 +49,7 @@ body {
     flex-shrink: 0;
     justify-content: center;
     align-items: center;
-    margin: 10px 23px 0 23px;
+    margin: 10px 25px 0 25px;
 }
 
 #colors-list {
@@ -76,29 +61,25 @@ body {
 
 .color {
     box-sizing: border-box;
-    height: 24px;
-    width: 24px;
-    margin: 4px;
+    height: 28px;
+    width: 28px;
+    margin: 5px;
 
     border: 2px solid #5a5a5a;
     border-radius: 4px;
 }
 
-.color:not(#selected-color) {
-    cursor: pointer;
-}
-
 #selected-color {
-    width: 80px;
-    height: 80px;
-    margin: 10px;
+    width: 85px;
+    height: 85px;
+    margin: 14px;
 }
 
 #controls-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 8px;
+    margin: 0 15px;
 }
 
 #toggle-button {
@@ -106,13 +87,13 @@ body {
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-    width: 190px;
-    height: 40px;
+    width: 228px;
+    height: 42px;
     margin: 10px 0;
     padding-top: 4px;
 
     cursor: pointer;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: bold;
     background-color: #fdd33c;
     border: 0;
@@ -129,19 +110,8 @@ body {
 }
 
 #shortcut-link {
-    display: inline-flex;
-    align-items: center;
-
-    cursor: pointer;
-}
-
-#shortcut-link-text {
     text-decoration: underline;
-}
-
-#shortcut-link .material-icons {
-    margin-left: 4px;
-    font-size: 16px;
+    cursor: pointer;
 }
 
 #highlights-section {
@@ -149,29 +119,21 @@ body {
     flex-direction: column;
     flex-grow: 1;
     min-height: 0;
-    margin: 0 8px;
+    margin: 0 12px;
 }
 
 #tools {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    margin: 8px 20px;
-}
-
-#tools .material-icons {
-    margin-left: 3px;
-    margin-bottom: 1px;
-    font-size: 22px;
+    margin: 10px 23px;
 }
 
 .tool {
-    display: flex;
-    align-items: center;
-    margin: 0 8px 0 8px;
+    margin: 0 10px 0 10px;
     
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 #highlights-list {
@@ -182,24 +144,10 @@ body {
 }
 
 .highlight {
-    margin: 0 18px 15px 18px;
-    padding: 10px 14px;
+    margin: 0 23px 20px 23px;
+    padding: 12px 16px;
 
-    cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     background-color: white;
     border-radius: 5px;
-}
-
-#highlights-list-empty-state {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-    margin-top: -20px;
-
-    font-size: 20px;
-    font-style: italic;
-    color: #aaaaaa;
 }
