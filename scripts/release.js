@@ -16,12 +16,15 @@ function exec(command) {
 
 function bumpVersion(version, releaseType) {
     let [major, minor, patch] = version.split('.');
-    switch(releaseType) {
+    switch (releaseType) {
         case "major":
             major = (parseInt(major, 10) + 1).toString();
+            minor = "0";
+            patch = "0";
             break;
         case "minor":
             minor = (parseInt(minor, 10) + 1).toString();
+            patch = "0";
             break;
         case "patch":
             patch = (parseInt(patch, 10) + 1).toString();
