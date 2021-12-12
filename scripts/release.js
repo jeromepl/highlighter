@@ -80,7 +80,7 @@ try {
     archive.directory('src/', 'Package/src');
     archive.directory('lib/', 'Package/lib');
     archive.directory('images/', 'Package/images');
-    archive.file('config/analytics-production.js', { name: 'Package/config/analytics.js' }); // NOTE: Replace the test analytics with the production one
+    archive.file('config/secrets.production.js', { name: 'Package/config/secrets.js' }); // NOTE: Replace the test analytics with the production one
     archive.file('manifest.json', { name: 'Package/manifest.json' });
     archive.file('LICENSE', { name: 'Package/LICENSE' });
     archive.finalize();

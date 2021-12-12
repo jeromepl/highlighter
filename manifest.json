@@ -1,5 +1,5 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "Highlighter",
     "description": "Highlight text on websites with a simple right-click or keyboard shortcut. Saves highlights on your device.",
     "version": "3.1.2",
@@ -8,7 +8,7 @@
         "48": "images/48.png",
         "128": "images/128.png"
     },
-    "browser_action": {
+    "action": {
         "default_icon": {
             "16": "images/16.png",
             "48": "images/48.png",
@@ -38,10 +38,8 @@
         }
     ],
     "background": {
-        "scripts": [
-            "config/analytics.js",
-            "src/background.js"
-        ]
+        "service_worker": "background.js",
+        "type": "module"
     },
     "commands": {
         "execute-highlight": {
@@ -68,13 +66,25 @@
     },
     "permissions": [
         "contextMenus",
-        "storage",
+        "scripting",
+        "storage"
+    ],
+    "host_permissions": [
         "<all_urls>"
     ],
     "web_accessible_resources": [
-        "images/*.png",
-        "images/*.svg",
-        "src/hoverTools/hoverTools.html"
+        {
+            "resources": [
+                "images/*.png",
+                "images/*.svg",
+                "src/hoverTools/hoverTools.html"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
     ],
-    "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'"
+    }
 }

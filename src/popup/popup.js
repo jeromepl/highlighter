@@ -1,7 +1,5 @@
 "use strict";
 
-const backgroundPage = chrome.extension.getBackgroundPage();
-
 const highlightBtn = document.getElementById('highlight');
 const removeHighlightsBtn = document.getElementById('remove-highlights');
 const radios = document.getElementsByName('color');
@@ -28,18 +26,16 @@ function closeConfirmation() {
 }
 
 function removeHighlights() {
-    backgroundPage.removeHighlights();
+    chrome.runtime.sendMessage({ action: 'remove-highlights' });
     window.close(); // Closing here also allows automatic refreshing of the highlight list
 }
 
 function colorChanged(color) {
-    backgroundPage.trackEvent('color-change-source', 'popup');
-    backgroundPage.changeColor(color);
+    chrome.runtime.sendMessage({ action: 'change-color', color, source: 'popup' });
 }
 
 function toggleHighlighterCursor() {
-    backgroundPage.trackEvent('toggle-cursor-source', 'popup');
-    backgroundPage.toggleHighlighterCursor();
+    chrome.runtime.sendMessage({ action: 'toggle-highlighter-cursor', source: 'popup' });
     window.close();
 }
 
@@ -60,7 +56,7 @@ function copyHighlights() {
     document.execCommand("copy");
     window.getSelection().empty();
 
-    backgroundPage.trackEvent('highlight-action', 'copy-all');
+    chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'copy-all' });
 
     // Let the user know the copy went through
     const checkmarkEl = document.createElement('span');
@@ -69,16 +65,14 @@ function copyHighlights() {
     copyBtn.appendChild(checkmarkEl);
 }
 
-(function getHighlights() {
-    chrome.tabs.executeScript({file: 'src/contentScripts/getHighlights.js'}, (results) => {
-        if (!results || !Array.isArray(results) || results.length == 0) return;
-        if (results[0].length == 0) {
+(async function getHighlights() {
+    chrome.runtime.sendMessage({ action: 'get-highlights' }, (highlights) => {
+        if (!Array.isArray(highlights)) return;
+        if (highlights.length == 0) {
             copyBtn.disabled = true;
             removeHighlightsBtn.disabled = true;
             return;
         }
-
-        const highlights = results[0];
 
         // Clear previous list elements, but only if there is at least one otherwise leave the "empty" message
         highlightsListEl.innerHTML = '';
@@ -89,7 +83,7 @@ function copyHighlights() {
             newEl.innerText = highlights[i + 1];
             const highlightId = highlights[i];
             newEl.addEventListener('click', () => {
-                backgroundPage.showHighlight(highlightId);
+                chrome.runtime.sendMessage({ action: 'show-highlight', highlightId });
             });
             highlightsListEl.appendChild(newEl);
         }
@@ -139,7 +133,7 @@ chrome.commands.getAll((commands) => {
 });
 
 // Register (in analytics) that the popup was opened
-backgroundPage.trackEvent('popup', 'opened');
+chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'popup', trackAction: 'opened' });
 
 closeConfirmation(); // Trigger initially to hide the 'remove confirmation' section
 

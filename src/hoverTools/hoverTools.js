@@ -8,7 +8,7 @@ let copyBtnEl = null;
 let changeColorBtnEl = null;
 let deleteBtnEl = null;
 
-$.get(chrome.extension.getURL('src/hoverTools/hoverTools.html'), (data) => {
+$.get(chrome.runtime.getURL('src/hoverTools/hoverTools.html'), (data) => {
     hoverToolEl = $(data);
     hoverToolEl.hide().appendTo('body');
     hoverToolEl[0].addEventListener('mouseenter', onHoverToolMouseEnter);
@@ -141,7 +141,7 @@ function onDeleteBtnClicked() {
 
 
 // feature: change color on popup menu
- function onChangeColorBtnClicked() {
+function onChangeColorBtnClicked() {
     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
     const highlights = $(`.highlighter--highlighted[data-highlight-id='${highlightId}']`);
     const colors = ["yellow", "cyan", "lime", "magenta"];
@@ -151,5 +151,4 @@ function onDeleteBtnClicked() {
 
     update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, newColor); // update the value in the local storage
     chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'change-color' });
- }
-
+}
