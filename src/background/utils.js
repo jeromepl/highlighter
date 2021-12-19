@@ -6,13 +6,19 @@ const getCurrentTab = async () => {
 
 const executeInCurrentTab = async ({ file, func, args }) => {
     const tab = await getCurrentTab();
-    const [execution] = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+    const executions = await chrome.scripting.executeScript({
+        target: { tabId: tab.id, allFrames: true },
         ...(file && { files: [file] }),
         func,
         args,
     });
-    return execution.result;
+
+    if (executions.length == 0) {
+        return executions[0].result;
+    }
+
+    // If there are many frames, concatenate the results
+    return executions.flatMap((execution) => execution.result);
 }
 
 export { getCurrentTab, executeInCurrentTab };
