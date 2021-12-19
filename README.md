@@ -14,8 +14,8 @@ npm install
 
 Finally, you will need to enter your own Google Analytics account IDs. One for production and one for testing:
 ```sh
-cp config/analytics.sample.js config/analytics.js # Then replace "FILL_ME_IN" with your test account ID
-cp config/analytics.sample.js config/analytics-production.js # Then replace the "FILL_ME_IN" with your production account ID
+cp config/secrets.sample.js config/secrets.js # Then replace "GA_TRACKING_ID" with your test account ID
+cp config/secrets.sample.js config/secrets.production.js # Then replace the "GA_TRACKING_ID" with your production account ID
 ```
 
 ## Other commands:
