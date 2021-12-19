@@ -15,9 +15,8 @@
         }
 
         chrome.runtime.sendMessage({ action: 'get-current-color' }, (color) => {
-            store(selection, container, window.location.hostname + window.location.pathname, color.color, (highlightIndex) => {
-                // TODO: textColor
-                highlight(selectionString, container, selection, color.color, highlightIndex);
+            store(selection, container, window.location.hostname + window.location.pathname, color.color, color.textColor, (highlightIndex) => {
+                highlight(selectionString, container, selection, color.color, color.textColor, highlightIndex);
             });
         });
     }

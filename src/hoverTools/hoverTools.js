@@ -148,12 +148,13 @@ function onChangeColorBtnClicked() {
 
     chrome.runtime.sendMessage({ action: 'get-color-options' }, (colorOptions) => {
         const currentIndex = colorOptions.findIndex((color) => color.color === currentColor); // Find index by color rgb value
-        const newColor = colorOptions[(currentIndex + 1) % colorOptions.length].color;
+        const newColorOption = colorOptions[(currentIndex + 1) % colorOptions.length];
+        const { color: newColor, textColor: newTextColor } = newColorOption;
 
-        // TODO: textColor
         highlights.css('backgroundColor', newColor); // Change the background color attribute
+        highlights.css('color', newTextColor || "inherit");
 
-        update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, newColor); // update the value in the local storage
+        update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, newColor, newTextColor); // update the value in the local storage
         chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'change-color' });
     });
 }

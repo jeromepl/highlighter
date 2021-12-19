@@ -4,10 +4,11 @@ const HIGHLIGHT_CLASS = 'highlighter--highlighted'; /* eslint-disable-line no-re
 const DELETED_CLASS = 'highlighter--deleted'; /* eslint-disable-line no-redeclare */
 
 
-function highlight(selString, container, selection, color, highlightIndex) { /* eslint-disable-line no-redeclare, no-unused-vars */
+function highlight(selString, container, selection, color, textColor, highlightIndex) { /* eslint-disable-line no-redeclare, no-unused-vars */
 
     const highlightInfo = {
         color: color ? color : "yellow",
+        textColor: textColor ? textColor : "inherit",
         highlightIndex: highlightIndex,
         selectionString: selString,
         selectionLength: selString.length,
@@ -51,7 +52,7 @@ function recursiveWrapper(highlightInfo) {
 
 function _recursiveWrapper(highlightInfo, startFound, charsHighlighted) {
 
-    const { container, anchor, focus, anchorOffset, focusOffset, color, highlightIndex, selectionString, selectionLength } = highlightInfo;
+    const { container, anchor, focus, anchorOffset, focusOffset, color, textColor, highlightIndex, selectionString, selectionLength } = highlightInfo;
 
     container.contents().each((index, element) => {
         if (charsHighlighted >= selectionLength) return; // Stop early if we are done highlighting
@@ -120,8 +121,9 @@ function _recursiveWrapper(highlightInfo, startFound, charsHighlighted) {
                 if (firstSplitTextEl) {
                     const highlightNode = document.createElement('span');
                     highlightNode.classList.add((color === 'inherit') ? DELETED_CLASS : HIGHLIGHT_CLASS);
-                    highlightNode.setAttribute('style', `background-color: ${color};`);
-                    highlightNode.setAttribute('data-highlight-id', highlightIndex);
+                    highlightNode.style.backgroundColor = color;
+                    highlightNode.style.color = textColor;
+                    highlightNode.dataset.highlightId = highlightIndex;
                     highlightNode.textContent = firstSplitTextEl.nodeValue;
 
                     firstSplitTextEl.remove();

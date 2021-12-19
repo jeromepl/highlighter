@@ -4,7 +4,7 @@ const STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
 
 let alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
-function store(selection, container, url, color, callback) { /* eslint-disable-line no-redeclare, no-unused-vars */
+function store(selection, container, url, color, textColor, callback) { /* eslint-disable-line no-redeclare, no-unused-vars */
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
 
@@ -18,7 +18,8 @@ function store(selection, container, url, color, callback) { /* eslint-disable-l
             anchorOffset: selection.anchorOffset,
             focusNode: getQuery(selection.focusNode),
             focusOffset: selection.focusOffset,
-            color: color,
+            color,
+            textColor,
         });
         chrome.storage.local.set({ highlights });
 
@@ -26,7 +27,7 @@ function store(selection, container, url, color, callback) { /* eslint-disable-l
     });
 }
 
-function update(highlightIndex, url, alternativeUrl, newColor) { /* eslint-disable-line no-redeclare, no-unused-vars */
+function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) { /* eslint-disable-line no-redeclare, no-unused-vars */
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
 
@@ -42,6 +43,7 @@ function update(highlightIndex, url, alternativeUrl, newColor) { /* eslint-disab
             const highlight = highlightsInKey[indexToUse];
             if (highlight) {
                 highlight.color = newColor;
+                highlight.textColor = newTextColor;
                 chrome.storage.local.set({ highlights });
             }
         }
@@ -83,9 +85,8 @@ function load(highlightVal, highlightIndex, noErrorTracking) { /* eslint-disable
     // Starting with version 3.1.0, a new highlighting system was used which modifies the DOM in place
     const loadLegacy = versionCompare(highlightVal.version, "3.1.0") < 0;
 
-    const selectionString = highlightVal.string;
+    const { color, string: selectionString, textColor } = highlightVal;
     const container = elementFromQuery(highlightVal.container);
-    const color = highlightVal.color;
 
     if (!selection.anchorNode || !selection.focusNode || !container) {
         if (!noErrorTracking) {
@@ -98,7 +99,7 @@ function load(highlightVal, highlightIndex, noErrorTracking) { /* eslint-disable
     if (loadLegacy) {
         success = highlight_legacy(selectionString, container, selection, color, highlightIndex);
     } else {
-        success = highlight(selectionString, container, selection, color, highlightIndex);
+        success = highlight(selectionString, container, selection, color, textColor, highlightIndex);
     }
 
     if (!noErrorTracking && !success) {
