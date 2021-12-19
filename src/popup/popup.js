@@ -57,11 +57,8 @@ function getFromBackgroundPage(payload) {
 }
 
 function copyHighlights() {
-    window.getSelection().selectAllChildren(highlightsListElement);
-    document.execCommand("copy"); // FIXME ?
-    window.getSelection().empty();
-
     chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'copy-all' });
+    navigator.clipboard.writeText(highlightsListElement.innerText);
 
     // Let the user know the copy went through
     const checkmarkEl = document.createElement('span');
