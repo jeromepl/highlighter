@@ -127,8 +127,9 @@ function onDeleteBtnClicked() {
     hoverToolTimeout = null;
 
     highlights.css('backgroundColor', 'inherit'); // Change the background color attribute
+    highlights.css('color', 'inherit'); // Also change the text color
     highlights.removeClass(HIGHLIGHT_CLASS).addClass(DELETED_CLASS); // Change the class name to the 'deleted' version
-    update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, 'inherit'); // update the value in the local storage
+    update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, 'inherit', 'inherit'); // update the value in the local storage
 
     highlights.each((_, el) => { // Finally, remove the event listeners that were attached to this highlight element
         el.removeEventListener('mouseenter', onHighlightMouseEnterOrClick);
