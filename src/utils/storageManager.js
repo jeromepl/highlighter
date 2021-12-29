@@ -4,7 +4,7 @@ const STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
 
 let alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
-function store(selection, container, url, color, textColor, callback) { /* eslint-disable-line no-redeclare, no-unused-vars */
+function store(selection, container, url, href, color, textColor, callback) { /* eslint-disable-line no-redeclare, no-unused-vars */
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
 
@@ -20,6 +20,8 @@ function store(selection, container, url, color, textColor, callback) { /* eslin
             focusOffset: selection.focusOffset,
             color,
             textColor,
+            href,
+            uuid: crypto.randomUUID(),
         });
         chrome.storage.local.set({ highlights });
 
