@@ -1,30 +1,20 @@
+import { getFromBackgroundPage } from "./utils.js";
+import { open as openRemoveAllModal } from "./remove-all-modal.js";
+import { open as openChangeColorModal } from "./change-color-modal.js";
+
+
 const highlightButton = document.getElementById('toggle-button');
 const removeAllButton = document.getElementById('remove-all-button');
 const copyAllButton = document.getElementById('copy-all-button');
 const closeButton = document.getElementById('close-button');
-const removeAllConfirmButton = document.getElementById('remove-all-confirm');
-const removeAllCancelButton = document.getElementById('remove-all-cancel');
+const changeColorButton = document.getElementById('change-color-button');
 
 const colorsListElement = document.getElementById('colors-list');
 const selectedColorElement = document.getElementById('selected-color');
 const shortcutLinkElement = document.getElementById('shortcut-link');
 const shortcutLinkTextElement = document.getElementById('shortcut-link-text');
-const removeAllConfirmationModal = document.getElementById('remove-all-confirmation-modal');
 const highlightsListElement = document.getElementById('highlights-list');
 
-function removeAllAskConfirmation() {
-    // Ask confirmation to remove all highlights on the page
-    removeAllConfirmationModal.style.display = 'flex';
-}
-
-function removeAllCloseConfirmation() {
-    removeAllConfirmationModal.style.display = 'none';
-}
-
-function removeAllHighlights() {
-    chrome.runtime.sendMessage({ action: 'remove-highlights' });
-    window.close(); // Closing here also allows automatic refreshing of the highlight list
-}
 
 function colorChanged(colorOption) {
     const { backgroundColor, borderColor } = colorOption.style;
@@ -47,13 +37,6 @@ function colorChanged(colorOption) {
 function toggleHighlighterCursor() {
     chrome.runtime.sendMessage({ action: 'toggle-highlighter-cursor', source: 'popup' });
     window.close();
-}
-
-// Converts the chrome runtime call into a promise to more easily fetch the results
-function getFromBackgroundPage(payload) {
-    return new Promise((resolve, _reject) => {
-        chrome.runtime.sendMessage(payload, (response) => resolve(response));
-    });
 }
 
 function copyHighlights() {
@@ -101,9 +84,9 @@ function copyHighlights() {
         colorOptionElement.dataset.colorTitle = colorTitle;
         colorOptionElement.style.backgroundColor = colorOption.color;
         if (colorOption.textColor) colorOptionElement.style.borderColor = colorOption.textColor;
-        colorOptionElement.addEventListener("click", (e) => colorChanged(e.target));
 
         if (!selected) {
+            colorOptionElement.addEventListener("click", (e) => colorChanged(e.target));
             colorsListElement.appendChild(colorOptionElement);
         }
     });
@@ -126,10 +109,9 @@ function copyHighlights() {
 // Register Events
 highlightButton.addEventListener('click', toggleHighlighterCursor);
 copyAllButton.addEventListener('click', copyHighlights);
-// Remove All and its confirmation modal:
-removeAllButton.addEventListener('click', removeAllAskConfirmation);
-removeAllConfirmButton.addEventListener('click', removeAllHighlights);
-removeAllCancelButton.addEventListener('click', removeAllCloseConfirmation);
+removeAllButton.addEventListener('click', openRemoveAllModal);
+changeColorButton.addEventListener('click', openChangeColorModal);
+selectedColorElement.addEventListener('click', openChangeColorModal);
 
 shortcutLinkElement.addEventListener('click', () => { // Open the shortcuts Chrome settings page in a new tab
     chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
@@ -139,5 +121,3 @@ closeButton.addEventListener('click', () => window.close());
 
 // Register (in analytics) that the popup was opened
 chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'popup', trackAction: 'opened' });
-
-removeAllCloseConfirmation(); // Trigger initially to hide the 'remove confirmation' section

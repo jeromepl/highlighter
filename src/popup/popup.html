@@ -27,7 +27,9 @@
 
     <div id="settings-section">
         <div id="colors-section">
-            <div id="selected-color" class="color" style="background-color: #fff615;"></div>
+            <div id="selected-color" class="color" style="background-color: #fff615;">
+                <div id="change-color-button" class="material-icons">edit</div>
+            </div>
             <div id="colors-list">
                 <!-- A list of <div class="color"> elements goes here -->
             </div>
@@ -69,6 +71,32 @@
             <div class="modal-button modal-action-cancel" id="remove-all-cancel">Cancel</div>
             <div class="modal-button modal-action-confirm" id="remove-all-confirm">Confirm</div>
         </div>
+    </div>
+    <div id="change-color-modal" class="modal">
+        <h2 class="modal-title">Customize the "<span id="change-color-title">yellow</span>" color</h2>
+        <form id="change-color-form">
+            <div>
+                <fieldset>
+                    <label for="highlight-color">Highlight Color:</label>
+                    <input type="color" name="highlight-color" />
+                </fieldset>
+                <fieldset>
+                    <fieldset>
+                        <input type="checkbox" name="use-text-color" />
+                        <label for="use-text-color">Change text color</label>
+                    </fieldset>
+                    <fieldset disabled id="text-color-fieldset">
+                        <label for="text-color">Text Color:</label>
+                        <input type="color" name="text-color" />
+                    </fieldset>
+                </fieldset>
+            </div>
+
+            <div class="modal-actions">
+                <div class="modal-button modal-action-cancel" id="change-color-cancel">Cancel</div>
+                <input type="submit" class="modal-button modal-action-confirm" value="Confirm" />
+            </div>
+        </form>
     </div>
 
     <script type="module" src="popup.js"></script>

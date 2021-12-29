@@ -50,13 +50,6 @@ chrome.runtime.onStartup.addListener(() => {
     trackEvent('extension', 'startup', null, null, { ni: 1 });
 });
 
-async function getCurrentColor() {
-    const { color } = await chrome.storage.sync.get("color");
-    const colorTitle = color || DEFAULT_COLOR_TITLE;
-    const colorOptions = await getColorOptions();
-    return colorOptions.find((colorOption) => colorOption.title === colorTitle);
-}
-
 // Add Keyboard shortcuts
 chrome.commands.onCommand.addListener((command) => {
     switch (command) {
@@ -111,6 +104,9 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             trackEvent('color-change-source', request.source);
             changeColor(request.color);
             return;
+        case 'edit-color':
+            editColor(request.colorTitle, request.color, request.textColor);
+            return;
         case 'toggle-highlighter-cursor':
             trackEvent('toggle-cursor-source', request.source);
             toggleHighlighterCursor();
@@ -130,6 +126,13 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 });
 /* eslint-enable consistent-return */
 
+async function getCurrentColor() {
+    const { color } = await chrome.storage.sync.get("color");
+    const colorTitle = color || DEFAULT_COLOR_TITLE;
+    const colorOptions = await getColorOptions();
+    return colorOptions.find((colorOption) => colorOption.title === colorTitle);
+}
+
 function highlightTextFromContext() {
     trackEvent('highlight-source', 'context-menu');
     highlightText();
@@ -140,11 +143,9 @@ function toggleHighlighterCursorFromContext() {
     toggleHighlighterCursor();
 }
 
-async function changeColorFromContext(menuItemId) {
+function changeColorFromContext(menuItemId) {
     trackEvent('color-change-source', 'context-menu');
-    const colorOptions = await getColorOptions();
-    const colorTitle = colorOptions.find((colorOption) => colorOption.title === menuItemId).title;
-    changeColor(colorTitle);
+    changeColor(menuItemId);
 }
 
 function highlightText() {
@@ -186,6 +187,8 @@ function getHighlights() {
 }
 
 function changeColor(colorTitle) {
+    if (!colorTitle) return;
+
     trackEvent('color-changed-to', colorTitle);
     chrome.storage.sync.set({ color: colorTitle });
 
@@ -193,29 +196,47 @@ function changeColor(colorTitle) {
     chrome.contextMenus.update(colorTitle, { checked: true });
 }
 
+async function editColor(colorTitle, color, textColor) {
+    trackEvent('color-edit', colorTitle);
+
+    const colorOptions = await getColorOptions();
+    const colorOption = colorOptions.find((option) => option.title === colorTitle);
+    colorOption.color = color;
+    colorOption.textColor = textColor;
+
+    if (!textColor) {
+        delete colorOption.textColor;
+    }
+
+    chrome.storage.sync.set({ colors: colorOptions });
+}
+
 function getColorOptions() {
-    // TODO: Add support for customizing the options
-    return Promise.resolve([
-        {
-            title: 'yellow',
-            color: 'rgb(255, 246, 21)',
-        },
-        {
-            title: 'green',
-            color: 'rgb(68, 255, 147)',
-        },
-        {
-            title: 'blue',
-            color: 'rgb(66, 229, 255)',
-        },
-        {
-            title: 'pink',
-            color: 'rgb(244, 151, 255)',
-        },
-        {
-            title: 'dark',
-            color: 'rgb(52, 73, 94)',
-            textColor: 'rgb(255, 255, 255)',
-        },
-    ]);
+    return new Promise((resolve, _reject) => {
+        chrome.storage.sync.get({
+            colors: [ // Default value
+                {
+                    title: 'yellow',
+                    color: 'rgb(255, 246, 21)',
+                },
+                {
+                    title: 'green',
+                    color: 'rgb(68, 255, 147)',
+                },
+                {
+                    title: 'blue',
+                    color: 'rgb(66, 229, 255)',
+                },
+                {
+                    title: 'pink',
+                    color: 'rgb(244, 151, 255)',
+                },
+                {
+                    title: 'dark',
+                    color: 'rgb(52, 73, 94)',
+                    textColor: 'rgb(255, 255, 255)',
+                },
+            ],
+        }, ({ colors }) => resolve(colors));
+    });
 }

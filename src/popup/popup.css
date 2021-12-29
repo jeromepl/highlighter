@@ -80,18 +80,35 @@ body {
     width: 24px;
     margin: 4px;
 
+    cursor: pointer;
     border: 2px solid #5a5a5a;
     border-radius: 4px;
 }
 
-.color:not(#selected-color) {
-    cursor: pointer;
-}
-
 #selected-color {
+    position: relative;
     width: 80px;
     height: 80px;
     margin: 10px;
+}
+
+#change-color-button {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+    width: 28px;
+    bottom: -12px;
+    right: -15px;
+
+    cursor: pointer;
+    border-radius: 50%;
+    background-color: rgba(196, 196, 196, 0.23);
+}
+
+#selected-color:hover #change-color-button, #change-color-button:hover {
+    background-color: rgba(196, 196, 196, 0.53);
 }
 
 #controls-section {

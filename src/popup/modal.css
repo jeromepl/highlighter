@@ -11,6 +11,13 @@
     box-sizing: border-box;
 }
 
+.modal-title {
+    font-size: 26px;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
 .modal-text {
     font-size: 22px;
 }
@@ -25,10 +32,9 @@
 }
 
 .modal-button {
+    box-sizing: content-box;
     height: 35px;
     padding: 4px 15px 0 15px;
-
-    cursor: pointer;
 
     cursor: pointer;
     font-size: 20px;
@@ -41,4 +47,40 @@
 
 .modal-button.modal-action-cancel {
     background-color: #c3c3c3;
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.modal fieldset {
+    border: 0;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.modal fieldset fieldset {
+    margin: 0;
+}
+
+.modal label {
+    font-size: 20px;
+    margin-right: 20px;
+}
+
+.modal input[type="color"] {
+    width: 80px;
+}
+
+.modal fieldset[disabled] label {
+    color: #c3c3c3;
+}
+
+#text-color-fieldset {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
 }
