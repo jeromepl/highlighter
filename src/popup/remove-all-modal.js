@@ -12,8 +12,8 @@ function close() {
 }
 
 function confirm() {
-    chrome.runtime.sendMessage({ action: 'remove-highlights' });
-    window.close(); // Closing here also allows automatic refreshing of the highlight list
+    // Closing the window here also allows automatic refreshing of the highlight list
+    chrome.runtime.sendMessage({ action: 'remove-highlights' }, () => window.close());
 }
 
 // Remove All and its confirmation modal:

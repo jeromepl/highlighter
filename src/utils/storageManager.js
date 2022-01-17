@@ -110,6 +110,18 @@ function load(highlightVal, highlightIndex, noErrorTracking) { /* eslint-disable
     return success;
 }
 
+function removeHighlight(highlightIndex, url, alternativeUrl) { /* eslint-disable-line no-redeclare, no-unused-vars */
+    chrome.storage.local.get({ highlights: {} }, (result) => {
+        const highlights = result.highlights;
+        if (highlightIndex < alternativeUrlIndexOffset) {
+            highlights[alternativeUrl].splice(highlightIndex, 1);
+        } else {
+            highlights[url].splice(highlightIndex - alternativeUrlIndexOffset, 1);
+        }
+        chrome.storage.local.set({ highlights });
+    });
+}
+
 // alternativeUrl is optional
 function clearPage(url, alternativeUrl) { /* eslint-disable-line no-redeclare, no-unused-vars */
     chrome.storage.local.get({ highlights: {} }, (result) => {

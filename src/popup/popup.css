@@ -199,6 +199,10 @@ body {
 }
 
 .highlight {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
     margin: 0 18px 15px 18px;
     padding: 10px 14px;
 
@@ -206,6 +210,25 @@ body {
     font-size: 14px;
     background-color: white;
     border-radius: 5px;
+}
+
+.highlight.lost {
+    cursor: default;
+}
+
+.highlight .delete-icon {
+    cursor: pointer;
+    visibility: hidden;
+    padding: 2px;
+}
+
+.highlight .delete-icon:hover {
+    background-color: rgba(196, 196, 196, 0.23);
+    border-radius: 4px;
+}
+
+.highlight:hover .delete-icon {
+    visibility: visible;
 }
 
 #highlights-list-empty-state {
@@ -219,4 +242,10 @@ body {
     font-size: 20px;
     font-style: italic;
     color: #aaaaaa;
+}
+
+#highlights-list-lost-title {
+    padding-left: 20px;
+    font-size: 15px;
+    color: #666;
 }

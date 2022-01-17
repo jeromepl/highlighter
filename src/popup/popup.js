@@ -14,6 +14,8 @@ const selectedColorElement = document.getElementById('selected-color');
 const shortcutLinkElement = document.getElementById('shortcut-link');
 const shortcutLinkTextElement = document.getElementById('shortcut-link-text');
 const highlightsListElement = document.getElementById('highlights-list');
+const highlightsEmptyStateElement = document.getElementById('highlights-list-empty-state');
+const highlightsListLostTitleElement = document.getElementById('highlights-list-lost-title');
 
 
 function colorChanged(colorOption) {
@@ -46,22 +48,54 @@ function copyHighlights() {
     // Let the user know the copy went through
     const checkmarkEl = document.createElement('span');
     checkmarkEl.style.color = '#00ff00';
-    checkmarkEl.innerHTML = ' &#10004;';
+    checkmarkEl.innerHTML = ' &#10004;'; // Checkmark character
     copyAllButton.prepend(checkmarkEl);
+}
+
+function showEmptyState() {
+    if (!highlightsListElement.querySelectorAll('.highlight').length) {
+        highlightsEmptyStateElement.style.display = 'flex';
+    } else {
+        highlightsEmptyStateElement.style.display = 'none';
+    }
+}
+
+function orderHighlights() {
+    highlightsListElement.querySelectorAll('.highlight').forEach((highlight) => {
+        if (highlight.classList.contains('lost')) {
+            // Move lost highlights to the end of the list
+            highlight.remove();
+            highlightsListElement.appendChild(highlight);
+        }
+    });
+}
+
+function showLostHighlightsTitle() {
+    highlightsListLostTitleElement.remove();
+    const lostHighlightElements = highlightsListElement.querySelectorAll('.lost');
+    if (lostHighlightElements.length > 0) {
+        highlightsListElement.insertBefore(highlightsListLostTitleElement, lostHighlightElements[0]);
+    }
+}
+
+function updateHighlightsListState() {
+    showEmptyState();
+    orderHighlights();
+    showLostHighlightsTitle();
 }
 
 (async function initializeHighlightsList() {
     const highlights = await getFromBackgroundPage({ action: 'get-highlights' });
 
-    if (!Array.isArray(highlights) || highlights.length == 0) return;
-
-    // Clear previous list elements, but only if there is at least one otherwise leave the "empty" message
-    highlightsListElement.innerHTML = '';
+    if (!Array.isArray(highlights) || highlights.length == 0) {
+        updateHighlightsListState();
+        return;
+    }
 
     // Populate with new elements
     for (let i = 0; i < highlights.length; i += 2) {
         const newEl = document.createElement('div');
-        newEl.classList.add("highlight");
+        newEl.classList.add('highlight');
         newEl.innerText = highlights[i + 1];
         const highlightId = highlights[i];
         newEl.addEventListener('click', () => {
@@ -69,6 +103,8 @@ function copyHighlights() {
         });
         highlightsListElement.appendChild(newEl);
     }
+
+    updateHighlightsListState();
 })();
 
 (async function initializeColorsList() {
@@ -104,6 +140,37 @@ function copyHighlights() {
             }
         }
     });
+})();
+
+(async function initializeLostHighlights() {
+    const lostHighlights = await getFromBackgroundPage({ action: 'get-lost-highlights' });
+
+    if (!Array.isArray(lostHighlights) || lostHighlights.length == 0) {
+        updateHighlightsListState();
+        return;
+    }
+
+    // Populate with new elements
+    lostHighlights.forEach((lostHighlight) => {
+        if (!lostHighlight?.string) return;
+
+        const newEl = document.createElement('div');
+        newEl.classList.add('highlight', 'lost');
+        newEl.innerText = lostHighlight.string;
+        const newDeleteIconEl = document.createElement('span');
+        newDeleteIconEl.classList.add('material-icons', 'delete-icon');
+        newDeleteIconEl.innerText = 'delete';
+        newDeleteIconEl.onclick = () => {
+            chrome.runtime.sendMessage({ action: 'remove-highlight', highlightId: lostHighlight.index }, () => {
+                newEl.remove();
+                updateHighlightsListState();
+            });
+        };
+        newEl.appendChild(newDeleteIconEl);
+        highlightsListElement.appendChild(newEl);
+    });
+
+    updateHighlightsListState();
 })();
 
 // Register Events

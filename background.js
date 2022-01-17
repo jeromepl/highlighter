@@ -100,6 +100,9 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
         case 'remove-highlights':
             removeHighlights();
             return;
+        case 'remove-highlight':
+            removeHighlight(request.highlightId);
+            return;
         case 'change-color':
             trackEvent('color-change-source', request.source);
             changeColor(request.color);
@@ -113,6 +116,9 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             return;
         case 'get-highlights':
             getHighlights().then(sendResponse);
+            return true; // return asynchronously
+        case 'get-lost-highlights':
+            getLostHighlights().then(sendResponse);
             return true; // return asynchronously
         case 'show-highlight':
             return showHighlight(request.highlightId);
@@ -163,6 +169,19 @@ function removeHighlights() {
     executeInCurrentTab({ file: 'src/contentScripts/removeHighlights.js' });
 }
 
+function removeHighlight(highlightId) {
+    trackEvent('highlight-action', 'remove-highlight');
+
+    function contentScriptRemoveHighlight(highlightIndex) {
+        const highlightError = window.highlighter_lostHighlights.get(highlightIndex);
+        clearTimeout(highlightError?.timeout);
+        window.highlighter_lostHighlights.delete(highlightIndex);
+        removeHighlight(highlightIndex, window.location.hostname + window.location.pathname, window.location.pathname);
+    }
+
+    executeInCurrentTab({ func: contentScriptRemoveHighlight, args: [highlightId] });
+}
+
 function showHighlight(highlightId) {
     trackEvent('highlight-action', 'show-highlight');
 
@@ -184,6 +203,16 @@ function showHighlight(highlightId) {
 
 function getHighlights() {
     return executeInCurrentTab({ file: 'src/contentScripts/getHighlights.js' });
+}
+
+function getLostHighlights() {
+    function contentScriptGetLostHighlights() {
+        const lostHighlights = [];
+        window.highlighter_lostHighlights.forEach((highlight, index) => lostHighlights.push({ string: highlight?.string, index }));
+        return lostHighlights;
+    }
+
+    return executeInCurrentTab({ func: contentScriptGetLostHighlights });
 }
 
 function changeColor(colorTitle) {
