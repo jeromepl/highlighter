@@ -143,10 +143,10 @@ function updateHighlightsListState() {
 })();
 
 (async function initializeLostHighlights() {
+    updateHighlightsListState();
     const lostHighlights = await getFromBackgroundPage({ action: 'get-lost-highlights' });
 
     if (!Array.isArray(lostHighlights) || lostHighlights.length == 0) {
-        updateHighlightsListState();
         return;
     }
 
