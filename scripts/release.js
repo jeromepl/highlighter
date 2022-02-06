@@ -2,11 +2,11 @@
 
 const readline = require('readline-sync');
 const { execSync } = require('child_process');
-const { createWriteStream } = require('fs');
 const { replaceInFileSync } = require('replace-in-file');
+const fs = require('fs');
 const archiver = require('archiver');
 
-const { version } = require('./package.json');
+const { version } = require('../package.json');
 
 
 function exec(command) {
@@ -64,9 +64,15 @@ try {
     exec(`git tag -a ${tag} -m "Version ${newVersion}" -f`);
     exec("git push --follow-tags");
 
+    // Create the 'releases' directory if it does not already exist:
+    const releasesDir = "releases";
+    if (!fs.existsSync(releasesDir)){
+        fs.mkdirSync(releasesDir);
+    }
+
     // Package necessary files into a zip file
-    const packageFile = `releases/Package-${newVersion.replace(/\./g, '_')}.zip`;
-    const output = createWriteStream(packageFile);
+    const packageFile = `${releasesDir}/Package-${newVersion.replace(/\./g, '_')}.zip`;
+    const output = fs.createWriteStream(packageFile);
     const archive = archiver('zip');
 
     output.on('close', function () {
@@ -86,8 +92,8 @@ try {
     archive.finalize();
 
     // Create a draft release (to give a chance to write a description from the Github interface)
-    // NOTE: This requires having `gh` installed locally
-    exec(`gh release create ${tag} ${packageFile} --title "Highlighter ${newVersion}" --draft`);
+    // NOTE: This requires having `gh` installed locally and authenticated with GitHub
+    exec(`gh release create ${tag} --title "Highlighter ${newVersion}" --notes "" --draft`);
 } catch (e) {
     console.log('Error! Reverting changes and returning to original git state');
     exec('git reset --hard');

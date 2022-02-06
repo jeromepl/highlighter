@@ -5,7 +5,7 @@ Available for [download on the Chrome web store](https://chrome.google.com/webst
 
 ## Development Set Up
 
-You will need Node.js and [the `gh` cli](https://cli.github.com/) installed.
+You will need Node.js and [the `gh` cli](https://cli.github.com/) installed (and authenticated).
 Then, run the following:
 
 ```sh
