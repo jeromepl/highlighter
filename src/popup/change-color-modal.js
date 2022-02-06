@@ -17,7 +17,7 @@ async function open() {
     textColorFieldSet.disabled = !textColor;
     useTextColorCheckbox.checked = Boolean(textColor);
     highlightColorField.value = rgbToHex(color);
-    textColorField.value = rgbToHex(textColor);
+    textColorField.value = rgbToHex(textColor) || "#000000";
 
     modal.style.display = 'flex';
 }
