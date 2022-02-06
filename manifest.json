@@ -25,6 +25,8 @@
                 "lib/jquery-2.1.3.min.js",
                 "src/utils/storageManager.js",
                 "src/utils/highlight.js",
+                "src/utils/highlightV3.js",
+                "src/utils/highlightV4.js",
                 "src/utils/highlight_legacy.js",
                 "src/utils/errorManager.js",
                 "src/hoverTools/hoverTools.js",

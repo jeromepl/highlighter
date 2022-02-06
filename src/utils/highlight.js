@@ -1,141 +1,45 @@
 "use strict";
 
-const HIGHLIGHT_CLASS = 'highlighter--highlighted'; /* eslint-disable-line no-redeclare */
-const DELETED_CLASS = 'highlighter--deleted'; /* eslint-disable-line no-redeclare */
+(() => {
+    window.HIGHLIGHT_CLASS = 'highlighter--highlighted';
+    window.DELETED_CLASS = 'highlighter--deleted';
 
-
-function highlight(selString, container, selection, color, textColor, highlightIndex) { /* eslint-disable-line no-redeclare, no-unused-vars */
-
-    const highlightInfo = {
-        color: color ? color : "yellow",
-        textColor: textColor ? textColor : "inherit",
-        highlightIndex: highlightIndex,
-        selectionString: selString,
-        selectionLength: selString.length,
-        container: $(container),
-        anchor: $(selection.anchorNode),
-        anchorOffset: selection.anchorOffset,
-        focus: $(selection.focusNode),
-        focusOffset: selection.focusOffset,
+    // Highlight method that selects the right highlighting algorithm based on the version the highlight was stored in
+    // We keep old algorithms for backwards compatibility of old saved highlights
+    window.highlight = function (selectionString, container, selection, color, textColor, highlightIndex, version = null) {
+        if (version === null || versionCompare(version, "4.0.0") >= 0) {
+            // Starting with version 4, the highlighting algorithm is more strict to prevent highlighting all the page and a big refactor was done
+            return highlightV4(selectionString, container, selection, color, textColor, highlightIndex);
+        } else if (versionCompare(version, "3.1.0") >= 0) {
+            // Starting with version 3.1.0, a new highlighting system was used which modifies the DOM in place
+            return highlightV3(selectionString, container, selection, color, textColor, highlightIndex);
+        } else {
+            return highlight_legacy(selectionString, container, selection, color, highlightIndex);
+        }
     };
 
-    /**
-    * STEPS:
-    * 1 - Use the offset of the anchor/focus to find the start of the selected text in the anchor/focus element
-    *     - Use the first of the anchor of the focus elements to appear
-    * 2 - From there, go through the elements and find all Text Nodes until the selected text is all found.
-    *     - Wrap all the text nodes (or parts of them) in a span DOM element with special highlight class name and bg color
-    * 3 - Deselect text
-    * 4 - Attach mouse hover event listeners to display tools when hovering a highlight
-    */
+    // Compare two manifest version strings, e.g. "3.1.0" > "2.0.4"
+    // Returns 1 if v1 is greater than v2, -1 if smaller and 0 if equal
+    // Counts an 'undefined' version as if it was the smallest possible
+    function versionCompare(v1, v2) {
+        if (v1 === undefined && v2 === undefined) return 0;
+        if (v1 === undefined) return -1;
+        if (v2 === undefined) return 1;
 
-    // Step 1 + 2:
-    recursiveWrapper(highlightInfo);
+        const v1Numbers = v1.split('.').map((numStr) => parseInt(numStr, 10));
+        const v2Numbers = v2.split('.').map((numStr) => parseInt(numStr, 10));
 
-    // Step 3:
-    if (selection.removeAllRanges) selection.removeAllRanges();
+        const v1Len = v1Numbers.length, v2Len = v2Numbers.length;
 
-    // Step 4:
-    const parent = $(container).parent();
-    parent.find(`.${HIGHLIGHT_CLASS}`).each((i, el) => {
-        el.addEventListener('mouseenter', onHighlightMouseEnterOrClick);
-        el.addEventListener('click', onHighlightMouseEnterOrClick);
-        el.addEventListener('mouseleave', onHighlightMouseLeave);
-    });
-
-    return true; // No errors. 'undefined' is returned by default if any error occurs during this method's execution, like if 'content.replace' fails by 'content' being 'undefined'
-}
-
-function recursiveWrapper(highlightInfo) {
-    return _recursiveWrapper(highlightInfo, false, 0); // Initialize the values of 'startFound' and 'charsHighlighted'
-}
-
-function _recursiveWrapper(highlightInfo, startFound, charsHighlighted) {
-
-    const { container, anchor, focus, anchorOffset, focusOffset, color, textColor, highlightIndex, selectionString, selectionLength } = highlightInfo;
-
-    container.contents().each((index, element) => {
-        if (charsHighlighted >= selectionLength) return; // Stop early if we are done highlighting
-
-        if (element.nodeType === Node.TEXT_NODE) {
-            let startIndex = 0;
-
-            // Step 1:
-            // The first element to appear could be the anchor OR the focus node,
-            // since you can highlight from left to right or right to left
-            if (!startFound) {
-                if (anchor.is(element)) {
-                    startFound = true;
-                    startIndex = anchorOffset;
-                }
-                if (focus.is(element)) {
-                    if (startFound) { // If the anchor and the focus elements are the same, use the smallest index
-                        startIndex = Math.min(anchorOffset, focusOffset);
-                    } else {
-                        startFound = true;
-                        startIndex = focusOffset;
-                    }
-                }
+        for (let i = 0; i < Math.min(v1Len, v2Len); i++) {
+            if (v1Numbers[i] !== v2Numbers[i]) {
+                return (v1Numbers[i] > v2Numbers[i]) ? 1 : -1;
             }
-
-            // Step 2:
-            if (startFound && charsHighlighted < selectionLength) {
-                const nodeValue = element.nodeValue;
-                const nodeValueLength = element.nodeValue.length;
-                const parent = element.parentElement;
-
-                let firstSplitTextEl = null;
-                let firstSplitIndex = -1;
-                let secondSplitTextEl = null;
-
-                // Go over all characters to see if they match the selection.
-                // This is done because the selection text and node text contents differ.
-                for (let i = 0; i < nodeValueLength; i++) {
-                    if (i === startIndex) {
-                        firstSplitTextEl = element.splitText(i);
-                        firstSplitIndex = i;
-                    }
-                    if (charsHighlighted === selectionLength) {
-                        secondSplitTextEl = firstSplitTextEl.splitText(i - firstSplitIndex);
-                        break;
-                    }
-
-                    if (i >= startIndex && charsHighlighted < selectionLength) {
-                        // Skip whitespaces as they often cause trouble (differences between selection and actual text)
-                        while (charsHighlighted < selectionLength && selectionString[charsHighlighted].match(/\s/u)) {
-                            charsHighlighted++;
-                        }
-
-                        if (selectionString[charsHighlighted] === nodeValue[i]) {
-                            charsHighlighted++;
-                        }
-                    }
-                }
-
-                // If textElement is wrapped in a .highlighter--highlighted span, do not add this highlight
-                if (parent.classList.contains(HIGHLIGHT_CLASS)) {
-                    parent.normalize(); // Undo any 'splitText' operations
-                    return;
-                }
-
-                if (firstSplitTextEl) {
-                    const highlightNode = document.createElement('span');
-                    highlightNode.classList.add((color === 'inherit') ? DELETED_CLASS : HIGHLIGHT_CLASS);
-                    highlightNode.style.backgroundColor = color;
-                    highlightNode.style.color = textColor;
-                    highlightNode.dataset.highlightId = highlightIndex;
-                    highlightNode.textContent = firstSplitTextEl.nodeValue;
-
-                    firstSplitTextEl.remove();
-                    const insertBeforeElement = secondSplitTextEl || element.nextSibling;
-                    parent.insertBefore(highlightNode, insertBeforeElement);
-                }
-            }
-        } else {
-            highlightInfo.container = $(element);
-            [startFound, charsHighlighted] = _recursiveWrapper(highlightInfo, startFound, charsHighlighted);
         }
-    });
 
-    return [startFound, charsHighlighted];
-}
+        // If all numbers matched but one string has more numbers then it is newer
+        if (v1Len !== v2Len) return (v1Len > v2Len) ? 1 : -1;
+
+        return 0; // Everything is equal
+    }
+})();

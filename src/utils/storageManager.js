@@ -84,10 +84,7 @@ function load(highlightVal, highlightIndex, noErrorTracking) { /* eslint-disable
         focusOffset: highlightVal.focusOffset,
     };
 
-    // Starting with version 3.1.0, a new highlighting system was used which modifies the DOM in place
-    const loadLegacy = versionCompare(highlightVal.version, "3.1.0") < 0;
-
-    const { color, string: selectionString, textColor } = highlightVal;
+    const { color, string: selectionString, textColor, version } = highlightVal;
     const container = elementFromQuery(highlightVal.container);
 
     if (!selection.anchorNode || !selection.focusNode || !container) {
@@ -97,12 +94,7 @@ function load(highlightVal, highlightIndex, noErrorTracking) { /* eslint-disable
         return false;
     }
 
-    let success = false;
-    if (loadLegacy) {
-        success = highlight_legacy(selectionString, container, selection, color, highlightIndex);
-    } else {
-        success = highlight(selectionString, container, selection, color, textColor, highlightIndex);
-    }
+    const success = highlight(selectionString, container, selection, color, textColor, highlightIndex, version);
 
     if (!noErrorTracking && !success) {
         addHighlightError(highlightVal, highlightIndex);
@@ -179,29 +171,4 @@ function getQuery(element) {
 // Similar (but much more simplified) to the CSS.escape() working draft
 function escapeCSSString(cssString) {
     return cssString.replace(/(:)/ug, "\\$1");
-}
-
-// Compare two manifest version strings, e.g. "3.1.0" > "2.0.4"
-// Returns 1 if v1 is greater than v2, -1 if smaller and 0 if equal
-// Counts an 'undefined' version as if it was the smallest possible
-function versionCompare(v1, v2) {
-    if (v1 === undefined && v2 === undefined) return 0;
-    if (v1 === undefined) return -1;
-    if (v2 === undefined) return 1;
-
-    const v1Numbers = v1.split('.').map((numStr) => parseInt(numStr, 10));
-    const v2Numbers = v2.split('.').map((numStr) => parseInt(numStr, 10));
-
-    const v1Len = v1Numbers.length, v2Len = v2Numbers.length;
-
-    for (let i = 0; i < Math.min(v1Len, v2Len); i++) {
-        if (v1Numbers[i] !== v2Numbers[i]) {
-            return (v1Numbers[i] > v2Numbers[i]) ? 1 : -1;
-        }
-    }
-
-    // If all numbers matched but one string has more numbers then it is newer
-    if (v1Len !== v2Len) return (v1Len > v2Len) ? 1 : -1;
-
-    return 0; // Everything is equal
 }

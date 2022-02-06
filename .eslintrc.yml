@@ -12,6 +12,8 @@ globals:
   update: readonly # From utils/storageManager
   addHighlightError: readonly # From utils/errorManager
   highlight: readonly # From utils/highlight
+  highlightV3: readonly # From utils/highlightV3
+  highlightV4: readonly # From utils/highlightV4
   highlight_legacy: readonly # From utils/highlight_legacy
   HIGHLIGHT_CLASS: readonly # From utils/highlight
   DELETED_CLASS: readonly # From utils/highlight
