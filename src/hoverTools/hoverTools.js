@@ -24,8 +24,8 @@ $.get(chrome.runtime.getURL('src/hoverTools/hoverTools.html'), (data) => {
 
 // Allow clicking outside of a highlight to unselect
 window.addEventListener('click', (e) => {
-    if (e.target.classList.contains('highlighter--highlighted')) return;
-    if (e.target.classList.contains('highlighter--icon-change-color')) return;
+    if (e.target.classList?.contains('highlighter--highlighted')) return;
+    if (e.target.classList?.contains('highlighter--icon-change-color')) return;
     hide();
 });
 
