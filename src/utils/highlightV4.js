@@ -89,10 +89,6 @@
                 throw new Error(`No match found for highlight string '${selectionString}'`);
             }
 
-            // If textElement is wrapped in a .highlighter--highlighted span, do not add this highlight
-            // as it is already highlighted, but still count the number of charsHighlighted
-            if (parent.classList.contains(HIGHLIGHT_CLASS)) return;
-
             // Split the text content into three parts, the part before the highlight, the highlight and the part after the highlight:
             const highlightTextEl = element.splitText(startIndex);
 
@@ -115,6 +111,10 @@
                     throw new Error(`No match found for highlight string '${selectionString}'`);
                 }
             }
+
+            // If textElement is wrapped in a .highlighter--highlighted span, do not add this highlight
+            // as it is already highlighted, but still count the number of charsHighlighted
+            if (parent.classList.contains(HIGHLIGHT_CLASS)) return;
 
             const elementCharCount = i - startIndex; // Number of chars to highlight in this particular element
             const insertBeforeElement = highlightTextEl.splitText(elementCharCount);
