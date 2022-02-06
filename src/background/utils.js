@@ -1,5 +1,5 @@
 async function getCurrentTab() {
-    const queryOptions = { active: true, currentWindow: true };
+    const queryOptions = { active: true, lastFocusedWindow: true };
     const [tab] = await chrome.tabs.query(queryOptions);
     return tab;
 }
@@ -13,7 +13,7 @@ async function executeInCurrentTab({ file, func, args }) {
         args,
     });
 
-    if (executions.length == 0) {
+    if (executions.length == 1) {
         return executions[0].result;
     }
 
