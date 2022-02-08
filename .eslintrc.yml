@@ -20,7 +20,6 @@ globals:
   onHighlightMouseEnterOrClick: readonly # From hoverTools/hoverTools
   onHighlightMouseLeave: readonly # From hoverTools/hoverTools
   highlightOnSelection: readonly # From contentScripts/highlighterCursor
-  _gaq: readonly # From config/analytics
 ignorePatterns:
   - lib/*
   - config/*
