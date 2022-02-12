@@ -15,6 +15,7 @@ const shortcutLinkElement = document.getElementById('shortcut-link');
 const shortcutLinkTextElement = document.getElementById('shortcut-link-text');
 const highlightsListElement = document.getElementById('highlights-list');
 const highlightsEmptyStateElement = document.getElementById('highlights-list-empty-state');
+const highlightsErrorStateElement = document.getElementById('highlights-list-error-state');
 const highlightsListLostTitleElement = document.getElementById('highlights-list-lost-title');
 
 
@@ -84,8 +85,24 @@ function updateHighlightsListState() {
     showLostHighlightsTitle();
 }
 
+function hideErrorState() {
+    highlightsErrorStateElement.style.display = 'none';
+}
+hideErrorState(); // Hide by default
+
+function showErrorState() {
+    highlightsErrorStateElement.style.display = 'flex';
+    highlightsEmptyStateElement.style.display = 'none'; // Also hide the empty state
+}
+
 (async function initializeHighlightsList() {
-    const highlights = await getFromBackgroundPage({ action: 'get-highlights' });
+    let highlights = [];
+    try {
+        highlights = await getFromBackgroundPage({ action: 'get-highlights' }, false);
+    } catch {
+        showErrorState();
+        return;
+    }
 
     if (!Array.isArray(highlights) || highlights.length == 0) {
         updateHighlightsListState();

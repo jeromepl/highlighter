@@ -147,7 +147,7 @@ function onChangeColorBtnClicked() {
     const highlights = $(`.highlighter--highlighted[data-highlight-id='${highlightId}']`);
     const currentColor = highlights[0].style.backgroundColor;
 
-    chrome.runtime.sendMessage({ action: 'get-color-options' }, (colorOptions) => {
+    chrome.runtime.sendMessage({ action: 'get-color-options' }, ({ response: colorOptions }) => {
         const currentIndex = colorOptions.findIndex((color) => color.color === currentColor); // Find index by color rgb value
         const newColorOption = colorOptions[(currentIndex + 1) % colorOptions.length];
         const { color: newColor, textColor: newTextColor } = newColorOption;

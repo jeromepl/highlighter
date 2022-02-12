@@ -14,7 +14,7 @@
             container = container.parentNode;
         }
 
-        chrome.runtime.sendMessage({ action: 'get-current-color' }, (color) => {
+        chrome.runtime.sendMessage({ action: 'get-current-color' }, ({ response: color }) => {
             store(selection, container, location.hostname + location.pathname, location.href, color.color, color.textColor, (highlightIndex) => {
                 highlight(selectionString, container, selection, color.color, color.textColor, highlightIndex);
             });

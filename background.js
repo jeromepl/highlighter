@@ -3,7 +3,7 @@
 // NOTE: This file must be in the top-level directory of the extension according to the docs
 
 import { trackEvent } from './src/background/analytics.js';
-import { executeInCurrentTab } from './src/background/utils.js';
+import { executeInCurrentTab, wrapResponse } from './src/background/utils.js';
 
 const DEFAULT_COLOR_TITLE = "yellow";
 
@@ -115,18 +115,18 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             toggleHighlighterCursor();
             return;
         case 'get-highlights':
-            getHighlights().then(sendResponse);
+            wrapResponse(getHighlights(), sendResponse);
             return true; // return asynchronously
         case 'get-lost-highlights':
-            getLostHighlights().then(sendResponse);
+            wrapResponse(getLostHighlights(), sendResponse);
             return true; // return asynchronously
         case 'show-highlight':
             return showHighlight(request.highlightId);
         case 'get-current-color':
-            getCurrentColor().then(sendResponse);
+            wrapResponse(getCurrentColor(), sendResponse);
             return true; // return asynchronously
         case 'get-color-options':
-            getColorOptions().then(sendResponse);
+            wrapResponse(getColorOptions(), sendResponse);
             return true; // return asynchronously
     }
 });

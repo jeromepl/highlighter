@@ -21,4 +21,14 @@ async function executeInCurrentTab({ file, func, args }) {
     return executions.flatMap((execution) => execution.result);
 }
 
-export { getCurrentTab, executeInCurrentTab };
+function wrapResponse(promise, sendResponse) {
+    promise.then((response) => sendResponse({
+        success: true,
+        response,
+    })).catch((error) => sendResponse({
+        success: false,
+        error: error.message,
+    }));
+}
+
+export { getCurrentTab, executeInCurrentTab, wrapResponse };
