@@ -50,6 +50,18 @@ chrome.runtime.onStartup.addListener(() => {
     trackEvent('extension', 'startup', null, null, { ni: 1 });
 });
 
+// If the URL changes, try again to highlight
+// This is done to support javascript Single-page applications
+// which often change the URL without reloading the page
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, _tab) => {
+    if (changeInfo.url) {
+        chrome.scripting.executeScript({
+            target: { tabId, allFrames: true },
+            files: ['src/contentScripts/loadHighlights.js'],
+        });
+    }
+});
+
 // Add Keyboard shortcuts
 chrome.commands.onCommand.addListener((command) => {
     switch (command) {
