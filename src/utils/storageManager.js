@@ -22,6 +22,7 @@ function store(selection, container, url, href, color, textColor, callback) { /*
             textColor,
             href,
             uuid: crypto.randomUUID(),
+            createdAt: Date.now(),
         });
         chrome.storage.local.set({ highlights });
 
@@ -46,6 +47,7 @@ function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) { /
             if (highlight) {
                 highlight.color = newColor;
                 highlight.textColor = newTextColor;
+                highlight.updatedAt = Date.now();
                 chrome.storage.local.set({ highlights });
             }
         }
