@@ -12,6 +12,7 @@
     "replace-in-file": "^6.2.0"
   },
   "scripts": {
+    "build": "node scripts/build.js",
     "lint": "eslint .",
     "release": "node scripts/release.js",
     "test": "echo \"Error: no test specified\" && exit 1"

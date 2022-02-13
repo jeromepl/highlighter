@@ -3,8 +3,6 @@
 const readline = require('readline-sync');
 const { execSync } = require('child_process');
 const { replaceInFileSync } = require('replace-in-file');
-const fs = require('fs');
-const archiver = require('archiver');
 
 const { version } = require('../package.json');
 
@@ -63,33 +61,6 @@ try {
     const tag = `v${newVersion}`;
     exec(`git tag -a ${tag} -m "Version ${newVersion}" -f`);
     exec("git push --follow-tags");
-
-    // Create the 'releases' directory if it does not already exist:
-    const releasesDir = "releases";
-    if (!fs.existsSync(releasesDir)){
-        fs.mkdirSync(releasesDir);
-    }
-
-    // Package necessary files into a zip file
-    const packageFile = `${releasesDir}/Package-${newVersion.replace(/\./g, '_')}.zip`;
-    const output = fs.createWriteStream(packageFile);
-    const archive = archiver('zip');
-
-    output.on('close', function () {
-        console.log(`\nPackage file zipped and saved at '${packageFile}'`);
-    })
-
-    archive.on('warning', (err) => { throw err; });
-    archive.on('error', (err) => { throw err; });
-
-    archive.pipe(output);
-    archive.directory('src/', 'Package/src');
-    archive.directory('lib/', 'Package/lib');
-    archive.directory('images/', 'Package/images');
-    archive.file('config/secrets.production.js', { name: 'Package/config/secrets.js' }); // NOTE: Replace the test analytics with the production one
-    archive.file('manifest.json', { name: 'Package/manifest.json' });
-    archive.file('LICENSE', { name: 'Package/LICENSE' });
-    archive.finalize();
 
     // Create a draft release (to give a chance to write a description from the Github interface)
     // NOTE: This requires having `gh` installed locally and authenticated with GitHub
