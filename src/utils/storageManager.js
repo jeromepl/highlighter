@@ -138,14 +138,35 @@ function elementFromQuery(storedQuery) {
     if (result) { // For text nodes, nth-of-type needs to be handled differently (not a valid CSS selector)
         const textNodeIndex = parseInt(result[1], 10);
         storedQuery = storedQuery.replace(re, "");
-        const parent = $(storedQuery)[0];
+        const parent = robustQuerySelector(storedQuery);
 
         if (!parent) return undefined;
 
         return parent.childNodes[textNodeIndex];
     }
 
-    return $(storedQuery)[0];
+    return robustQuerySelector(storedQuery);
+}
+
+function robustQuerySelector(query) {
+    try {
+        return document.querySelector(query);
+    } catch (error) {
+        // It is possible that this query fails because of an invalid CSS selector that actually exists in the DOM.
+        // This was happening for example here: https://lawphil.net/judjuris/juri2013/sep2013/gr_179987_2013.html
+        // where there is a tag <p"> that is invalid in HTML5 but was still rendered by the browser
+        // In this case, manually find the element:
+        let element = document;
+        for (const queryPart of query.split(">")) {
+            if (!element) return null;
+
+            const re = /^(.*):nth-of-type\(([0-9]+)\)$/ui;
+            const result = re.exec(queryPart);
+            const [, tagName, index] = result || [undefined, queryPart, 1];
+            element = Array.from(element.childNodes).filter((child) => child.localName === tagName)[index - 1];
+        }
+        return element;
+    }
 }
 
 // From an DOM element, get a query to that DOM element
@@ -155,16 +176,14 @@ function getQuery(element) {
 
     const parent = element.parentNode;
 
-    let index = null;
     const parentSelector = getQuery(parent);
     // The element is a text node
     if (!element.localName) {
         // Find the index of the text node:
-        index = Array.prototype.indexOf.call(parent.childNodes, element);
+        const index = Array.prototype.indexOf.call(parent.childNodes, element);
         return `${parentSelector}>textNode:nth-of-type(${index})`;
     } else {
-        const jEl = $(element);
-        index = jEl.parent().find(`>${element.localName}`).index(jEl) + 1;
+        const index = Array.from(parent.childNodes).filter((child) => child.localName === element.localName).indexOf(element) + 1;
         return `${parentSelector}>${element.localName}:nth-of-type(${index})`;
     }
 }
