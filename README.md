@@ -21,4 +21,12 @@ cp config/secrets.sample.js config/secrets.production.js # Then replace the "GA_
 ## Other commands:
 
 - Linting (ESLint): `npm run lint`
-- Releasing a new version (on Github, not yet directly on the chrome store): `npm run release`
+- Releasing a new version:
+```sh
+# Bump the version in the manifest and package.json files, create a new commit, tag it, push to Github
+# and create a draft release on Github using the `gh` CLI tool
+npm run release
+
+# Create the zipped package to upload to the Chrome web store
+npm run build
+```
