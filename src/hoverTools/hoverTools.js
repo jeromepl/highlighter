@@ -10,7 +10,7 @@ let deleteBtnEl = null;
 
 $.get(chrome.runtime.getURL('src/hoverTools/hoverTools.html'), (data) => {
     hoverToolEl = $(data);
-    hoverToolEl.hide().appendTo('body');
+    hoverToolEl.hide();
     hoverToolEl[0].addEventListener('mouseenter', onHoverToolMouseEnter);
     hoverToolEl[0].addEventListener('mouseleave', onHighlightMouseLeave);
 
@@ -21,6 +21,16 @@ $.get(chrome.runtime.getURL('src/hoverTools/hoverTools.html'), (data) => {
     deleteBtnEl.addEventListener('click', onDeleteBtnClicked);
     changeColorBtnEl.addEventListener('click', onChangeColorBtnClicked);
 });
+
+function getHoverToolEl() {
+    if (!hoverToolEl.isConnected) {
+        // The first time we want to show this element, append it to the DOM.
+        // It's also possible the webpage deleted this node from the DOM. In that case, simply re-attach it
+        hoverToolEl.appendTo('body');
+    }
+
+    return hoverToolEl;
+}
 
 // Allow clicking outside of a highlight to unselect
 window.addEventListener('click', (e) => {
@@ -73,7 +83,7 @@ function moveToolbarToHighlight(highlightEl, cursorX) { // cursorX is optional, 
     const toolWidth = 108; // When changing this, also update the width in css #highlighter--hover-tools--container
 
     const hoverTop = boundingRect.top - 45;
-    hoverToolEl?.css({ top: hoverTop });
+    getHoverToolEl()?.css({ top: hoverTop });
 
     if (cursorX !== undefined) {
         let hoverLeft = null;
@@ -91,15 +101,15 @@ function moveToolbarToHighlight(highlightEl, cursorX) { // cursorX is optional, 
             hoverLeft = cursorX - (toolWidth / 2);
         }
 
-        hoverToolEl?.css({ left: hoverLeft });
+        getHoverToolEl()?.css({ left: hoverLeft });
     }
 
-    hoverToolEl?.show();
+    getHoverToolEl()?.show();
 }
 
 function hide() {
     $('.highlighter--hovered').removeClass('highlighter--hovered');
-    hoverToolEl?.hide();
+    getHoverToolEl()?.hide();
     hoverToolTimeout = null;
     highlightClicked = false;
 }
@@ -123,7 +133,7 @@ function onDeleteBtnClicked() {
     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
     const highlights = $(`.highlighter--highlighted[data-highlight-id='${highlightId}']`);
     $('.highlighter--hovered').removeClass('highlighter--hovered');
-    hoverToolEl?.hide();
+    getHoverToolEl()?.hide();
     hoverToolTimeout = null;
 
     highlights.css('backgroundColor', 'inherit'); // Change the background color attribute
