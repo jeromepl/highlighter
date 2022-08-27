@@ -5,7 +5,7 @@ function showHighlight(highlightId) {
     trackEvent('highlight-action', 'show-highlight');
 
     function contentScriptShowHighlight(highlightId) { // eslint-disable-line no-shadow
-        window.showHighlight(highlightId);
+        window.highlighterAPI.showHighlight(highlightId);
     }
 
     executeInCurrentTab({ func: contentScriptShowHighlight, args: [highlightId] });

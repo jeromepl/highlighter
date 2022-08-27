@@ -5,7 +5,7 @@ function highlightText() {
     trackEvent('highlight-action', 'highlight');
 
     function contentScriptHighlightText() {
-        window.highlightSelectedText();
+        window.highlighterAPI.highlightSelectedText();
     }
 
     executeInCurrentTab({ func: contentScriptHighlightText });

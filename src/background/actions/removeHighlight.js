@@ -5,8 +5,8 @@ function removeHighlight(highlightId) {
     trackEvent('highlight-action', 'remove-highlight');
 
     function contentScriptRemoveHighlight(highlightIndex) {
-        window.removeLostHighlight(highlightIndex);
-        window.removeHighlight(highlightIndex, window.location.hostname + window.location.pathname, window.location.pathname);
+        window.highlighterAPI.removeLostHighlight(highlightIndex);
+        window.highlighterAPI.removeHighlight(highlightIndex, window.location.hostname + window.location.pathname, window.location.pathname);
     }
 
     executeInCurrentTab({ func: contentScriptRemoveHighlight, args: [highlightId] });
