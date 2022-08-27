@@ -4,8 +4,7 @@
 
 import { trackEvent } from './src/background/analytics.js';
 import { executeInCurrentTab, wrapResponse } from './src/background/utils.js';
-
-const DEFAULT_COLOR_TITLE = "yellow";
+import { DEFAULT_COLOR_TITLE, DEFAULT_COLORS } from './src/background/constants.js';
 
 // Add option when right-clicking
 chrome.runtime.onInstalled.addListener(async () => {
@@ -255,29 +254,7 @@ async function editColor(colorTitle, color, textColor) {
 function getColorOptions() {
     return new Promise((resolve, _reject) => {
         chrome.storage.sync.get({
-            colors: [ // Default value
-                {
-                    title: 'yellow',
-                    color: 'rgb(255, 246, 21)',
-                },
-                {
-                    title: 'green',
-                    color: 'rgb(68, 255, 147)',
-                },
-                {
-                    title: 'blue',
-                    color: 'rgb(66, 229, 255)',
-                },
-                {
-                    title: 'pink',
-                    color: 'rgb(244, 151, 255)',
-                },
-                {
-                    title: 'dark',
-                    color: 'rgb(52, 73, 94)',
-                    textColor: 'rgb(255, 255, 255)',
-                },
-            ],
+            colors: DEFAULT_COLORS, // Default value
         }, ({ colors }) => resolve(colors));
     });
 }
