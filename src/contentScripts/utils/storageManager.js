@@ -6,7 +6,7 @@ const STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
 
 let alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
-export function store(selection, container, url, href, color, textColor, callback) {
+function store(selection, container, url, href, color, textColor, callback) {
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
 
@@ -32,7 +32,7 @@ export function store(selection, container, url, href, color, textColor, callbac
     });
 }
 
-export function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) {
+function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) {
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
 
@@ -57,7 +57,7 @@ export function update(highlightIndex, url, alternativeUrl, newColor, newTextCol
 }
 
 // alternativeUrl is optional
-export function loadAll(url, alternativeUrl) {
+function loadAll(url, alternativeUrl) {
     chrome.storage.local.get({ highlights: {} }, (result) => {
         let highlights = [];
 
@@ -80,7 +80,7 @@ export function loadAll(url, alternativeUrl) {
 }
 
 // noErrorTracking is optional
-export function load(highlightVal, highlightIndex, noErrorTracking) {
+function load(highlightVal, highlightIndex, noErrorTracking) {
     const selection = {
         anchorNode: elementFromQuery(highlightVal.anchorNode),
         anchorOffset: highlightVal.anchorOffset,
@@ -106,7 +106,7 @@ export function load(highlightVal, highlightIndex, noErrorTracking) {
     return success;
 }
 
-export function removeHighlight(highlightIndex, url, alternativeUrl) {
+function removeHighlight(highlightIndex, url, alternativeUrl) {
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
         if (highlightIndex < alternativeUrlIndexOffset) {
@@ -119,7 +119,7 @@ export function removeHighlight(highlightIndex, url, alternativeUrl) {
 }
 
 // alternativeUrl is optional
-export function clearPage(url, alternativeUrl) {
+function clearPage(url, alternativeUrl) {
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
         delete highlights[url];
@@ -195,3 +195,12 @@ function getQuery(element) {
 function escapeCSSString(cssString) {
     return cssString.replace(/(:)/ug, "\\$1");
 }
+
+export {
+    store,
+    update,
+    loadAll,
+    load,
+    removeHighlight,
+    clearPage,
+};

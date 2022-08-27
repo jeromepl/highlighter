@@ -6,7 +6,7 @@ import showHighlight from './showHighlight.js';
 import { getLostHighlights, removeLostHighlight } from './utils/errorManager.js';
 import { clearPage, removeHighlight } from './utils/storageManager.js';
 
-export default {
+export {
   clearPage,
   removeHighlight,
   showHighlight,

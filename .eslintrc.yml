@@ -240,3 +240,4 @@ rules:
       "newlines-between": "always",
       "alphabetize": { "order": "asc", "caseInsensitive": true },
     }]
+  import/exports-last: error

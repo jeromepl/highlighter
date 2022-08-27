@@ -4,12 +4,12 @@ async function getCurrentTab() {
     return tab;
 }
 
-export async function executeInCurrentTab(opts) {
+async function executeInCurrentTab(opts) {
     const tab = await getCurrentTab();
     return executeInTab(tab.id, opts);
 }
 
-export async function executeInTab(tabId, { file, func, args }) {
+async function executeInTab(tabId, { file, func, args }) {
     const executions = await chrome.scripting.executeScript({
         target: { tabId, allFrames: true },
         ...(file && { files: [file] }),
@@ -25,7 +25,7 @@ export async function executeInTab(tabId, { file, func, args }) {
     return executions.flatMap((execution) => execution.result);
 }
 
-export function wrapResponse(promise, sendResponse) {
+function wrapResponse(promise, sendResponse) {
     promise.then((response) => sendResponse({
         success: true,
         response,
@@ -34,3 +34,5 @@ export function wrapResponse(promise, sendResponse) {
         error: error.message,
     }));
 }
+
+export { executeInCurrentTab, executeInTab, wrapResponse };

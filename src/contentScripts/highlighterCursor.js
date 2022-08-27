@@ -11,11 +11,11 @@ function highlightOnSelection() {
     }
 }
 
-export function initializeHighlighterCursor() {
+function initializeHighlighterCursor() {
     document.addEventListener('mouseup', highlightOnSelection);
 }
 
-export function toggleHighlighterCursor() {
+function toggleHighlighterCursor() {
     showHighlighterCursor = !showHighlighterCursor;
 
     if (showHighlighterCursor) {
@@ -27,3 +27,5 @@ export function toggleHighlighterCursor() {
         document.body.style.cursor = 'default';
     }
 }
+
+export { initializeHighlighterCursor, toggleHighlighterCursor };

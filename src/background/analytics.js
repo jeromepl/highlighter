@@ -16,7 +16,7 @@ async function clientUUID() {
 }
 
 // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
-export async function trackEvent(category, action, label = null, value = null, extraParams = {}) {
+async function trackEvent(category, action, label = null, value = null, extraParams = {}) {
     const data = {
         // API Version.
         v: '1',
@@ -40,3 +40,5 @@ export async function trackEvent(category, action, label = null, value = null, e
     const params = new URLSearchParams(data).toString();
     return fetch(`https://www.google-analytics.com/collect?${params}`);
 }
+
+export { trackEvent };

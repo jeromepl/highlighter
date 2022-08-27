@@ -16,7 +16,7 @@ import { trackEvent } from './analytics.js';
 import { wrapResponse } from './utils.js';
 
 
-export function initialize() {
+function initialize() {
     initializeContextMenus();
     initializeContextMenuEventListeners();
     initializeExtensionEventListeners();
@@ -175,3 +175,5 @@ function initializeMessageEventListeners() {
     });
     /* eslint-enable consistent-return */
 }
+
+export { initialize };

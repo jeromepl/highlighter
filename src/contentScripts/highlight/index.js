@@ -2,8 +2,6 @@ import highlightLegacy from './highlightLegacy.js';
 import highlightV3 from './highlightV3.js';
 import highlightV4 from './highlightV4.js';
 
-export * from './constants.js';
-
 function highlight(selectionString, container, selection, color, textColor, highlightIndex, version = null) {
     if (version === null || versionCompare(version, "4.0.0") >= 0) {
         // Starting with version 4, the highlighting algorithm is more strict to prevent highlighting all the page and a big refactor was done
@@ -41,4 +39,5 @@ function versionCompare(v1, v2) {
     return 0; // Everything is equal
 }
 
+export * from './constants.js';
 export default highlight;

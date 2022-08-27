@@ -9,7 +9,7 @@ let copyBtnEl = null;
 let changeColorBtnEl = null;
 let deleteBtnEl = null;
 
-export function initializeHoverTools() {
+function initializeHoverTools() {
     $.get(chrome.runtime.getURL('src/contentScripts/hoverTools/index.html'), (data) => {
         hoverToolEl = $(data);
         hoverToolEl.hide();
@@ -38,7 +38,7 @@ export function initializeHoverTools() {
     });
 }
 
-export function initializeHighlightEventListeners(highlightElement) {
+function initializeHighlightEventListeners(highlightElement) {
     highlightElement.addEventListener('mouseenter', onHighlightMouseEnterOrClick);
     highlightElement.addEventListener('click', onHighlightMouseEnterOrClick);
     highlightElement.addEventListener('mouseleave', onHighlightMouseLeave);
@@ -60,7 +60,7 @@ function getHoverToolEl() {
     return hoverToolEl;
 }
 
-export function onHighlightMouseEnterOrClick(e) {
+function onHighlightMouseEnterOrClick(e) {
     const newHighlightEl = e.target;
     const newHighlightId = newHighlightEl.getAttribute('data-highlight-id');
 
@@ -182,3 +182,5 @@ function onChangeColorBtnClicked() {
         chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'change-color' });
     });
 }
+
+export { initializeHoverTools, initializeHighlightEventListeners, onHighlightMouseEnterOrClick };

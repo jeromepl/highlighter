@@ -8,7 +8,7 @@ const RETRY_INTERVAL = 500;
 // Use a Map instead of an object to keep order
 const lostHighlights = new Map();
 
-export function addHighlightError(highlight, highlightIndex) {
+function addHighlightError(highlight, highlightIndex) {
     const highlightError = {
         highlight,
         highlightIndex,
@@ -31,12 +31,14 @@ function retryHighlightError(highlightError) {
     }
 }
 
-export function getLostHighlights() {
+function getLostHighlights() {
     return lostHighlights;
 }
 
-export function removeLostHighlight(highlightIndex) {
+function removeLostHighlight(highlightIndex) {
     const highlightError = lostHighlights.get(highlightIndex);
     clearTimeout(highlightError?.timeout);
     lostHighlights.delete(highlightIndex);
 }
+
+export { addHighlightError, getLostHighlights, removeLostHighlight };

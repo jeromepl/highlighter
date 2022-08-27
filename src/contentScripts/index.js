@@ -1,9 +1,9 @@
-import api from './api.js';
+import * as api from './api.js';
 import { initializeHighlighterCursor } from './highlighterCursor.js';
 import { initializeHoverTools } from './hoverTools/index.js';
 import loadPageHighlights from "./loadPageHighlights.js";
 
-export function initialize() {
+function initialize() {
     initializeHoverTools();
     initializeHighlighterCursor();
     exposeAPI();
@@ -14,3 +14,5 @@ export function initialize() {
 function exposeAPI() {
     window.highlighterAPI = api;
 }
+
+export { initialize };
