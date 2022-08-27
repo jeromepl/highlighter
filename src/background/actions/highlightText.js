@@ -3,7 +3,12 @@ import { executeInCurrentTab } from '../utils.js';
 
 function highlightText() {
     trackEvent('highlight-action', 'highlight');
-    executeInCurrentTab({ file: 'src/contentScripts/highlight.js' });
+
+    function contentScriptHighlightText() {
+        window.highlightSelectedText();
+    }
+
+    executeInCurrentTab({ func: contentScriptHighlightText });
 }
 
 export default highlightText;

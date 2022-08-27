@@ -1,5 +1,6 @@
-import { trackEvent } from '../analytics.js';
 import getColorOptions from './getColorOptions.js';
+
+import { trackEvent } from '../analytics.js';
 
 async function editColor(colorTitle, color, textColor) {
     trackEvent('color-edit', colorTitle);

@@ -1,10 +1,12 @@
-"use strict";
+import { addHighlightError } from './errorManager.js';
+
+import highlight from '../highlight/index.js';
 
 const STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
 
 let alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
-function store(selection, container, url, href, color, textColor, callback) { /* eslint-disable-line no-redeclare, no-unused-vars */
+export function store(selection, container, url, href, color, textColor, callback) {
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
 
@@ -30,7 +32,7 @@ function store(selection, container, url, href, color, textColor, callback) { /*
     });
 }
 
-function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) { /* eslint-disable-line no-redeclare, no-unused-vars */
+export function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) {
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
 
@@ -43,11 +45,11 @@ function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) { /
 
         const highlightsInKey = highlights[urlToUse];
         if (highlightsInKey) {
-            const highlight = highlightsInKey[indexToUse];
-            if (highlight) {
-                highlight.color = newColor;
-                highlight.textColor = newTextColor;
-                highlight.updatedAt = Date.now();
+            const highlightObject = highlightsInKey[indexToUse];
+            if (highlightObject) {
+                highlightObject.color = newColor;
+                highlightObject.textColor = newTextColor;
+                highlightObject.updatedAt = Date.now();
                 chrome.storage.local.set({ highlights });
             }
         }
@@ -55,7 +57,7 @@ function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) { /
 }
 
 // alternativeUrl is optional
-function loadAll(url, alternativeUrl) { /* eslint-disable-line no-redeclare, no-unused-vars */
+export function loadAll(url, alternativeUrl) {
     chrome.storage.local.get({ highlights: {} }, (result) => {
         let highlights = [];
 
@@ -78,7 +80,7 @@ function loadAll(url, alternativeUrl) { /* eslint-disable-line no-redeclare, no-
 }
 
 // noErrorTracking is optional
-function load(highlightVal, highlightIndex, noErrorTracking) { /* eslint-disable-line no-redeclare */
+export function load(highlightVal, highlightIndex, noErrorTracking) {
     const selection = {
         anchorNode: elementFromQuery(highlightVal.anchorNode),
         anchorOffset: highlightVal.anchorOffset,
@@ -104,7 +106,7 @@ function load(highlightVal, highlightIndex, noErrorTracking) { /* eslint-disable
     return success;
 }
 
-function removeHighlight(highlightIndex, url, alternativeUrl) { /* eslint-disable-line no-redeclare, no-unused-vars */
+export function removeHighlight(highlightIndex, url, alternativeUrl) {
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
         if (highlightIndex < alternativeUrlIndexOffset) {
@@ -117,7 +119,7 @@ function removeHighlight(highlightIndex, url, alternativeUrl) { /* eslint-disabl
 }
 
 // alternativeUrl is optional
-function clearPage(url, alternativeUrl) { /* eslint-disable-line no-redeclare, no-unused-vars */
+export function clearPage(url, alternativeUrl) {
     chrome.storage.local.get({ highlights: {} }, (result) => {
         const highlights = result.highlights;
         delete highlights[url];

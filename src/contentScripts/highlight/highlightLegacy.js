@@ -1,4 +1,6 @@
-"use strict";
+import { DELETED_CLASS, HIGHLIGHT_CLASS } from './constants.js';
+
+import { initializeHighlightEventListeners } from '../hoverTools/index.js';
 
 // Pick a combination of characters that should (almost) never occur
 var DELIMITERS = {
@@ -35,7 +37,7 @@ function _resetVars() {
     alreadyHighlighted = true;
 }
 
-function highlight_legacy(selString, container, selection, color, highlightIndex) { /* eslint-disable-line no-redeclare, no-unused-vars, camelcase */
+function highlightLegacy(selString, container, selection, color, highlightIndex) {
     _resetVars();
 
     selectionString = selString;
@@ -58,7 +60,7 @@ function highlight_legacy(selString, container, selection, color, highlightIndex
     */
 
     // Step 1 + 2:
-    recursiveWrapper_legacy(container);
+    recursiveWrapper(container);
 
     color = color ? color : "yellow";
     const replacements = getReplacements(color, highlightIndex);
@@ -95,15 +97,13 @@ function highlight_legacy(selString, container, selection, color, highlightIndex
 
     // Attach mouse hover event listeners to display tools when hovering a highlight
     parent.find(`.${HIGHLIGHT_CLASS}`).each((i, el) => {
-        el.addEventListener('mouseenter', onHighlightMouseEnterOrClick);
-        el.addEventListener('click', onHighlightMouseEnterOrClick);
-        el.addEventListener('mouseleave', onHighlightMouseLeave);
+        initializeHighlightEventListeners(el);
     });
 
     return true; // No errors. 'undefined' is returned by default if any error occurs during this method's execution, like if 'content.replace' fails by 'content' being 'undefined'
 }
 
-function recursiveWrapper_legacy(container) { /* eslint-disable-line camelcase */
+function recursiveWrapper(container) {
 
     container.contents().each((index, element) => {
         if (element.nodeType === Node.TEXT_NODE) {
@@ -172,7 +172,7 @@ function recursiveWrapper_legacy(container) { /* eslint-disable-line camelcase *
                 element.nodeValue = newText;
             }
         } else {
-            recursiveWrapper_legacy($(element));
+            recursiveWrapper($(element));
         }
     });
 }
@@ -184,3 +184,5 @@ function recursiveWrapper_legacy(container) { /* eslint-disable-line camelcase *
 function escapeRegex(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/ug, "\\$&");
 }
+
+export default highlightLegacy;

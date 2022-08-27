@@ -1,6 +1,7 @@
-"use strict";
+import highlight from './highlight/index.js';
+import { store } from './utils/storageManager.js';
 
-(() => { // Restrict the scope of the variables to this file
+function highlightSelectedText() {
     const selection = window.getSelection();
     const selectionString = selection.toString();
 
@@ -20,4 +21,6 @@
             });
         });
     }
-})();
+}
+
+export default highlightSelectedText;

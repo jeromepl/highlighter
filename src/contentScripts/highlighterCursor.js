@@ -1,10 +1,7 @@
-"use strict";
+let showHighlighterCursor = false;
 
-window.showHighlighterCursor = false;
-
-// We want this to be exported, so do not wrap this code in a function
-function highlightOnSelection() { /* eslint-disable-line no-redeclare */
-    if (!window.showHighlighterCursor) return;
+function highlightOnSelection() {
+    if (!showHighlighterCursor) return;
 
     const selection = window.getSelection();
     const selectionString = selection.toString();
@@ -14,4 +11,19 @@ function highlightOnSelection() { /* eslint-disable-line no-redeclare */
     }
 }
 
-document.addEventListener('mouseup', highlightOnSelection);
+export function initializeHighlighterCursor() {
+    document.addEventListener('mouseup', highlightOnSelection);
+}
+
+export function toggleHighlighterCursor() {
+    showHighlighterCursor = !showHighlighterCursor;
+
+    if (showHighlighterCursor) {
+        document.body.style.cursor = `url(${chrome.runtime.getURL('images/cursor.png')}), auto`;
+
+        // Highlight right away if some text is already selected:
+        highlightOnSelection();
+    } else {
+        document.body.style.cursor = 'default';
+    }
+}

@@ -1,4 +1,5 @@
-"use strict";
+import { DELETED_CLASS, HIGHLIGHT_CLASS } from '../highlight/index.js';
+import { update } from '../utils/storageManager.js';
 
 let hoverToolEl = null;
 let hoverToolTimeout = null;
@@ -8,19 +9,46 @@ let copyBtnEl = null;
 let changeColorBtnEl = null;
 let deleteBtnEl = null;
 
-$.get(chrome.runtime.getURL('src/hoverTools/hoverTools.html'), (data) => {
-    hoverToolEl = $(data);
-    hoverToolEl.hide();
-    hoverToolEl[0].addEventListener('mouseenter', onHoverToolMouseEnter);
-    hoverToolEl[0].addEventListener('mouseleave', onHighlightMouseLeave);
+export function initializeHoverTools() {
+    $.get(chrome.runtime.getURL('src/contentScripts/hoverTools/index.html'), (data) => {
+        hoverToolEl = $(data);
+        hoverToolEl.hide();
+        hoverToolEl[0].addEventListener('mouseenter', onHoverToolMouseEnter);
+        hoverToolEl[0].addEventListener('mouseleave', onHighlightMouseLeave);
 
-    copyBtnEl = hoverToolEl.find('.highlighter--icon-copy')[0];
-    deleteBtnEl = hoverToolEl.find('.highlighter--icon-delete')[0];
-    changeColorBtnEl = hoverToolEl.find('.highlighter--icon-change-color')[0];
-    copyBtnEl.addEventListener('click', onCopyBtnClicked);
-    deleteBtnEl.addEventListener('click', onDeleteBtnClicked);
-    changeColorBtnEl.addEventListener('click', onChangeColorBtnClicked);
-});
+        copyBtnEl = hoverToolEl.find('.highlighter--icon-copy')[0];
+        deleteBtnEl = hoverToolEl.find('.highlighter--icon-delete')[0];
+        changeColorBtnEl = hoverToolEl.find('.highlighter--icon-change-color')[0];
+        copyBtnEl.addEventListener('click', onCopyBtnClicked);
+        deleteBtnEl.addEventListener('click', onDeleteBtnClicked);
+        changeColorBtnEl.addEventListener('click', onChangeColorBtnClicked);
+    });
+
+    // Allow clicking outside of a highlight to unselect
+    window.addEventListener('click', (e) => {
+        if (e.target.classList?.contains('highlighter--highlighted')) return;
+        if (e.target.classList?.contains('highlighter--icon-change-color')) return;
+        hide();
+    });
+
+    window.addEventListener("scroll", () => {
+        if (highlightClicked) {
+            moveToolbarToHighlight(currentHighlightEl);
+        }
+    });
+}
+
+export function initializeHighlightEventListeners(highlightElement) {
+    highlightElement.addEventListener('mouseenter', onHighlightMouseEnterOrClick);
+    highlightElement.addEventListener('click', onHighlightMouseEnterOrClick);
+    highlightElement.addEventListener('mouseleave', onHighlightMouseLeave);
+}
+
+function removeHighlightEvenListeners(highlightElement) {
+    highlightElement.removeEventListener('mouseenter', onHighlightMouseEnterOrClick);
+    highlightElement.removeEventListener('click', onHighlightMouseEnterOrClick);
+    highlightElement.removeEventListener('mouseleave', onHighlightMouseLeave);
+}
 
 function getHoverToolEl() {
     if (!hoverToolEl.isConnected) {
@@ -32,20 +60,7 @@ function getHoverToolEl() {
     return hoverToolEl;
 }
 
-// Allow clicking outside of a highlight to unselect
-window.addEventListener('click', (e) => {
-    if (e.target.classList?.contains('highlighter--highlighted')) return;
-    if (e.target.classList?.contains('highlighter--icon-change-color')) return;
-    hide();
-});
-
-window.addEventListener("scroll", () => {
-    if (highlightClicked) {
-        moveToolbarToHighlight(currentHighlightEl);
-    }
-});
-
-function onHighlightMouseEnterOrClick(e) { /* eslint-disable-line no-redeclare */
+export function onHighlightMouseEnterOrClick(e) {
     const newHighlightEl = e.target;
     const newHighlightId = newHighlightEl.getAttribute('data-highlight-id');
 
@@ -72,7 +87,7 @@ function onHighlightMouseEnterOrClick(e) { /* eslint-disable-line no-redeclare *
     $(`.highlighter--highlighted[data-highlight-id='${newHighlightId}']`).addClass('highlighter--hovered');
 }
 
-function onHighlightMouseLeave() { /* eslint-disable-line no-redeclare */
+function onHighlightMouseLeave() {
     if (!highlightClicked) {
         hoverToolTimeout = setTimeout(hide, 170);
     }
@@ -142,9 +157,7 @@ function onDeleteBtnClicked() {
     update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, 'inherit', 'inherit'); // update the value in the local storage
 
     highlights.each((_, el) => { // Finally, remove the event listeners that were attached to this highlight element
-        el.removeEventListener('mouseenter', onHighlightMouseEnterOrClick);
-        el.removeEventListener('click', onHighlightMouseEnterOrClick);
-        el.removeEventListener('mouseleave', onHighlightMouseLeave);
+        removeHighlightEvenListeners(el);
     });
 
     chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'delete' });

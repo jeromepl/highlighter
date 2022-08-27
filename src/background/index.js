@@ -1,18 +1,19 @@
-import { trackEvent } from './analytics.js';
-import { wrapResponse } from './utils.js';
 import {
-    highlightText,
-    toggleHighlighterCursor,
-    removeHighlights,
-    removeHighlight,
-    showHighlight,
-    getHighlights,
-    getLostHighlights,
     changeColor,
     editColor,
-    getCurrentColor,
     getColorOptions,
+    getCurrentColor,
+    getHighlights,
+    getLostHighlights,
+    highlightText,
+    loadPageHighlights,
+    removeHighlight,
+    removeHighlights,
+    showHighlight,
+    toggleHighlighterCursor,
 } from './actions/index.js';
+import { trackEvent } from './analytics.js';
+import { wrapResponse } from './utils.js';
 
 
 export function initialize() {
@@ -84,10 +85,7 @@ function initializeTabEventListeners() {
     // which often change the URL without reloading the page
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, _tab) => {
         if (changeInfo.url) {
-            chrome.scripting.executeScript({
-                target: { tabId, allFrames: true },
-                files: ['src/contentScripts/loadHighlights.js'],
-            });
+            loadPageHighlights(tabId);
         }
     });
 }

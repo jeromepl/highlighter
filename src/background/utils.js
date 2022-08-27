@@ -4,10 +4,14 @@ async function getCurrentTab() {
     return tab;
 }
 
-async function executeInCurrentTab({ file, func, args }) {
+async function executeInCurrentTab(opts) {
     const tab = await getCurrentTab();
+    return executeInTab(tab.id, opts);
+}
+
+async function executeInTab(tabId, { file, func, args }) {
     const executions = await chrome.scripting.executeScript({
-        target: { tabId: tab.id, allFrames: true },
+        target: { tabId, allFrames: true },
         ...(file && { files: [file] }),
         func,
         args,
@@ -31,4 +35,4 @@ function wrapResponse(promise, sendResponse) {
     }));
 }
 
-export { getCurrentTab, executeInCurrentTab, wrapResponse };
+export { getCurrentTab, executeInTab, executeInCurrentTab, wrapResponse };

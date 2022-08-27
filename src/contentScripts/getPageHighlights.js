@@ -1,6 +1,5 @@
-"use strict";
 
-(() => { // Restrict the scope of the variables to this file
+function getPageHighlights() {
     const highlights = document.getElementsByClassName('highlighter--highlighted');
 
     const textToCopy = new Map(); // Use a Map instead of an object since it retains order of insertion
@@ -26,4 +25,6 @@
     });
 
     return highlightsText;
-})(); // Return value is passed through
+}
+
+export default getPageHighlights;
