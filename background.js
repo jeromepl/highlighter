@@ -3,8 +3,20 @@
 // NOTE: This file must be in the top-level directory of the extension according to the docs
 
 import { trackEvent } from './src/background/analytics.js';
-import { executeInCurrentTab, wrapResponse } from './src/background/utils.js';
-import { DEFAULT_COLOR_TITLE, DEFAULT_COLORS } from './src/background/constants.js';
+import { wrapResponse } from './src/background/utils.js';
+import {
+    highlightText,
+    toggleHighlighterCursor,
+    removeHighlights,
+    removeHighlight,
+    showHighlight,
+    getHighlights,
+    getLostHighlights,
+    changeColor,
+    editColor,
+    getCurrentColor,
+    getColorOptions,
+} from './src/background/actions/index.js';
 
 // Add option when right-clicking
 chrome.runtime.onInstalled.addListener(async () => {
@@ -27,16 +39,19 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 chrome.contextMenus.onClicked.addListener(({ menuItemId, parentMenuItemId }) => {
     if (parentMenuItemId === 'highlight-color') {
-        changeColorFromContext(menuItemId);
+        trackEvent('color-change-source', 'context-menu');
+        changeColor(menuItemId);
         return;
     }
 
     switch (menuItemId) {
         case 'highlight':
-            highlightTextFromContext();
+            trackEvent('highlight-source', 'context-menu');
+            highlightText();
             break;
         case 'toggle-cursor':
-            toggleHighlighterCursorFromContext();
+            trackEvent('toggle-cursor-source', 'context-menu');
+            toggleHighlighterCursor();
             break;
     }
 });
@@ -142,119 +157,3 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     }
 });
 /* eslint-enable consistent-return */
-
-async function getCurrentColor() {
-    const { color } = await chrome.storage.sync.get("color");
-    const colorTitle = color || DEFAULT_COLOR_TITLE;
-    const colorOptions = await getColorOptions();
-    return colorOptions.find((colorOption) => colorOption.title === colorTitle) || colorOptions[0];
-}
-
-function highlightTextFromContext() {
-    trackEvent('highlight-source', 'context-menu');
-    highlightText();
-}
-
-function toggleHighlighterCursorFromContext() {
-    trackEvent('toggle-cursor-source', 'context-menu');
-    toggleHighlighterCursor();
-}
-
-function changeColorFromContext(menuItemId) {
-    trackEvent('color-change-source', 'context-menu');
-    changeColor(menuItemId);
-}
-
-function highlightText() {
-    trackEvent('highlight-action', 'highlight');
-    executeInCurrentTab({ file: 'src/contentScripts/highlight.js' });
-}
-
-function toggleHighlighterCursor() {
-    trackEvent('highlight-action', 'toggle-cursor');
-    executeInCurrentTab({ file: 'src/contentScripts/toggleHighlighterCursor.js' });
-}
-
-function removeHighlights() {
-    trackEvent('highlight-action', 'clear-all');
-    executeInCurrentTab({ file: 'src/contentScripts/removeHighlights.js' });
-}
-
-function removeHighlight(highlightId) {
-    trackEvent('highlight-action', 'remove-highlight');
-
-    function contentScriptRemoveHighlight(highlightIndex) {
-        const highlightError = window.highlighter_lostHighlights.get(highlightIndex);
-        clearTimeout(highlightError?.timeout);
-        window.highlighter_lostHighlights.delete(highlightIndex);
-        removeHighlight(highlightIndex, window.location.hostname + window.location.pathname, window.location.pathname);
-    }
-
-    executeInCurrentTab({ func: contentScriptRemoveHighlight, args: [highlightId] });
-}
-
-function showHighlight(highlightId) {
-    trackEvent('highlight-action', 'show-highlight');
-
-    function contentScriptShowHighlight(highlightId) { // eslint-disable-line no-shadow
-        const highlightEl = document.querySelector(`[data-highlight-id="${highlightId}"]`);
-        if (highlightEl) {
-            highlightEl.scrollIntoViewIfNeeded(true);
-            const boundingRect = highlightEl.getBoundingClientRect();
-            onHighlightMouseEnterOrClick({
-                'type': 'click',
-                'target': highlightEl,
-                'clientX': boundingRect.left + (boundingRect.width / 2),
-            });
-        }
-    }
-
-    executeInCurrentTab({ func: contentScriptShowHighlight, args: [highlightId] });
-}
-
-function getHighlights() {
-    return executeInCurrentTab({ file: 'src/contentScripts/getHighlights.js' });
-}
-
-function getLostHighlights() {
-    function contentScriptGetLostHighlights() {
-        const lostHighlights = [];
-        window.highlighter_lostHighlights.forEach((highlight, index) => lostHighlights.push({ string: highlight?.string, index }));
-        return lostHighlights;
-    }
-
-    return executeInCurrentTab({ func: contentScriptGetLostHighlights });
-}
-
-function changeColor(colorTitle) {
-    if (!colorTitle) return;
-
-    trackEvent('color-changed-to', colorTitle);
-    chrome.storage.sync.set({ color: colorTitle });
-
-    // Also update the context menu
-    chrome.contextMenus.update(colorTitle, { checked: true });
-}
-
-async function editColor(colorTitle, color, textColor) {
-    trackEvent('color-edit', colorTitle);
-
-    const colorOptions = await getColorOptions();
-    const colorOption = colorOptions.find((option) => option.title === colorTitle);
-    colorOption.color = color;
-    colorOption.textColor = textColor;
-
-    if (!textColor) {
-        delete colorOption.textColor;
-    }
-
-    chrome.storage.sync.set({ colors: colorOptions });
-}
-
-function getColorOptions() {
-    return new Promise((resolve, _reject) => {
-        chrome.storage.sync.get({
-            colors: DEFAULT_COLORS, // Default value
-        }, ({ colors }) => resolve(colors));
-    });
-}
