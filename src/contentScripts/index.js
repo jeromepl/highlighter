@@ -1,5 +1,5 @@
 import * as api from './api.js';
-import { initializeHighlighterCursor } from './highlighterCursor.js';
+import { initializeHighlighterCursor } from './highlighterCursor/index.js';
 import { loadAll as loadAllHighlights } from './highlights/index.js';
 import { initializeHoverTools } from './hoverTools/index.js';
 
