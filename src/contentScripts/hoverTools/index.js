@@ -44,7 +44,7 @@ function initializeHighlightEventListeners(highlightElement) {
     highlightElement.addEventListener('mouseleave', onHighlightMouseLeave);
 }
 
-function removeHighlightEvenListeners(highlightElement) {
+function removeHighlightEventListeners(highlightElement) {
     highlightElement.removeEventListener('mouseenter', onHighlightMouseEnterOrClick);
     highlightElement.removeEventListener('click', onHighlightMouseEnterOrClick);
     highlightElement.removeEventListener('mouseleave', onHighlightMouseLeave);
@@ -157,7 +157,7 @@ function onDeleteBtnClicked() {
     update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, 'inherit', 'inherit'); // update the value in the local storage
 
     highlights.each((_, el) => { // Finally, remove the event listeners that were attached to this highlight element
-        removeHighlightEvenListeners(el);
+        removeHighlightEventListeners(el);
     });
 
     chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'delete' });
