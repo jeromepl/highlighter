@@ -2,7 +2,11 @@ import { executeInCurrentTab } from '../utils.js';
 
 function getHighlights() {
     function contentScriptGetHighlights() {
-        return window.highlighterAPI.getPageHighlights();
+        const highlightsMap = window.highlighterAPI.highlights.getAllFound();
+
+        // Return an array instead of a Map since for some reason Maps don't get returned properly (serialization issue?)
+        // Note that we could return a dict instead, but that we would lose ordering
+        return Array.from(highlightsMap).flatMap((value, key) => [key, value]);
     }
 
     return executeInCurrentTab({ func: contentScriptGetHighlights });

@@ -5,7 +5,7 @@ function toggleHighlighterCursor() {
     trackEvent('highlight-action', 'toggle-cursor');
 
     function contentScriptToggleHighlighterCursor() {
-        window.highlighterAPI.toggleHighlighterCursor();
+        window.highlighterAPI.highlighterCursor.toggle();
     }
 
     executeInCurrentTab({ func: contentScriptToggleHighlighterCursor });

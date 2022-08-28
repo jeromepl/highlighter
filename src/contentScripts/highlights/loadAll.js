@@ -1,8 +1,8 @@
-import { loadAll } from './utils/storageManager.js';
+import { loadAll as loadAllFromStorage } from '../utils/storageManager.js';
 
-function loadPageHighlights() {
+function loadAll() {
     function loadAllHighlightsOnPage() {
-        loadAll(window.location.hostname + window.location.pathname, window.location.pathname);
+        loadAllFromStorage(window.location.hostname + window.location.pathname, window.location.pathname);
     }
 
     if (document.readyState === 'loading') {
@@ -14,4 +14,4 @@ function loadPageHighlights() {
     }
 }
 
-export default loadPageHighlights;
+export default loadAll;

@@ -1,6 +1,6 @@
 import { addHighlightError } from './errorManager.js';
 
-import highlight from '../highlight/index.js';
+import { highlight } from '../highlight/index.js';
 
 const STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
 

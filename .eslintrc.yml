@@ -241,3 +241,4 @@ rules:
       "alphabetize": { "order": "asc", "caseInsensitive": true },
     }]
   import/exports-last: error
+  import/default: 'off'

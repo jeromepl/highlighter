@@ -7,7 +7,7 @@ async function highlightText() {
     trackEvent('highlight-action', 'highlight');
 
     function contentScriptHighlightText(currentColor) {
-        window.highlighterAPI.highlightSelectedText(currentColor);
+        window.highlighterAPI.highlight.create(currentColor);
     }
 
     const currentColor = await getCurrentColor();

@@ -1,6 +1,6 @@
 import { DELETED_CLASS, HIGHLIGHT_CLASS } from './constants.js';
 
-import { initializeHighlightEventListeners } from '../hoverTools/index.js';
+import { initializeHighlightEventListeners } from '../../hoverTools/index.js';
 
 function highlight(selString, container, selection, color, textColor, highlightIndex) {
     const highlightInfo = {

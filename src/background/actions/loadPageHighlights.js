@@ -9,8 +9,8 @@ function loadPageHighlights(tabId) {
     // Furthermore, the 'DOMContentLoaded' event is fired before the content scripts are loaded.
     // This is not an issue because this content script is also loaded by default on every
     // page through the manifest configuration.
-    if (typeof window.highlighterAPI?.loadPageHighlights === "function") {
-      window.highlighterAPI.loadPageHighlights();
+    if (typeof window.highlighterAPI?.highlights?.loadAll === "function") {
+      window.highlighterAPI.highlights.loadAll();
     }
   }
 

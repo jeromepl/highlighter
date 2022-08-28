@@ -1,5 +1,8 @@
-import { DELETED_CLASS, HIGHLIGHT_CLASS } from '../highlight/index.js';
-import { update } from '../utils/storageManager.js';
+import {
+    HIGHLIGHT_CLASS,
+    updateColor as updateHighlightColor,
+    remove as removeHighlight,
+} from '../highlight/index.js';
 
 let hoverToolEl = null;
 let hoverToolTimeout = null;
@@ -26,7 +29,7 @@ function initializeHoverTools() {
 
     // Allow clicking outside of a highlight to unselect
     window.addEventListener('click', (e) => {
-        if (e.target.classList?.contains('highlighter--highlighted')) return;
+        if (e.target.classList?.contains(HIGHLIGHT_CLASS)) return;
         if (e.target.classList?.contains('highlighter--icon-change-color')) return;
         hide();
     });
@@ -84,7 +87,7 @@ function onHighlightMouseEnterOrClick(e) {
 
     // Remove any previous borders and add a border to the highlight (by id) to clearly see what was selected
     $('.highlighter--hovered').removeClass('highlighter--hovered');
-    $(`.highlighter--highlighted[data-highlight-id='${newHighlightId}']`).addClass('highlighter--hovered');
+    $(`.${HIGHLIGHT_CLASS}[data-highlight-id='${newHighlightId}']`).addClass('highlighter--hovered');
 }
 
 function onHighlightMouseLeave() {
@@ -138,7 +141,7 @@ function onHoverToolMouseEnter() {
 
 function onCopyBtnClicked() {
     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
-    const highlights = document.querySelectorAll(`.highlighter--highlighted[data-highlight-id='${highlightId}']`);
+    const highlights = document.querySelectorAll(`.${HIGHLIGHT_CLASS}[data-highlight-id='${highlightId}']`);
     const highlightText = Array.from(highlights).map((el) => el.textContent.replace(/\s+/ugm, ' ')).join(''); // clean up whitespace
     navigator.clipboard.writeText(highlightText);
     chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'copy' });
@@ -146,20 +149,10 @@ function onCopyBtnClicked() {
 
 function onDeleteBtnClicked() {
     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
-    const highlights = $(`.highlighter--highlighted[data-highlight-id='${highlightId}']`);
-    $('.highlighter--hovered').removeClass('highlighter--hovered');
+    removeHighlight(highlightId);
+
     getHoverToolEl()?.hide();
     hoverToolTimeout = null;
-
-    highlights.css('backgroundColor', 'inherit'); // Change the background color attribute
-    highlights.css('color', 'inherit'); // Also change the text color
-    highlights.removeClass(HIGHLIGHT_CLASS).addClass(DELETED_CLASS); // Change the class name to the 'deleted' version
-    update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, 'inherit', 'inherit'); // update the value in the local storage
-
-    highlights.each((_, el) => { // Finally, remove the event listeners that were attached to this highlight element
-        removeHighlightEventListeners(el);
-    });
-
     chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'delete' });
 }
 
@@ -167,20 +160,13 @@ function onDeleteBtnClicked() {
 // feature: change color on popup menu
 function onChangeColorBtnClicked() {
     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
-    const highlights = $(`.highlighter--highlighted[data-highlight-id='${highlightId}']`);
-    const currentColor = highlights[0].style.backgroundColor;
-
-    chrome.runtime.sendMessage({ action: 'get-color-options' }, ({ response: colorOptions }) => {
-        const currentIndex = colorOptions.findIndex((color) => color.color === currentColor); // Find index by color rgb value
-        const newColorOption = colorOptions[(currentIndex + 1) % colorOptions.length];
-        const { color: newColor, textColor: newTextColor } = newColorOption;
-
-        highlights.css('backgroundColor', newColor); // Change the background color attribute
-        highlights.css('color', newTextColor || "inherit");
-
-        update(highlightId, window.location.hostname + window.location.pathname, window.location.pathname, newColor, newTextColor); // update the value in the local storage
-        chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'change-color' });
-    });
+    updateHighlightColor(highlightId);
+    chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'change-color' });
 }
 
-export { initializeHoverTools, initializeHighlightEventListeners, onHighlightMouseEnterOrClick };
+export {
+    initializeHoverTools,
+    initializeHighlightEventListeners,
+    onHighlightMouseEnterOrClick,
+    removeHighlightEventListeners,
+};

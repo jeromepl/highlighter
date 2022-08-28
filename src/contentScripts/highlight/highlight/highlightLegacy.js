@@ -1,6 +1,6 @@
 import { DELETED_CLASS, HIGHLIGHT_CLASS } from './constants.js';
 
-import { initializeHighlightEventListeners } from '../hoverTools/index.js';
+import { initializeHighlightEventListeners } from '../../hoverTools/index.js';
 
 // Pick a combination of characters that should (almost) never occur
 var DELIMITERS = {
