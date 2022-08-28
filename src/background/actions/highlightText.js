@@ -1,14 +1,17 @@
+import getCurrentColor from './getCurrentColor.js';
+
 import { trackEvent } from '../analytics.js';
 import { executeInCurrentTab } from '../utils.js';
 
-function highlightText() {
+async function highlightText() {
     trackEvent('highlight-action', 'highlight');
 
-    function contentScriptHighlightText() {
-        window.highlighterAPI.highlightSelectedText();
+    function contentScriptHighlightText(currentColor) {
+        window.highlighterAPI.highlightSelectedText(currentColor);
     }
 
-    executeInCurrentTab({ func: contentScriptHighlightText });
+    const currentColor = await getCurrentColor();
+    executeInCurrentTab({ func: contentScriptHighlightText, args: [currentColor] });
 }
 
 export default highlightText;

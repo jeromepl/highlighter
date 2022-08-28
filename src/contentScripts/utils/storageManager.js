@@ -6,77 +6,73 @@ const STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
 
 let alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
-function store(selection, container, url, href, color, textColor, callback) {
-    chrome.storage.local.get({ highlights: {} }, (result) => {
-        const highlights = result.highlights;
+async function store(selection, container, url, href, color, textColor) {
+    const { highlights } = await chrome.storage.local.get({ highlights: {} });
 
-        if (!highlights[url]) highlights[url] = [];
+    if (!highlights[url]) highlights[url] = [];
 
-        const count = highlights[url].push({
-            version: STORE_FORMAT_VERSION,
-            string: selection.toString(),
-            container: getQuery(container),
-            anchorNode: getQuery(selection.anchorNode),
-            anchorOffset: selection.anchorOffset,
-            focusNode: getQuery(selection.focusNode),
-            focusOffset: selection.focusOffset,
-            color,
-            textColor,
-            href,
-            uuid: crypto.randomUUID(),
-            createdAt: Date.now(),
-        });
-        chrome.storage.local.set({ highlights });
-
-        if (callback) callback(count - 1 + alternativeUrlIndexOffset);
+    const count = highlights[url].push({
+        version: STORE_FORMAT_VERSION,
+        string: selection.toString(),
+        container: getQuery(container),
+        anchorNode: getQuery(selection.anchorNode),
+        anchorOffset: selection.anchorOffset,
+        focusNode: getQuery(selection.focusNode),
+        focusOffset: selection.focusOffset,
+        color,
+        textColor,
+        href,
+        uuid: crypto.randomUUID(),
+        createdAt: Date.now(),
     });
+    chrome.storage.local.set({ highlights });
+
+    // Return the index of the new highlight:
+    return count - 1 + alternativeUrlIndexOffset;
 }
 
-function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) {
-    chrome.storage.local.get({ highlights: {} }, (result) => {
-        const highlights = result.highlights;
+async function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) {
+    const { highlights } = await chrome.storage.local.get({ highlights: {} });
 
-        let urlToUse = url;
-        let indexToUse = highlightIndex - alternativeUrlIndexOffset;
-        if (highlightIndex < alternativeUrlIndexOffset) {
-            urlToUse = alternativeUrl;
-            indexToUse = highlightIndex;
-        }
+    let urlToUse = url;
+    let indexToUse = highlightIndex - alternativeUrlIndexOffset;
+    if (highlightIndex < alternativeUrlIndexOffset) {
+        urlToUse = alternativeUrl;
+        indexToUse = highlightIndex;
+    }
 
-        const highlightsInKey = highlights[urlToUse];
-        if (highlightsInKey) {
-            const highlightObject = highlightsInKey[indexToUse];
-            if (highlightObject) {
-                highlightObject.color = newColor;
-                highlightObject.textColor = newTextColor;
-                highlightObject.updatedAt = Date.now();
-                chrome.storage.local.set({ highlights });
-            }
+    const highlightsInKey = highlights[urlToUse];
+    if (highlightsInKey) {
+        const highlightObject = highlightsInKey[indexToUse];
+        if (highlightObject) {
+            highlightObject.color = newColor;
+            highlightObject.textColor = newTextColor;
+            highlightObject.updatedAt = Date.now();
+            chrome.storage.local.set({ highlights });
         }
-    });
+    }
 }
 
 // alternativeUrl is optional
-function loadAll(url, alternativeUrl) {
-    chrome.storage.local.get({ highlights: {} }, (result) => {
-        let highlights = [];
+async function loadAll(url, alternativeUrl) {
+    const result = await chrome.storage.local.get({ highlights: {} });
+    let highlights = [];
 
-        // Because of a bug in an older version of the code, some highlights were stored
-        // using a key that didn't correspond to the full page URL. To fix this, if the
-        // alternativeUrl exists, try to load highlights from there as well
-        if (alternativeUrl) {
-            highlights = highlights.concat(result.highlights[alternativeUrl] || []);
-        }
-        alternativeUrlIndexOffset = highlights.length;
+    // Because of a bug in an older version of the code, some highlights were stored
+    // using a key that didn't correspond to the full page URL. To fix this, if the
+    // alternativeUrl exists, try to load highlights from there as well
+    if (alternativeUrl) {
+        highlights = highlights.concat(result.highlights[alternativeUrl] || []);
+    }
+    alternativeUrlIndexOffset = highlights.length;
 
-        highlights = highlights.concat(result.highlights[url] || []);
+    highlights = highlights.concat(result.highlights[url] || []);
 
-        if (!highlights) return;
+    if (!highlights) return;
 
-        for (let i = 0; i < highlights.length; i++) {
-            load(highlights[i], i);
-        }
-    });
+    for (let i = 0; i < highlights.length; i++) {
+        load(highlights[i], i);
+    }
 }
 
 // noErrorTracking is optional
@@ -106,31 +102,29 @@ function load(highlightVal, highlightIndex, noErrorTracking) {
     return success;
 }
 
-function removeHighlight(highlightIndex, url, alternativeUrl) {
-    chrome.storage.local.get({ highlights: {} }, (result) => {
-        const highlights = result.highlights;
-        if (highlightIndex < alternativeUrlIndexOffset) {
-            highlights[alternativeUrl].splice(highlightIndex, 1);
-        } else {
-            highlights[url].splice(highlightIndex - alternativeUrlIndexOffset, 1);
-        }
-        chrome.storage.local.set({ highlights });
-    });
+async function removeHighlight(highlightIndex, url, alternativeUrl) {
+    const { highlights } = await chrome.storage.local.get({ highlights: {} });
+
+    if (highlightIndex < alternativeUrlIndexOffset) {
+        highlights[alternativeUrl].splice(highlightIndex, 1);
+    } else {
+        highlights[url].splice(highlightIndex - alternativeUrlIndexOffset, 1);
+    }
+
+    chrome.storage.local.set({ highlights });
 }
 
 // alternativeUrl is optional
-function clearPage(url, alternativeUrl) {
-    chrome.storage.local.get({ highlights: {} }, (result) => {
-        const highlights = result.highlights;
-        delete highlights[url];
+async function clearPage(url, alternativeUrl) {
+    const { highlights } = await chrome.storage.local.get({ highlights: {} });
 
-        if (alternativeUrl) {
-            // See 'loadAll()' for an explaination of why this is necessary
-            delete highlights[alternativeUrl];
-        }
+    delete highlights[url];
+    if (alternativeUrl) {
+        // See 'loadAll()' for an explaination of why this is necessary
+        delete highlights[alternativeUrl];
+    }
 
-        chrome.storage.local.set({ highlights });
-    });
+    chrome.storage.local.set({ highlights });
 }
 
 function elementFromQuery(storedQuery) {
