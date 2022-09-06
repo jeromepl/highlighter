@@ -1,25 +1,12 @@
 env:
   browser: true
   es2021: true
-extends: 'eslint:recommended'
+extends:
+  - eslint:recommended
+  - plugin:import/recommended
 globals:
   chrome: readonly
   $: readonly
-  store: readonly # From utils/storageManager
-  load: readonly # From utils/storageManager
-  loadAll: readonly # From utils/storageManager
-  clearPage: readonly # From utils/storageManager
-  update: readonly # From utils/storageManager
-  addHighlightError: readonly # From utils/errorManager
-  highlight: readonly # From utils/highlight
-  highlightV3: readonly # From utils/highlightV3
-  highlightV4: readonly # From utils/highlightV4
-  highlight_legacy: readonly # From utils/highlight_legacy
-  HIGHLIGHT_CLASS: readonly # From utils/highlight
-  DELETED_CLASS: readonly # From utils/highlight
-  onHighlightMouseEnterOrClick: readonly # From hoverTools/hoverTools
-  onHighlightMouseLeave: readonly # From hoverTools/hoverTools
-  highlightOnSelection: readonly # From contentScripts/highlighterCursor
 ignorePatterns:
   - lib/*
   - config/*
@@ -94,7 +81,9 @@ rules:
   jsx-quotes: error
   key-spacing: 'off'
   keyword-spacing: 'off'
-  linebreak-style: 'off'
+  linebreak-style:
+    - error
+    - unix
   lines-around-comment: error
   lines-between-class-members: error
   max-classes-per-file: error
@@ -246,3 +235,10 @@ rules:
   yoda:
     - error
     - never
+  import/order: ["error", {
+      "groups": ["index", "sibling", "parent", "internal", "external", "builtin", "object", "type"],
+      "newlines-between": "always",
+      "alphabetize": { "order": "asc", "caseInsensitive": true },
+    }]
+  import/exports-last: error
+  import/default: 'off'

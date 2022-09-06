@@ -1,6 +1,6 @@
-import { getFromBackgroundPage } from "./utils.js";
-import { open as openRemoveAllModal } from "./remove-all-modal.js";
 import { open as openChangeColorModal } from "./change-color-modal.js";
+import { open as openRemoveAllModal } from "./remove-all-modal.js";
+import { getFromBackgroundPage } from "./utils.js";
 
 
 const highlightButton = document.getElementById('toggle-button');

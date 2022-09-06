@@ -41,4 +41,4 @@ async function trackEvent(category, action, label = null, value = null, extraPar
     return fetch(`https://www.google-analytics.com/collect?${params}`);
 }
 
-export { trackEvent, clientUUID };
+export { trackEvent };
