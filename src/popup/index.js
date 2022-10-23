@@ -110,16 +110,15 @@ function showErrorState() {
     }
 
     // Populate with new elements
-    for (let i = 0; i < highlights.length; i += 2) {
+    highlights.forEach(([highlightId, highlightText]) => {
         const newEl = document.createElement('div');
         newEl.classList.add('highlight');
-        newEl.innerText = highlights[i + 1];
-        const highlightId = highlights[i];
+        newEl.innerText = highlightText;
         newEl.addEventListener('click', () => {
             chrome.runtime.sendMessage({ action: 'show-highlight', highlightId });
         });
         highlightsListElement.appendChild(newEl);
-    }
+    });
 
     updateHighlightsListState();
 })();

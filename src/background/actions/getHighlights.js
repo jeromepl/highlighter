@@ -6,7 +6,7 @@ function getHighlights() {
 
         // Return an array instead of a Map since for some reason Maps don't get returned properly (serialization issue?)
         // Note that we could return a dict instead, but that we would lose ordering
-        return Array.from(highlightsMap).flatMap((value, key) => [key, value]);
+        return Array.from(highlightsMap);
     }
 
     return executeInCurrentTab({ func: contentScriptGetHighlights });
