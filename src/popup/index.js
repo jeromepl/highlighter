@@ -38,8 +38,7 @@ function colorChanged(colorOption) {
 }
 
 function toggleHighlighterCursor() {
-    chrome.runtime.sendMessage({ action: 'toggle-highlighter-cursor', source: 'popup' });
-    window.close();
+    chrome.runtime.sendMessage({ action: 'toggle-highlighter-cursor', source: 'popup' }, () => window.close());
 }
 
 function copyHighlights() {
