@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Highlighter",
     "description": "Highlight text on websites with a simple right-click or keyboard shortcut. Saves highlights on your device.",
-    "version": "4.0.2",
+    "version": "4.0.3",
     "icons": {
         "16": "images/16.png",
         "48": "images/48.png",

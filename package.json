@@ -1,6 +1,6 @@
 {
   "name": "highlighter",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Chrome extension to highlight text on websites with a simple right-click or keyboard shortcut. Saves highlights on your device.",
   "repository": "github:jeromepl/highlighter",
   "main": "manifest.json",
