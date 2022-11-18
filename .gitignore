@@ -6,3 +6,5 @@ config/secrets.production.js
 
 node_modules/
 releases/
+
+.ds_store
