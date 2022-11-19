@@ -50,7 +50,7 @@ try {
     // Bump version
     const newVersion = bumpVersion(version, releaseType);
     replaceInFileSync({
-        files: ["manifest.json", "package.json"],
+        files: ["manifest.json", "package.json", "package-lock.json"],
         from: `"version": "${version}"`,
         to: `"version": "${newVersion}"`,
     });
