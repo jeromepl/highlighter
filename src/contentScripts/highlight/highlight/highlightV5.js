@@ -104,7 +104,7 @@ function _recursiveWrapper(container, highlightInfo, startFound, charsHighlighte
             const char = nodeValue[i];
             if (char === selectionString[charsHighlighted]) {
                 charsHighlighted++;
-            } else if (!char.match(/\s/u)) { // FIXME: Here, this is where the issue happens
+            } else if (!char.match(/\s/u)) {
                 // Similarly, if the char in the text node is a whitespace, ignore any differences
                 // Otherwise, we can't find the highlight text; throw an error
                 throw new Error(`No match found for highlight string '${selectionString}'`);
@@ -126,13 +126,14 @@ function _recursiveWrapper(container, highlightInfo, startFound, charsHighlighte
         }
 
         // If we get here, highlight!
-        // Wrap the highlighted text in a span with the highlight class name
-        const highlightNode = document.createElement('span');
+        // Wrap the highlighted text in a custom element with the highlight class name
+        // Using a custom element instead of a span prevents any outside styles on spans from affecting the highlight
+        const highlightNode = document.createElement('highlighter-span');
         highlightNode.classList.add((color === 'inherit') ? DELETED_CLASS : HIGHLIGHT_CLASS);
         highlightNode.style.backgroundColor = color;
         highlightNode.style.color = textColor;
         highlightNode.dataset.highlightId = highlightIndex;
-        highlightNode.textContent = highlightTextEl.nodeValue;
+        highlightNode.textContent = highlightText;
         highlightTextEl.remove();
         parent.insertBefore(highlightNode, insertBeforeElement);
     });

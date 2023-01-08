@@ -1,9 +1,13 @@
 import highlightLegacy from './highlightLegacy.js';
 import highlightV3 from './highlightV3.js';
 import highlightV4 from './highlightV4.js';
+import highlightV5 from './highlightV5.js';
 
 function highlight(selectionString, container, selection, color, textColor, highlightIndex, version = null) {
-    if (version === null || versionCompare(version, "4.0.0") >= 0) {
+    if (version === null || versionCompare(version, "5.0.0") >= 0) {
+        // Starting with version 5, highlights use a custom element ('highlighter-span') instead of a span
+        return highlightV5(selectionString, container, selection, color, textColor, highlightIndex);
+    } else if (versionCompare(version, "4.0.0") >= 0) {
         // Starting with version 4, the highlighting algorithm is more strict to prevent highlighting all the page and a big refactor was done
         return highlightV4(selectionString, container, selection, color, textColor, highlightIndex);
     } else if (versionCompare(version, "3.1.0") >= 0) {
