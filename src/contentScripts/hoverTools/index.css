@@ -1,5 +1,5 @@
 .highlighter--highlighted.highlighter--hovered {
-    box-shadow: 0 1px 0 grey;
+    box-shadow: inset 0 -1px 0 grey;
 }
 
 #highlighter--hover-tools {
