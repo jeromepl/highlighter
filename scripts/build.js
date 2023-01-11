@@ -16,7 +16,7 @@ function exec(command) {
 const stashOutput = exec("git stash save --include-untracked");
 const stashed = !stashOutput.match(/No local changes to save/);
 const branch = exec("git rev-parse --abbrev-ref HEAD").trim();
-exec("git checkout master");
+exec("git checkout main");
 
 try {
     // Create the 'releases' directory if it does not already exist:
@@ -41,7 +41,6 @@ try {
     archive.directory('src/', 'Package/src');
     archive.directory('lib/', 'Package/lib');
     archive.directory('images/', 'Package/images');
-    archive.file('config/secrets.production.js', { name: 'Package/config/secrets.js' }); // NOTE: Replace the test analytics with the production one
     archive.file('manifest.json', { name: 'Package/manifest.json' });
     archive.file('background.js', { name: 'Package/background.js' });
     archive.file('contentScript.js', { name: 'Package/contentScript.js' });

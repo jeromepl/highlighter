@@ -6,12 +6,37 @@ const STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
 
 let alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
+
+async function loadClippings(url) {
+    const res = await fetch(`http://localhost:3000/api/clippings?api_key=zachcdmx&link=${"https://" + url}&title=${"https://" + url}`);
+    const data = await res.json();
+    console.log(data);
+    return data.clippings;
+}
+
+
+async function createClipping(text, link, title, clipping_data) {
+    const res = await fetch("http://localhost:3000/api/clippings", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            api_key: "zachcdmx",
+            clipping_data: clipping_data,
+            text: text,
+            title: title,
+            link: link,
+        })
+    });
+    
+    const data = await res.json();
+    return data.clippings;
+}
+
+// url is no longer use as each page's clippings are returned independently by title and href
 async function store(selection, container, url, href, color, textColor) {
-    const { highlights } = await chrome.storage.local.get({ highlights: {} });
-
-    if (!highlights[url]) highlights[url] = [];
-
-    const count = highlights[url].push({
+    const clipping = {
         version: STORE_FORMAT_VERSION,
         string: selection.toString(),
         container: getQuery(container),
@@ -24,11 +49,12 @@ async function store(selection, container, url, href, color, textColor) {
         href,
         uuid: crypto.randomUUID(),
         createdAt: Date.now(),
-    });
-    chrome.storage.local.set({ highlights });
+    };
+    
+    const clippings = await createClipping(clipping.string, clipping.href, clipping.href, clipping);
 
     // Return the index of the new highlight:
-    return count - 1 + alternativeUrlIndexOffset;
+    return clippings.length - 1;
 }
 
 async function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) {
@@ -53,25 +79,14 @@ async function update(highlightIndex, url, alternativeUrl, newColor, newTextColo
     }
 }
 
-// alternativeUrl is optional
+// alternativeUrl is no longer used, second parameter is optional
 async function loadAll(url, alternativeUrl) {
-    const result = await chrome.storage.local.get({ highlights: {} });
-    let highlights = [];
-
-    // Because of a bug in an older version of the code, some highlights were stored
-    // using a key that didn't correspond to the full page URL. To fix this, if the
-    // alternativeUrl exists, try to load highlights from there as well
-    if (alternativeUrl) {
-        highlights = highlights.concat(result.highlights[alternativeUrl] || []);
-    }
-    alternativeUrlIndexOffset = highlights.length;
-
-    highlights = highlights.concat(result.highlights[url] || []);
+    const highlights = await loadClippings(url);
 
     if (!highlights) return;
 
     for (let i = 0; i < highlights.length; i++) {
-        load(highlights[i], i);
+        load(highlights[i].clipping_data, i);
     }
 }
 
