@@ -6,9 +6,21 @@ const STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
 
 let alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
+async function getCookie(){
+    const res = await chrome.runtime.sendMessage({ action:  'get-auth'});
+    return res.response;
+}
 
 async function loadClippings(url) {
-    const res = await fetch(`http://localhost:3000/api/clippings?api_key=zachcdmx&link=${"https://" + url}&title=${"https://" + url}`);
+    const cookie = await getCookie();
+    const headers = {
+        "Authorization": "Bearer " + cookie,
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    };
+
+    const res = await fetch(`https://jots.co/api/clippings?link=${"https://" + url}&title=${"https://" + url}`, { headers });
+
     const data = await res.json();
     console.log(data);
     return data.clippings;

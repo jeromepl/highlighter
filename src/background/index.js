@@ -126,6 +126,16 @@ function initializeKeyboardShortcutEventListeners() {
     });
 }
 
+async function getAuthInfo() {
+    const cookies = await chrome.cookies.getAll({ name: '_jots_session' });
+    const jotsCookie = cookies[0]
+
+    if(jotsCookie){
+        return jotsCookie.value;
+    }
+}
+
+
 function initializeMessageEventListeners() {
     // Listen to messages from content scripts
     /* eslint-disable consistent-return */
@@ -170,7 +180,11 @@ function initializeMessageEventListeners() {
                 return true; // return asynchronously
             case 'get-color-options':
                 wrapResponse(getColorOptions(), sendResponse);
+            console.log("running get auth info")
                 return true; // return asynchronously
+            case 'get-auth':
+            wrapResponse(getAuthInfo(), sendResponse);
+                return true; 
         }
     });
     /* eslint-enable consistent-return */
