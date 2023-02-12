@@ -8,42 +8,61 @@ let alternativeUrlIndexOffset = 0; // Number of elements stored in the alternati
 
 async function getCookie(){
     const res = await chrome.runtime.sendMessage({ action:  'get-auth'});
-    return res.response;
+    if(res.response){
+        return res.response;
+    }
+    else{
+        chrome.tabs.create({ url: 'https://jots.co/sign_in', active: false });
+    }
 }
 
 async function loadClippings(url) {
     const cookie = await getCookie();
+
+    if(!cookie){
+        return
+    }
+
     const headers = {
-        "Authorization": "Bearer " + cookie,
         "Accept": "application/json",
         "Content-Type": "application/json"
     };
 
-    const res = await fetch(`https://jots.co/api/clippings?link=${"https://" + url}&title=${"https://" + url}`, { headers });
+    const res = await fetch(`https://jots.co/api/clippings?link=${"https://" + url}&title=${"https://" + url}&jots_session=${cookie}`, { headers });
 
     const data = await res.json();
-    console.log(data);
     return data.clippings;
 }
 
 
 async function createClipping(text, link, title, clipping_data) {
-    const res = await fetch("http://localhost:3000/api/clippings", {
+    console.log("create clipping - clipping_data", clipping_data);
+    const cookie = await getCookie();
+
+    if(!cookie) return;
+
+    const res = await fetch(`https://jots.co/api/clippings`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            api_key: "zachcdmx",
-            clipping_data: clipping_data,
+            data: clipping_data,
             text: text,
-            title: title,
-            link: link,
+            title: document.title,
+            link: clipping_data.href,
+            jots_session: decodeURIComponent(cookie)
         })
     });
-    
-    const data = await res.json();
-    return data.clippings;
+
+    if(res.status === 200){
+        const data = await res.json();
+        // okay - TODO
+        const formatted = data.clippings.map(x => x.data);
+        console.log("okay, here we have data", formatted);
+        return formatted;
+    }
+
 }
 
 // url is no longer use as each page's clippings are returned independently by title and href
@@ -66,7 +85,10 @@ async function store(selection, container, url, href, color, textColor) {
     const clippings = await createClipping(clipping.string, clipping.href, clipping.href, clipping);
 
     // Return the index of the new highlight:
-    return clippings.length - 1;
+    if(clippings){
+        return clippings.length - 1;
+    }
+
 }
 
 async function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) {
@@ -98,7 +120,7 @@ async function loadAll(url, alternativeUrl) {
     if (!highlights) return;
 
     for (let i = 0; i < highlights.length; i++) {
-        load(highlights[i].clipping_data, i);
+        load(highlights[i].data, i);
     }
 }
 
