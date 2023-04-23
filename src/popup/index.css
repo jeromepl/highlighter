@@ -5,30 +5,30 @@
 
 html {
     width: 450px;
-    height: 600px;
+/*     height: 600px; - to allow seeing highlights behind the popup window by "rolling up" */
 }
 
 body {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+/*     height: 100vh; - to allow seeing highlights behind the popup window by "rolling up" */
     margin: 0;
     padding: 0;
-
     background-color: #f0f0f0;
 }
 
 #title-section {
     display: flex;
+    align-self: center;
     flex-direction: row;
     flex-shrink: 0;
     align-items: center;
-    margin: 22px 22px 0 22px;
+    margin: 10px 22px 0 22px;
 }
 
 #title-section h1 {
     color: black;
-    font-size: 40px;
+    font-size: 30px;
     font-weight: bold;
     margin: 0 0 -6px -4px;
 
@@ -36,7 +36,7 @@ body {
 }
 
 #title-section .highlighter-icon {
-    height: 72px;
+    height: 56px;
 }
 
 #close-button {
@@ -55,7 +55,7 @@ body {
     flex-shrink: 0;
     justify-content: center;
     align-items: center;
-    height: 140px;
+    height: 90px;
 }
 
 #colors-section {
@@ -64,7 +64,7 @@ body {
     flex-shrink: 0;
     justify-content: center;
     align-items: center;
-    margin: 10px 23px 0 23px;
+    margin: 6px 23px 0 23px;
 }
 
 #colors-list {
@@ -88,7 +88,7 @@ body {
 #selected-color {
     position: relative;
     width: 80px;
-    height: 80px;
+    height: 40px;
     margin: 10px;
 }
 
@@ -172,7 +172,7 @@ body {
 #tools {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: flex-start;
     margin: 8px 20px;
 }
 
@@ -195,16 +195,16 @@ body {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    overflow-y: auto;
+/*     overflow-y: auto; - to prevent unnecessary scroll bar */
 }
 
 .highlight {
     display: flex;
-    align-items: center;
-    flex-direction: row;
+/*     align-items: center; */
+    flex-direction: column;
     justify-content: space-between;
-    margin: 0 18px 15px 18px;
-    padding: 10px 14px;
+    margin: 0 10px 15px 10px;
+    padding: 10px 10px;
 
     cursor: pointer;
     font-size: 14px;
@@ -237,7 +237,8 @@ body {
     height: 100%;
     justify-content: center;
     align-items: center;
-    margin-top: -20px;
+/*     margin-top: -20px; */
+    padding: 10px 10px;
 
     font-size: 20px;
     font-style: italic;
@@ -251,8 +252,9 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    margin-top: -20px;
-    padding: 0 45px;
+/*     margin-top: -20px; */
+/*     padding: 0 45px; */
+    padding: 10px 10px;
     box-sizing: border-box;
 
     font-size: 20px;
