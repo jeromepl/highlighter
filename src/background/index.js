@@ -11,6 +11,9 @@ import {
     removeHighlights,
     showHighlight,
     toggleHighlighterCursor,
+    //+++
+    hideHighlight,
+    //^^^
 } from './actions/index.js';
 import { trackEvent } from './analytics.js';
 import { wrapResponse } from './utils.js';
@@ -137,6 +140,11 @@ function initializeMessageEventListeners() {
                 trackEvent('highlight-source', 'highlighter-cursor');
                 highlightText();
                 return;
+            //+++
+            case 'hide-highlight':
+                hideHighlight(request.highlightId);
+                return;
+            //^^^
             case 'track-event':
                 trackEvent(request.trackCategory, request.trackAction);
                 return;
