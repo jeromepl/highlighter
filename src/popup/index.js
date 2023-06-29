@@ -18,6 +18,10 @@ const highlightsEmptyStateElement = document.getElementById('highlights-list-emp
 const highlightsErrorStateElement = document.getElementById('highlights-list-error-state');
 const highlightsListLostTitleElement = document.getElementById('highlights-list-lost-title');
 
+//+++
+const minimizeButton = document.getElementById('minimize-button');
+const hideAllButton = document.getElementById('hide-all-button');
+//^^^
 
 function colorChanged(colorOption) {
     const { backgroundColor, borderColor } = colorOption.style;
@@ -43,7 +47,11 @@ function toggleHighlighterCursor() {
 
 function copyHighlights() {
     chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'copy-all' });
-    navigator.clipboard.writeText(highlightsListElement.innerText);
+    ///+++ replacing invisible spaces to separate highlights
+    let text = highlightsListElement.innerText;
+    let result = text.replaceAll('\u2028\n', '\n\n----\n\n'); // adding separator       
+    result = result.replaceAll('\u2028', '\n'); // the last note       
+    navigator.clipboard.writeText(result);
 
     // Let the user know the copy went through
     const checkmarkEl = document.createElement('span');
@@ -112,7 +120,8 @@ function showErrorState() {
     highlights.forEach(([highlightId, highlightText]) => {
         const newEl = document.createElement('div');
         newEl.classList.add('highlight');
-        newEl.innerText = highlightText;
+        //+++ adding invisible space to separate highlights while copying
+        newEl.innerText = highlightText+'\u2028';
         newEl.addEventListener('click', () => {
             chrome.runtime.sendMessage({ action: 'show-highlight', highlightId });
         });
@@ -187,6 +196,55 @@ function showErrorState() {
 
     updateHighlightsListState();
 })();
+
+// ++++
+function toggleflex(id) {
+    var element = document.getElementById(id);
+    if (element) {
+        var display = element.style.display;
+
+        if (display == "none") {
+            element.style.display = "flex";
+        } else {
+            element.style.display = "none";
+        }
+    }
+}
+
+function minimizeWindow() {
+    toggleflex('settings-section');
+    toggleflex('highlights-section');
+    minimizeButton.innerText = minimizeButton.innerText=='minimize' ? 'maximize':'minimize';
+}
+
+async function hideHighlights() {
+    let highlights = [];
+    try {
+        highlights = await getFromBackgroundPage({ action: 'get-highlights' }, false);
+        if (!Array.isArray(highlights) || highlights.length == 0) {
+            // updateHighlightsListState();
+            // return;
+        } else if (Array.isArray(highlights)) {
+          try {  
+            // Populate with new elements
+            highlights.forEach(([highlightId, highlightText]) => {
+                chrome.runtime.sendMessage({ action: 'hide-highlight', highlightId });
+             });
+            let highlightId = 0;
+            chrome.runtime.sendMessage({ action: 'hide-highlight', highlightId}, () => window.close());
+            // window.close();
+          } catch(err) { console.log(err)}  
+        }
+    } catch(err) { console.log(err)}
+}
+
+minimizeButton.addEventListener('click', minimizeWindow);
+hideAllButton.addEventListener('click', hideHighlights);
+
+// Make list of highlights sortable - before copying
+var elH = document.getElementById('highlights-list');
+var sortableH = Sortable.create(elH);
+//^^^
 
 // Register Events
 highlightButton.addEventListener('click', toggleHighlighterCursor);

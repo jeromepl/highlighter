@@ -1,4 +1,7 @@
 export { default as highlightText } from './highlightText.js';
+//+++
+export { default as hideHighlight } from './hideHighlight.js';
+//^^^
 export { default as toggleHighlighterCursor } from './toggleHighlighterCursor.js';
 export { default as removeHighlights } from './removeHighlights.js';
 export { default as removeHighlight } from './removeHighlight.js';
