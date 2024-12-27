@@ -6,6 +6,7 @@
   "main": "manifest.json",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.49.1",
     "archiver": "^5.3.0",
     "eslint": "^7.32.0",
     "eslint-plugin-import": "^2.26.0",
@@ -17,6 +18,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "release": "node scripts/release.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "playwright test",
+    "test:debug": "playwright test --ui"
   }
 }

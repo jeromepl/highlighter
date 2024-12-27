@@ -3,8 +3,12 @@ config/secrets.production.js
 
 node_modules/
 releases/
+tmp/
 
 .ds_store
 *.crx
 .idea/
 .vscode/
+/test-results/
+/playwright-report/
+/playwright/.cache/

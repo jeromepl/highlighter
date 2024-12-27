@@ -10,6 +10,7 @@ globals:
 ignorePatterns:
   - lib/*
   - config/*
+  - *.config.js
 parserOptions:
   ecmaVersion: 12
   sourceType: "module"
