@@ -16,3 +16,11 @@ export async function selectText(page, textToSelect) {
     selection.addRange(range);
   }, textToSelect);
 }
+
+export async function highlightText(page, popupPage, textToSelect) {
+  await selectText(page, textToSelect);
+  await page.bringToFront();
+  await popupPage.evaluate(async () => {
+    await chrome.runtime.sendMessage({ action: 'highlight' });
+  });
+}

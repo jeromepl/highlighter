@@ -5,7 +5,7 @@ import path from 'path';
 // Taken from https://playwright.dev/docs/chrome-extensions
 
 export const test = base.extend({
-  context: async (_, use) => {
+  context: async ({}, use) => { // eslint-disable-line
     const pathToExtension = path.join(__dirname, "../");
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium',
