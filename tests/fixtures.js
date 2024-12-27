@@ -39,6 +39,6 @@ export const test = base.extend({
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/src/popup/index.html`);
     await use(page);
-  }
+  },
 });
 export const expect = test.expect;
