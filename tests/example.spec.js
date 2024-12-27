@@ -11,7 +11,7 @@ test.describe('popup', () => {
 
 test.describe('highlight', () => {
   test.beforeEach(async ({ page }) => {
-    page.goto(path.join(__dirname, 'assets/test-page.html'))
+    page.goto(path.join(__dirname, 'assets/test-page.html'));
     await page.bringToFront();
   });
 

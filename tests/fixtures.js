@@ -5,7 +5,7 @@ import path from 'path';
 // Taken from https://playwright.dev/docs/chrome-extensions
 
 export const test = base.extend({
-  context: async ({}, use) => {
+  context: async (_, use) => {
     const pathToExtension = path.join(__dirname, "../");
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium',
@@ -25,7 +25,7 @@ export const test = base.extend({
     }
     await use(background);
   },
-  extensionId: async ({ context, backgroundWorker }, use) => {
+  extensionId: async ({ backgroundWorker }, use) => {
     const extensionId = backgroundWorker.url().split('/')[2];
     await use(extensionId);
   },

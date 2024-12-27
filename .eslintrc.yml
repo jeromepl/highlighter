@@ -7,10 +7,12 @@ extends:
 globals:
   chrome: readonly
   $: readonly
+  __dirname: readonly
 ignorePatterns:
   - lib/*
   - config/*
-  - *.config.js
+  - "*.config.js"
+  - tmp/*
 parserOptions:
   ecmaVersion: 12
   sourceType: "module"
