@@ -35,6 +35,7 @@ export const test = base.extend({
   // by launching the content scripts in the correct (active) tab.
   // Note that we also can't (for some reason) send messages to the service worker through the main page,
   // so we have to do it through the popup page. Otherwise chrome.runtime returns null.
+  // More info here: https://github.com/microsoft/playwright/issues/5593
   popupPage: async({ context, extensionId }, use) => {
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/src/popup/index.html`);
