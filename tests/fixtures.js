@@ -17,14 +17,16 @@ export const test = base.extend({
     await use(context);
     await context.close();
   },
-  extensionId: async ({ context }, use) => {
+  backgroundWorker: async ({ context }, use) => {
     // for manifest v3:
     let [background] = context.serviceWorkers();
     if (!background) {
       background = await context.waitForEvent('serviceworker');
     }
-
-    const extensionId = background.url().split('/')[2];
+    await use(background);
+  },
+  extensionId: async ({ context, backgroundWorker }, use) => {
+    const extensionId = backgroundWorker.url().split('/')[2];
     await use(extensionId);
   },
 });
