@@ -19,7 +19,6 @@
     "lint:fix": "eslint --fix .",
     "release": "node scripts/release.js",
     "test": "playwright test",
-    "test:debug": "playwright test --ui --headed",
-    "test:generate": "playwright codegen example.com"
+    "test:debug": "playwright test --ui --headed"
   }
 }
