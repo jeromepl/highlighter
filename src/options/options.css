@@ -1,0 +1,21 @@
+* {
+    font-family: 'Catamaran', sans-serif;
+    color: #414141;
+}
+
+html {
+    width: 100dvw;
+}
+
+body {
+    margin: auto;
+    max-width: 600px;
+}
+
+#title-section {
+    margin-bottom: 24px;
+}
+
+body button {
+    margin-bottom: 8px;
+}

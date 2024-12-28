@@ -62,6 +62,7 @@
             "description": "Change highlighter color to dark"
         }
     },
+    "options_page": "src/options/options.html",
     "permissions": [
         "contextMenus",
         "scripting",
