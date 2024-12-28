@@ -18,6 +18,9 @@ const highlightsEmptyStateElement = document.getElementById('highlights-list-emp
 const highlightsErrorStateElement = document.getElementById('highlights-list-error-state');
 const highlightsListLostTitleElement = document.getElementById('highlights-list-lost-title');
 
+//+++
+const hideAllButton = document.getElementById('hide-all-button');
+//^^^
 
 function colorChanged(colorOption) {
     const { backgroundColor, borderColor } = colorOption.style;
@@ -187,6 +190,31 @@ function showErrorState() {
 
     updateHighlightsListState();
 })();
+
+// ++++
+async function hideHighlights() {
+    let highlights = [];
+    try {
+        highlights = await getFromBackgroundPage({ action: 'get-highlights' }, false);
+        if (!Array.isArray(highlights) || highlights.length == 0) {
+            // updateHighlightsListState();
+            // return;
+        } else if (Array.isArray(highlights)) {
+          try {  
+            // Populate with new elements
+            highlights.forEach(([highlightId, highlightText]) => {
+                chrome.runtime.sendMessage({ action: 'hide-highlight', highlightId });
+             });
+            let highlightId = 0;
+            chrome.runtime.sendMessage({ action: 'hide-highlight', highlightId}, () => window.close());
+            // window.close();
+          } catch(err) { console.log(err)}  
+        }
+    } catch(err) { console.log(err)}
+}
+
+hideAllButton.addEventListener('click', hideHighlights);
+//^^^
 
 // Register Events
 highlightButton.addEventListener('click', toggleHighlighterCursor);
