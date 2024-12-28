@@ -10,7 +10,7 @@ import path from 'path';
 
 test.describe('context menu actions', () => {
   test.beforeEach(async ({ page }) => {
-    page.goto(path.join(__dirname, 'assets/test-page.html'));
+    await page.goto(`file://${path.join(__dirname, 'assets/test-page.html')}`);
     await page.bringToFront();
   });
 
