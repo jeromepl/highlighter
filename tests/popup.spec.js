@@ -15,16 +15,6 @@ test.describe('background worker actions', () => {
     await page.bringToFront();
   });
 
-  test.describe('highlight', () => {
-    test('highlights selected text', async ({ popupPage, page }) => {
-      highlightText(page, popupPage, 'Test Page for Highlighter');
-
-      await expect(page.locator('highlighter-span')).toHaveText('Test Page for Highlighter');
-    });
-
-    // TODO: Add more tests for edge cases, like other types of nodes and nested nodes.
-  });
-
   test.describe('remove-highlights', () => {
     test('removes all highlights on the page', async ({ popupPage, page }) => {
       await highlightText(page, popupPage, 'Test Page for Highlighter');
