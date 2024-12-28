@@ -11,7 +11,7 @@ test.describe('popup', () => {
 
 test.describe('background worker actions', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(`file://${path.join(__dirname, 'assets/test-page.html')}`);
+    await page.goto(process.env.CI ? "http://localhost:3000/test-page.html" : `file://${path.join(__dirname, 'assets/test-page.html')}`);
     await page.bringToFront();
   });
 
