@@ -49,7 +49,7 @@ function initializeContextMenus() {
 
 function initializeContextMenuEventListeners() {
     chrome.contextMenus.onClicked.addListener(({ menuItemId, parentMenuItemId }) => {
-        if (parentMenuItemId === 'highlight-color') {
+        if (parentMenuItemId === 'highlight-colors') {
             trackEvent('color-change-source', 'context-menu');
             changeColor(menuItemId);
             return;
@@ -108,15 +108,15 @@ function initializeKeyboardShortcutEventListeners() {
                 break;
             case 'change-color-to-cyan':
                 trackEvent('color-change-source', 'keyboard-shortcut');
-                changeColor('cyan');
+                changeColor('blue');
                 break;
             case 'change-color-to-lime':
                 trackEvent('color-change-source', 'keyboard-shortcut');
-                changeColor('lime');
+                changeColor('green');
                 break;
             case 'change-color-to-magenta':
                 trackEvent('color-change-source', 'keyboard-shortcut');
-                changeColor('magenta');
+                changeColor('pink');
                 break;
             case 'change-color-to-dark':
                 trackEvent('color-change-source', 'keyboard-shortcut');
