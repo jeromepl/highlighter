@@ -57,7 +57,7 @@ function getHoverToolEl() {
     if (!hoverToolEl.isConnected) {
         // The first time we want to show this element, append it to the DOM.
         // It's also possible the webpage deleted this node from the DOM. In that case, simply re-attach it
-        hoverToolEl.appendTo('body');
+        hoverToolEl.appendTo('html');
     }
 
     return hoverToolEl;
