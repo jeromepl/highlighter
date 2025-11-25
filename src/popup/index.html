@@ -4,7 +4,7 @@
 <head>
     <title>Highlighter</title>
 
-    <meta name="viewport" content="width=562 height=780 initial-scale=1 maximum-scale=1">
+    <meta name="viewport" content="initial-scale=1 maximum-scale=1">
     <meta charset="utf-8">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="index.css">
     <link rel="stylesheet" type="text/css" href="modal.css">
 
-    <script type="module" src="index.js" defer></script>
+    <!-- <script type="module" src="index.js" defer></script> - loading below -->
 </head>
 
 <body>
@@ -23,6 +23,9 @@
         <h1>Highlighter</h1>
     </div>
 
+    <div id="minimize-button" class="material-icons" title="Roll window up to see highlights behind">
+        minimize
+    </div>
     <div id="close-button" class="material-icons">
         close
     </div>
@@ -50,14 +53,20 @@
 
     <div id="highlights-section">
         <div id="tools">
-            <div class="tool" id="remove-all-button">
-                <span>Delete all</span>
-                <span class="material-icons">delete</span>
-            </div>
             <div class="tool" id="copy-all-button">
-                <span>Copy all</span>
+                <span title="Copy all list items to clipboard">Copy all</span>
                 <span class="material-icons">file_copy</span>
             </div>
+            <div class="tool" id="remove-all-button">
+                <span title="Delete all highlights on this page">Delete all</span>
+                <span class="material-icons">delete</span>
+            </div>
+            <!-- +++ -->
+            <div class="tool" id="hide-all-button">
+                <span title="Hide all highlights. Reload page to see again.">temp Hide</span>
+                <span class="material-icons">hide_source</span>
+            </div>
+            <!-- ^^^ -->
         </div>
         <div id="highlights-list">
             <!-- A list of <div class="highlight"> elements goes here -->
@@ -102,6 +111,9 @@
             </div>
         </form>
     </div>
+    <script type="module" src="Sortable.js" defer></script> 
+    <script type="module" src="index.js"></script>   
+  <!-- </div> -->
 </body>
 
 </html>
