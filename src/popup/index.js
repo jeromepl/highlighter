@@ -2,13 +2,11 @@ import { open as openChangeColorModal } from "./change-color-modal.js";
 import { open as openRemoveAllModal } from "./remove-all-modal.js";
 import { getFromBackgroundPage } from "./utils.js";
 
-
 const highlightButton = document.getElementById('toggle-button');
 const removeAllButton = document.getElementById('remove-all-button');
 const copyAllButton = document.getElementById('copy-all-button');
 const closeButton = document.getElementById('close-button');
 const changeColorButton = document.getElementById('change-color-button');
-
 const colorsListElement = document.getElementById('colors-list');
 const selectedColorElement = document.getElementById('selected-color');
 const shortcutLinkElement = document.getElementById('shortcut-link');
@@ -18,11 +16,9 @@ const highlightsEmptyStateElement = document.getElementById('highlights-list-emp
 const highlightsErrorStateElement = document.getElementById('highlights-list-error-state');
 const highlightsListLostTitleElement = document.getElementById('highlights-list-lost-title');
 
-
 function colorChanged(colorOption) {
     const { backgroundColor, borderColor } = colorOption.style;
     const { colorTitle } = colorOption.dataset;
-
     // Swap (in the UI) the previous selected color and the newly selected one
     const { backgroundColor: previousBackgroundColor, borderColor: previousBorderColor } = selectedColorElement.style;
     const { colorTitle: previousColorTitle } = selectedColorElement.dataset;
@@ -32,7 +28,6 @@ function colorChanged(colorOption) {
     selectedColorElement.style.backgroundColor = backgroundColor;
     selectedColorElement.style.borderColor = borderColor;
     selectedColorElement.dataset.colorTitle = colorTitle;
-
     // Change the global highlighter color
     chrome.runtime.sendMessage({ action: 'change-color', color: colorTitle, source: 'popup' });
 }
@@ -44,7 +39,6 @@ function toggleHighlighterCursor() {
 function copyHighlights() {
     chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'copy-all' });
     navigator.clipboard.writeText(highlightsListElement.innerText);
-
     // Let the user know the copy went through
     const checkmarkEl = document.createElement('span');
     checkmarkEl.style.color = '#00ff00';
@@ -59,7 +53,6 @@ function showEmptyState() {
         highlightsEmptyStateElement.style.display = 'none';
     }
 }
-
 function orderHighlights() {
     highlightsListElement.querySelectorAll('.highlight').forEach((highlight) => {
         if (highlight.classList.contains('lost')) {
@@ -69,7 +62,6 @@ function orderHighlights() {
         }
     });
 }
-
 function showLostHighlightsTitle() {
     highlightsListLostTitleElement.remove();
     const lostHighlightElements = highlightsListElement.querySelectorAll('.lost');
@@ -83,7 +75,6 @@ function updateHighlightsListState() {
     orderHighlights();
     showLostHighlightsTitle();
 }
-
 function hideErrorState() {
     highlightsErrorStateElement.style.display = 'none';
 }
@@ -93,7 +84,28 @@ function showErrorState() {
     highlightsErrorStateElement.style.display = 'flex';
     highlightsEmptyStateElement.style.display = 'none'; // Also hide the empty state
 }
+function createDeleteIcon(highlightId, highlightElement, lost = false) {
+    const deleteIconElement = document.createElement('span');
+    deleteIconElement.classList.add('material-icons', 'delete-icon');
+    deleteIconElement.innerText = 'delete';
+    deleteIconElement.title = 'Delete';
 
+    deleteIconElement.addEventListener('click', async (event) => {
+        event.stopPropagation();
+
+        try {
+            await getFromBackgroundPage({ action: 'remove-highlight', highlightId, lost }, false);
+        } catch {
+            showErrorState();
+            return;
+        }
+
+        highlightElement.remove();
+        updateHighlightsListState();
+    });
+
+    return deleteIconElement;
+}
 (async function initializeHighlightsList() {
     let highlights = [];
     try {
@@ -107,12 +119,12 @@ function showErrorState() {
         updateHighlightsListState();
         return;
     }
-
     // Populate with new elements
     highlights.forEach(([highlightId, highlightText]) => {
         const newEl = document.createElement('div');
         newEl.classList.add('highlight');
         newEl.innerText = highlightText;
+        newEl.appendChild(createDeleteIcon(highlightId, newEl));
         newEl.addEventListener('click', () => {
             chrome.runtime.sendMessage({ action: 'show-highlight', highlightId });
         });
@@ -121,7 +133,6 @@ function showErrorState() {
 
     updateHighlightsListState();
 })();
-
 (async function initializeColorsList() {
     const color = await getFromBackgroundPage({ action: 'get-current-color' });
     const colorOptions = await getFromBackgroundPage({ action: 'get-color-options' });
@@ -130,7 +141,6 @@ function showErrorState() {
         const colorTitle = colorOption.title;
         const selected = colorTitle === color.title;
         const colorOptionElement = selected ? selectedColorElement : document.createElement('div');
-
         colorOptionElement.classList.add('color');
         colorOptionElement.dataset.colorTitle = colorTitle;
         colorOptionElement.style.backgroundColor = colorOption.color;
@@ -142,7 +152,6 @@ function showErrorState() {
         }
     });
 })();
-
 // Retrieve the shortcut for the highlight command from the Chrome settings and display it
 (async function initializeShortcutLinkText() {
     const commands = await chrome.commands.getAll();
@@ -156,7 +165,6 @@ function showErrorState() {
         }
     });
 })();
-
 (async function initializeLostHighlights() {
     updateHighlightsListState();
     const lostHighlights = await getFromBackgroundPage({ action: 'get-lost-highlights' });
@@ -168,23 +176,12 @@ function showErrorState() {
     // Populate with new elements
     lostHighlights.forEach((lostHighlight) => {
         if (!lostHighlight?.string) return;
-
         const newEl = document.createElement('div');
         newEl.classList.add('highlight', 'lost');
         newEl.innerText = lostHighlight.string;
-        const newDeleteIconEl = document.createElement('span');
-        newDeleteIconEl.classList.add('material-icons', 'delete-icon');
-        newDeleteIconEl.innerText = 'delete';
-        newDeleteIconEl.onclick = () => {
-            chrome.runtime.sendMessage({ action: 'remove-highlight', highlightId: lostHighlight.index }, () => {
-                newEl.remove();
-                updateHighlightsListState();
-            });
-        };
-        newEl.appendChild(newDeleteIconEl);
+        newEl.appendChild(createDeleteIcon(lostHighlight.index, newEl, true));
         highlightsListElement.appendChild(newEl);
     });
-
     updateHighlightsListState();
 })();
 
@@ -194,7 +191,6 @@ copyAllButton.addEventListener('click', copyHighlights);
 removeAllButton.addEventListener('click', openRemoveAllModal);
 changeColorButton.addEventListener('click', openChangeColorModal);
 selectedColorElement.addEventListener('click', openChangeColorModal);
-
 shortcutLinkElement.addEventListener('click', () => { // Open the shortcuts Chrome settings page in a new tab
     chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
 });
