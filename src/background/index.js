@@ -15,7 +15,6 @@ import {
 import { trackEvent } from './analytics.js';
 import { wrapResponse } from './utils.js';
 
-
 function initialize() {
     initializeContextMenus();
     initializeContextMenuEventListeners();
@@ -31,7 +30,6 @@ function initializeContextMenus() {
     chrome.runtime.onInstalled.addListener(async () => {
         // remove existing menu items
         chrome.contextMenus.removeAll();
-
         chrome.contextMenus.create({ title: 'Highlight', id: 'highlight', contexts: ['selection'] });
         chrome.contextMenus.create({ title: 'Toggle Cursor', id: 'toggle-cursor' });
         chrome.contextMenus.create({ title: 'Highlighter color', id: 'highlight-colors' });
@@ -40,7 +38,6 @@ function initializeContextMenus() {
         chrome.contextMenus.create({ title: 'Green', id: 'green', parentId: 'highlight-colors', type: 'radio' });
         chrome.contextMenus.create({ title: 'Pink', id: 'pink', parentId: 'highlight-colors', type: 'radio' });
         chrome.contextMenus.create({ title: "Dark", id: "dark", parentId: "highlight-colors", type: "radio" });
-
         // Get the initial selected color value
         const { title: colorTitle } = await getCurrentColor();
         chrome.contextMenus.update(colorTitle, { checked: true });
@@ -54,7 +51,6 @@ function initializeContextMenuEventListeners() {
             changeColor(menuItemId);
             return;
         }
-
         switch (menuItemId) {
             case 'highlight':
                 trackEvent('highlight-source', 'context-menu');
@@ -67,7 +63,6 @@ function initializeContextMenuEventListeners() {
         }
     });
 }
-
 function initializeExtensionEventListeners() {
     // Analytics (non-interactive events)
     chrome.runtime.onInstalled.addListener(() => {
@@ -77,7 +72,6 @@ function initializeExtensionEventListeners() {
         trackEvent('extension', 'startup', null, null, { ni: 1 });
     });
 }
-
 
 function initializeTabEventListeners() {
     // If the URL changes, try again to highlight
@@ -89,7 +83,6 @@ function initializeTabEventListeners() {
         }
     });
 }
-
 function initializeKeyboardShortcutEventListeners() {
     // Add Keyboard shortcuts
     chrome.commands.onCommand.addListener((command) => {
@@ -125,13 +118,11 @@ function initializeKeyboardShortcutEventListeners() {
         }
     });
 }
-
 function initializeMessageEventListeners() {
     // Listen to messages from content scripts
     /* eslint-disable consistent-return */
     chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
         if (!request.action) return;
-
         switch (request.action) {
             case 'highlight':
                 trackEvent('highlight-source', 'highlighter-cursor');
@@ -144,8 +135,8 @@ function initializeMessageEventListeners() {
                 removeHighlights();
                 return;
             case 'remove-highlight':
-                removeHighlight(request.highlightId);
-                return;
+                wrapResponse(removeHighlight(request.highlightId, request.lost), sendResponse);
+                return true; // return asynchronously
             case 'change-color':
                 trackEvent('color-change-source', request.source);
                 changeColor(request.color);
@@ -175,5 +166,4 @@ function initializeMessageEventListeners() {
     });
     /* eslint-enable consistent-return */
 }
-
 export { initialize };
